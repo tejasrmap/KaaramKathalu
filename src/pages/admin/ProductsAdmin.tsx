@@ -251,16 +251,16 @@ export default function ProductsAdmin() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }} 
               animate={{ opacity: 1, scale: 1, y: 0 }} 
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-3xl shadow-2xl relative z-10 w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]"
+              className="bg-white md:rounded-3xl shadow-2xl relative z-10 w-full md:max-w-2xl h-full md:h-auto md:max-h-[90vh] overflow-y-auto flex flex-col"
             >
-              <form onSubmit={handleSubmit} className="flex flex-col h-full">
-                <div className="p-6 border-b border-warm-dark/10">
+              <form onSubmit={handleSubmit} className="flex flex-col min-h-full">
+                <div className="p-6 border-b border-warm-dark/10 sticky top-0 bg-white z-20 backdrop-blur-md">
                   <h2 className="text-2xl font-serif font-bold text-warm-dark">
                     {editingProduct ? 'Edit Product' : 'Add New Product'}
                   </h2>
                 </div>
                 
-                <div className="p-6 overflow-y-auto flex-1 min-h-0">
+                <div className="p-6 space-y-6 flex-1">
                   <div className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
@@ -354,7 +354,7 @@ export default function ProductsAdmin() {
                   </div>
                 </div>
 
-                <div className="p-6 border-t border-warm-dark/10 bg-warm-bg flex justify-end gap-3">
+                <div className="p-6 border-t border-warm-dark/10 bg-[#F4EBE1]/50 flex justify-end gap-3 sticky bottom-0 backdrop-blur-md">
                   <button 
                     type="button"
                     onClick={() => setIsModalOpen(false)}
