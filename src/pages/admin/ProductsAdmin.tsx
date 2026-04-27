@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Edit2, Trash2, Image as ImageIcon, Loader2, Database } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Image as ImageIcon, Loader2, Database, X } from 'lucide-react';
 import { PRODUCTS, Product, ProductType } from '../../data/products';
 import { motion, AnimatePresence } from 'motion/react';
 import { db, storage } from '../../firebase';
