@@ -48,12 +48,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen relative overflow-x-hidden flex flex-col max-w-[100vw]">
       {/* KOLAM LEFT BORDER */}
       <div 
-        className="fixed top-0 left-0 bottom-0 w-[24px] sm:w-[32px] md:w-[60px] lg:w-[80px] z-0 pointer-events-none opacity-[0.08]"
+        className="fixed top-0 left-0 bottom-0 w-[12px] sm:w-[32px] md:w-[60px] lg:w-[80px] z-0 pointer-events-none opacity-[0.08]"
         style={{ backgroundImage: KOLAM_PATTERN, backgroundRepeat: 'repeat', backgroundPosition: 'left center', backgroundSize: '100% auto' }}
       />
       {/* KOLAM RIGHT BORDER */}
       <div 
-        className="fixed top-0 right-0 bottom-0 w-[24px] sm:w-[32px] md:w-[60px] lg:w-[80px] z-0 pointer-events-none opacity-[0.08]"
+        className="fixed top-0 right-0 bottom-0 w-[12px] sm:w-[32px] md:w-[60px] lg:w-[80px] z-0 pointer-events-none opacity-[0.08]"
         style={{ backgroundImage: KOLAM_PATTERN, backgroundRepeat: 'repeat', backgroundPosition: 'right center', backgroundSize: '100% auto' }}
       />
 

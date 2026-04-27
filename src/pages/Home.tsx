@@ -19,8 +19,8 @@ export default function Home() {
     <>
       <SEO />
       {/* HERO SECTION */}
-      <section className="pt-24 md:pt-32 pb-20 px-4 sm:px-6 md:px-12 w-full max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-24 min-h-[90vh]">
-        <div className="flex-1 flex flex-col gap-6 md:gap-8 z-10 w-full lg:max-w-none ml-2 md:ml-0 mr-4 md:mr-0">
+      <section className="pt-24 md:pt-32 pb-12 md:pb-20 px-4 sm:px-6 md:px-12 w-full max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-24 min-h-[90vh]">
+        <div className="flex-1 flex flex-col gap-4 md:gap-8 z-10 w-full lg:max-w-none">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

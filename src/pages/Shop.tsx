@@ -84,7 +84,7 @@ export default function Shop() {
               className="group"
             >
               <Link to={`/product/${product.id}`} className="block h-full">
-                <div className="bg-white border-2 border-warm-dark p-3 flex flex-col h-full relative z-10 transition-transform duration-300 group-hover:-translate-y-2 group-hover:-translate-x-1 shadow-[8px_8px_0px_#3A2A22]">
+                <div className="bg-white border-2 border-warm-dark p-3 flex flex-col h-full relative z-10 transition-transform duration-300 group-hover:-translate-y-2 group-hover:-translate-x-1 shadow-[4px_4px_0px_#3A2A22] md:shadow-[8px_8px_0px_#3A2A22]">
                   
                   <div className="relative aspect-square border-2 border-dashed border-warm-dark/30 mb-4 bg-warm-bg overflow-hidden p-2">
                     <img 
