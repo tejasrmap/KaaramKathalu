@@ -251,32 +251,42 @@ export default function ProductsAdmin() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }} 
               animate={{ opacity: 1, scale: 1, y: 0 }} 
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white md:rounded-3xl shadow-2xl relative z-10 w-full md:max-w-2xl h-full md:h-auto md:max-h-[90vh] overflow-y-auto flex flex-col"
+              className="bg-white md:rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.2)] relative z-10 w-full md:max-w-2xl h-full md:h-auto md:max-h-[85vh] overflow-hidden flex flex-col border border-warm-dark/5"
             >
-              <form onSubmit={handleSubmit} className="flex flex-col min-h-full">
-                <div className="p-6 border-b border-warm-dark/10 sticky top-0 bg-white z-20 backdrop-blur-md">
-                  <h2 className="text-2xl font-serif font-bold text-warm-dark">
-                    {editingProduct ? 'Edit Product' : 'Add New Product'}
-                  </h2>
+              <form onSubmit={handleSubmit} className="flex flex-col h-full overflow-y-auto custom-scrollbar">
+                <div className="p-8 pb-4 border-b border-warm-dark/5 sticky top-0 bg-white/80 backdrop-blur-md z-20 flex justify-between items-center">
+                  <div>
+                    <h2 className="text-3xl font-serif font-bold text-warm-dark italic">
+                      {editingProduct ? 'Refine Product' : 'Seal a New Jar'}
+                    </h2>
+                    <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-warm-accent mt-1">Inventory Management</p>
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="p-2 hover:bg-warm-bg rounded-full transition-colors text-warm-dark/40 hover:text-warm-dark"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
                 </div>
                 
-                <div className="p-6 space-y-6 flex-1">
+                <div className="p-8 space-y-8 flex-1 bg-gradient-to-b from-white to-warm-bg/10">
                   <div className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label className="text-sm font-bold uppercase tracking-widest text-warm-dark/60">Product Name</label>
-                        <input name="name" required defaultValue={editingProduct?.name} className="w-full px-4 py-2 border-2 border-warm-dark bg-warm-bg/30 focus:outline-none focus:border-warm-accent" placeholder="e.g. Garlic Pickle" />
+                        <input name="name" required defaultValue={editingProduct?.name} className="w-full px-5 py-3 rounded-xl border-2 border-warm-dark/10 bg-white focus:outline-none focus:border-warm-accent transition-all font-serif" placeholder="e.g. Garlic Pickle" />
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-bold uppercase tracking-widest text-warm-dark/60">Price (₹)</label>
-                        <input name="price" required type="number" defaultValue={editingProduct?.price} className="w-full px-4 py-2 border-2 border-warm-dark bg-warm-bg/30 focus:outline-none focus:border-warm-accent" placeholder="299" />
+                        <input name="price" required type="number" defaultValue={editingProduct?.price} className="w-full px-5 py-3 rounded-xl border-2 border-warm-dark/10 bg-white focus:outline-none focus:border-warm-accent transition-all font-serif" placeholder="299" />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label className="text-sm font-bold uppercase tracking-widest text-warm-dark/60">Category</label>
-                        <select name="type" defaultValue={editingProduct?.type || 'pickle'} className="w-full px-4 py-2 border-2 border-warm-dark bg-warm-bg/30 focus:outline-none focus:border-warm-accent">
+                        <select name="type" defaultValue={editingProduct?.type || 'pickle'} className="w-full px-5 py-3 rounded-xl border-2 border-warm-dark/10 bg-white focus:outline-none focus:border-warm-accent transition-all font-serif">
                           <option value="pickle">Pickle</option>
                           <option value="podi">Podi</option>
                           <option value="bundle">Bundle</option>
@@ -284,14 +294,14 @@ export default function ProductsAdmin() {
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-bold uppercase tracking-widest text-warm-dark/60">Stock Level</label>
-                        <input name="stock" required type="number" defaultValue={editingProduct?.stock || 50} className="w-full px-4 py-2 border-2 border-warm-dark bg-warm-bg/30 focus:outline-none focus:border-warm-accent" />
+                        <input name="stock" required type="number" defaultValue={editingProduct?.stock || 50} className="w-full px-5 py-3 rounded-xl border-2 border-warm-dark/10 bg-white focus:outline-none focus:border-warm-accent transition-all font-serif" />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label className="text-sm font-bold uppercase tracking-widest text-warm-dark/60">Spiciness (1-3)</label>
-                        <input name="spiciness" required type="number" min="1" max="3" defaultValue={editingProduct?.spiciness || 1} className="w-full px-4 py-2 border-2 border-warm-dark bg-warm-bg/30 focus:outline-none focus:border-warm-accent" />
+                        <input name="spiciness" required type="number" min="1" max="3" defaultValue={editingProduct?.spiciness || 1} className="w-full px-5 py-3 rounded-xl border-2 border-warm-dark/10 bg-white focus:outline-none focus:border-warm-accent transition-all font-serif" />
                       </div>
                     </div>
 
@@ -349,23 +359,23 @@ export default function ProductsAdmin() {
 
                     <div className="space-y-2">
                       <label className="text-sm font-bold uppercase tracking-widest text-warm-dark/60">Description</label>
-                      <textarea name="description" required rows={3} defaultValue={editingProduct?.description} className="w-full px-4 py-2 border-2 border-warm-dark bg-warm-bg/30 focus:outline-none focus:border-warm-accent" placeholder="Short description..."></textarea>
+                      <textarea name="description" required rows={3} defaultValue={editingProduct?.description} className="w-full px-5 py-3 rounded-xl border-2 border-warm-dark/10 bg-white focus:outline-none focus:border-warm-accent transition-all font-serif" placeholder="Short description..."></textarea>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-6 border-t border-warm-dark/10 bg-[#F4EBE1]/50 flex justify-end gap-3 sticky bottom-0 backdrop-blur-md">
+                <div className="p-8 border-t border-warm-dark/5 bg-white/90 backdrop-blur-md flex justify-end items-center gap-6 sticky bottom-0 z-20">
                   <button 
                     type="button"
                     onClick={() => setIsModalOpen(false)}
-                    className="px-6 py-2.5 font-bold uppercase tracking-widest text-xs text-warm-dark hover:bg-warm-dark/5 transition-colors"
+                    className="text-xs font-bold uppercase tracking-widest text-warm-dark/40 hover:text-warm-accent transition-colors"
                   >
-                    Cancel
+                    Discard Changes
                   </button>
                   <button 
                     type="submit"
                     disabled={isSubmitting || isUploading}
-                    className="px-8 py-3 bg-warm-dark text-white font-bold uppercase tracking-widest text-xs shadow-[4px_4px_0px_#B83A20] hover:translate-y-1 hover:shadow-none transition-all disabled:opacity-50"
+                    className="bg-warm-dark text-white px-10 py-4 rounded-xl font-bold tracking-widest uppercase text-xs shadow-xl hover:bg-warm-accent hover:-translate-y-1 transition-all disabled:opacity-50 disabled:translate-y-0"
                   >
                     {isUploading ? 'Uploading Image...' : isSubmitting ? 'Saving...' : 'Save Product'}
                   </button>
