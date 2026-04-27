@@ -2,11 +2,26 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight, Instagram, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { PRODUCTS } from '../data/products';
+import { collection, query, limit, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase';
 import SEO from '../components/SEO';
 
 export default function Home() {
-  const featured = PRODUCTS.slice(0, 3);
+  const [featuredProducts, setFeaturedProducts] = React.useState<any[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const q = query(collection(db, 'products'), limit(3));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const products = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setFeaturedProducts(products);
+      setIsLoading(false);
+    });
+    return unsubscribe;
+  }, []);
 
   const galleryImages = [
     "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600&q=80",
@@ -118,30 +133,43 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            {featured.map((product, idx) => (
-              <Link to={`/product/${product.id}`} key={product.id} className="group relative">
-                <div className="absolute inset-0 bg-warm-dark transform translate-x-2 translate-y-2 opacity-10"></div>
-                <div className={`bg-white border-2 border-warm-dark p-3 flex flex-col h-full relative z-10 transition-transform duration-300 group-hover:-translate-y-2 group-hover:-translate-x-1 ${idx % 2 === 0 ? 'transform rotate-1' : 'transform -rotate-1'}`}>
-                  <div className="relative aspect-[4/3] border-2 border-dashed border-warm-dark/30 mb-4 bg-warm-bg">
-                    <img 
-                      src={product.image} 
-                      alt={product.name} 
-                      className="w-full h-full object-cover grayscale-[10%] contrast-110 sepia-[10%] transition-all duration-700 group-hover:grayscale-0 group-hover:sepia-0"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute top-2 left-2 bg-warm-bg border-2 border-warm-dark px-2 py-1 text-[10px] uppercase font-bold tracking-widest text-warm-dark shadow-[2px_2px_0px_#3A2A22]">
-                      {product.type}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {isLoading ? (
+               [1, 2, 3].map(i => (
+                 <div key={i} className="h-[400px] bg-warm-bg/50 animate-pulse border-2 border-warm-dark/10"></div>
+               ))
+            ) : featuredProducts.map((product) => (
+              <motion.div
+                key={product.id}
+                whileHover={{ y: -10 }}
+                className="group"
+              >
+                <Link to={`/product/${product.id}`} className="block h-full">
+                  <div className="bg-white border-2 border-warm-dark p-4 flex flex-col h-full relative transition-transform duration-300 group-hover:-translate-y-1 shadow-[4px_4px_0px_#3A2A22] md:shadow-[8px_8px_0px_#3A2A22]">
+                    <div className="relative aspect-square border-2 border-dashed border-warm-dark/30 mb-6 bg-warm-bg overflow-hidden p-2">
+                      <img 
+                        src={product.image} 
+                        alt={product.name} 
+                        className="w-full h-full object-cover grayscale-[10%] group-hover:grayscale-0 transition-all duration-700"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute top-4 left-4 bg-warm-accent text-white px-3 py-1 font-bold text-xs shadow-[2px_2px_0px_#3A2A22] transform -rotate-3 border-2 border-warm-dark">
+                        ₹{product.price}
+                      </div>
+                    </div>
+                    
+                    <h3 className="text-2xl font-serif font-bold text-warm-dark mb-2 group-hover:text-warm-accent transition-colors">{product.name}</h3>
+                    <p className="text-warm-dark/60 text-sm font-serif italic mb-6 line-clamp-2">
+                      {product.description}
+                    </p>
+                    
+                    <div className="mt-auto pt-6 border-t-2 border-dashed border-warm-dark/10 flex justify-between items-center">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-warm-dark/40 group-hover:text-warm-accent transition-colors">Experience Heritage</span>
+                      <ArrowRight className="w-4 h-4 text-warm-dark/20 group-hover:text-warm-accent group-hover:translate-x-1 transition-all" />
                     </div>
                   </div>
-                  
-                  <div className="p-4 flex-1 flex flex-col items-center text-center border-2 border-warm-dark bg-[#F4EBE1]">
-                    <h3 className="font-serif text-2xl font-bold text-warm-dark mb-2">{product.name}</h3>
-                    <span className="font-bold text-md tracking-widest text-warm-accent mb-4 block border-b border-warm-dark/20 pb-2 w-full">₹{product.price}</span>
-                    <p className="text-warm-dark/70 text-sm font-serif italic">{product.description}</p>
-                  </div>
-                </div>
-              </Link>
+                </Link>
+              </motion.div>
             ))}
           </div>
         </div>

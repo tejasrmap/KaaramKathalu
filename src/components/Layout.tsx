@@ -63,108 +63,111 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         style={{ backgroundImage: KOLAM_PATTERN, backgroundRepeat: 'repeat', backgroundPosition: 'right center', backgroundSize: '100% auto' }}
       />
 
-      {/* Announcement Bar */}
-      <div className="bg-warm-dark text-[#F4EBE1] py-2 px-4 text-center text-[10px] uppercase font-bold tracking-[0.2em] relative z-50">
-        {announcement}
-      </div>
+      {/* TOP NAVIGATION WRAPPER */}
+      <div className="fixed top-0 left-0 right-0 z-50">
+        {/* Announcement Bar */}
+        <div className="bg-warm-dark text-[#F4EBE1] py-2 px-4 text-center text-[10px] uppercase font-bold tracking-[0.2em]">
+          {announcement}
+        </div>
 
-      {/* NAVBAR (Desktop & Mobile Header) */}
-      <header 
-        className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${
-          isScrolled || location.pathname !== '/' ? 'bg-warm-bg/95 backdrop-blur-sm border-b-2 border-warm-dark py-3 md:py-4' : 'bg-transparent py-4 md:py-6'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex justify-between items-center w-full">
-          <Link to="/" className="flex items-center gap-2 z-50">
-            <span className="font-serif font-bold text-xl md:text-2xl tracking-tight text-warm-dark bg-[#F4EBE1] px-2 py-1 md:px-3 md:py-1 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] transform -rotate-1 relative">
-              <span className="absolute -left-1 -top-1 md:-left-2 md:-top-2 w-2 h-2 md:w-3 md:h-3 bg-warm-accent rounded-full border border-warm-dark shadow-sm"></span>
-              Kaaram<span className="text-warm-accent italic">Kathalu</span>
-            </span>
-          </Link>
+        {/* NAVBAR (Desktop & Mobile Header) */}
+        <header 
+          className={`transition-all duration-300 ${
+            isScrolled || location.pathname !== '/' ? 'bg-warm-bg/95 backdrop-blur-sm border-b-2 border-warm-dark py-3 md:py-4' : 'bg-transparent py-4 md:py-6'
+          }`}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex justify-between items-center w-full">
+            <Link to="/" className="flex items-center gap-2">
+              <span className="font-serif font-bold text-xl md:text-2xl tracking-tight text-warm-dark bg-[#F4EBE1] px-2 py-1 md:px-3 md:py-1 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] transform -rotate-1 relative">
+                <span className="absolute -left-1 -top-1 md:-left-2 md:-top-2 w-2 h-2 md:w-3 md:h-3 bg-warm-accent rounded-full border border-warm-dark shadow-sm"></span>
+                Kaaram<span className="text-warm-accent italic">Kathalu</span>
+              </span>
+            </Link>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden md:flex gap-8 items-center font-bold text-xs tracking-widest uppercase bg-[#F4EBE1] px-8 py-3 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22]">
-            <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Home</Link>
-            <Link to="/about" className={`${location.pathname === '/about' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Our Story</Link>
-            <Link to="/shop" className={`${location.pathname === '/shop' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Shop</Link>
-          </nav>
+            {/* Desktop Nav Links */}
+            <nav className="hidden md:flex gap-8 items-center font-bold text-xs tracking-widest uppercase bg-[#F4EBE1] px-8 py-3 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22]">
+              <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Home</Link>
+              <Link to="/about" className={`${location.pathname === '/about' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Our Story</Link>
+              <Link to="/shop" className={`${location.pathname === '/shop' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Shop</Link>
+            </nav>
 
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-4 z-50">
-            {user ? (
-              <div className="flex items-center gap-2">
+            {/* Desktop Actions */}
+            <div className="hidden md:flex items-center gap-4">
+              {user ? (
+                <div className="flex items-center gap-2">
+                  <Link 
+                    to="/profile"
+                    className="p-2 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark hover:bg-warm-dark hover:text-[#F4EBE1] transition-colors shadow-[4px_4px_0px_#3A2A22]"
+                    title="My Profile"
+                  >
+                    <UserIcon className="w-5 h-5" />
+                  </Link>
+                  <Link 
+                    to="/my-orders"
+                    className="p-2 bg-white border-2 border-warm-dark text-warm-dark hover:bg-warm-bg transition-colors shadow-[4px_4px_0px_#3A2A22]"
+                    title="My Orders"
+                  >
+                    <ShoppingBag className="w-5 h-5 opacity-50" /> 
+                  </Link>
+                  <button 
+                    onClick={() => logout()}
+                    className="p-2 bg-white border-2 border-warm-dark text-warm-dark hover:bg-red-50 hover:text-red-600 transition-colors shadow-[4px_4px_0px_#3A2A22]"
+                    title="Logout"
+                  >
+                    <LogOut className="w-5 h-5" />
+                  </button>
+                </div>
+              ) : (
                 <Link 
-                  to="/profile"
+                  to="/login"
                   className="p-2 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark hover:bg-warm-dark hover:text-[#F4EBE1] transition-colors shadow-[4px_4px_0px_#3A2A22]"
-                  title="My Profile"
+                  title="Login"
                 >
                   <UserIcon className="w-5 h-5" />
                 </Link>
-                <Link 
-                  to="/my-orders"
-                  className="p-2 bg-white border-2 border-warm-dark text-warm-dark hover:bg-warm-bg transition-colors shadow-[4px_4px_0px_#3A2A22]"
-                  title="My Orders"
-                >
-                  <ShoppingBag className="w-5 h-5 opacity-50" /> 
-                </Link>
-                <button 
-                  onClick={() => logout()}
-                  className="p-2 bg-white border-2 border-warm-dark text-warm-dark hover:bg-red-50 hover:text-red-600 transition-colors shadow-[4px_4px_0px_#3A2A22]"
-                  title="Logout"
-                >
-                  <LogOut className="w-5 h-5" />
-                </button>
-              </div>
-            ) : (
-              <Link 
-                to="/login"
-                className="p-2 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark hover:bg-warm-dark hover:text-[#F4EBE1] transition-colors shadow-[4px_4px_0px_#3A2A22]"
-                title="Login"
-              >
-                <UserIcon className="w-5 h-5" />
-              </Link>
-            )}
-
-            <Link 
-              to="/wishlist"
-              className="relative p-2 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark hover:bg-warm-dark hover:text-[#F4EBE1] transition-colors shadow-[4px_4px_0px_#3A2A22]"
-              title="My Wishlist"
-            >
-              <Heart className={`w-5 h-5 ${wishlistCount > 0 ? 'fill-warm-accent text-warm-accent' : ''}`} />
-              {wishlistCount > 0 && (
-                <span className="absolute -top-3 -right-3 bg-white text-warm-dark text-[10px] font-bold w-6 h-6 flex items-center justify-center border-2 border-warm-dark transform -rotate-3">
-                  {wishlistCount}
-                </span>
               )}
-            </Link>
 
+              <Link 
+                to="/wishlist"
+                className="relative p-2 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark hover:bg-warm-dark hover:text-[#F4EBE1] transition-colors shadow-[4px_4px_0px_#3A2A22]"
+                title="My Wishlist"
+              >
+                <Heart className={`w-5 h-5 ${wishlistCount > 0 ? 'fill-warm-accent text-warm-accent' : ''}`} />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-3 -right-3 bg-white text-warm-dark text-[10px] font-bold w-6 h-6 flex items-center justify-center border-2 border-warm-dark transform -rotate-3">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
+
+              <button 
+                onClick={() => setIsCartOpen(true)}
+                className="relative p-2 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark hover:bg-warm-dark hover:text-[#F4EBE1] transition-colors shadow-[4px_4px_0px_#3A2A22]"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-3 -right-3 bg-warm-accent text-white text-[10px] font-bold w-6 h-6 flex items-center justify-center border-2 border-warm-dark transform rotate-3">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* Mobile Cart Button (Header) */}
             <button 
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark hover:bg-warm-dark hover:text-[#F4EBE1] transition-colors shadow-[4px_4px_0px_#3A2A22]"
+              className="md:hidden relative p-2 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark shadow-[4px_4px_0px_#3A2A22]"
             >
               <ShoppingCart className="w-5 h-5" />
               {cartCount > 0 && (
-                <span className="absolute -top-3 -right-3 bg-warm-accent text-white text-[10px] font-bold w-6 h-6 flex items-center justify-center border-2 border-warm-dark transform rotate-3">
+                <span className="absolute -top-2 -right-2 bg-warm-accent text-white text-[8px] font-bold w-5 h-5 flex items-center justify-center border-2 border-warm-dark transform rotate-3">
                   {cartCount}
                 </span>
               )}
             </button>
           </div>
-
-          {/* Mobile Cart Button (Header) */}
-          <button 
-            onClick={() => setIsCartOpen(true)}
-            className="md:hidden relative p-2 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark shadow-[4px_4px_0px_#3A2A22]"
-          >
-            <ShoppingCart className="w-5 h-5" />
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-warm-accent text-white text-[8px] font-bold w-5 h-5 flex items-center justify-center border-2 border-warm-dark transform rotate-3">
-                {cartCount}
-              </span>
-            )}
-          </button>
-        </div>
-      </header>
+        </header>
+      </div>
 
       {/* MOBILE BOTTOM NAVIGATION */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-t-2 border-warm-dark pb-safe">
@@ -207,7 +210,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 mt-16 md:mt-24 pb-24 md:pb-0">
+      <main className="flex-1 mt-24 md:mt-32 pb-24 md:pb-0">
         {children}
       </main>
 
