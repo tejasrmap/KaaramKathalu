@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ArrowRight, Instagram } from 'lucide-react';
+import { ArrowRight, Instagram, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PRODUCTS } from '../data/products';
 import SEO from '../components/SEO';
@@ -51,6 +51,22 @@ export default function Home() {
               Explore Shop <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
             </Link>
           </motion.div>
+
+          {/* Mobile Quick Categories */}
+          <div className="md:hidden grid grid-cols-3 gap-3 mt-4">
+             {['Pickles', 'Podis', 'Bundles'].map((cat) => (
+                <Link 
+                  key={cat}
+                  to={`/shop?filter=${cat.toLowerCase().slice(0,-1)}`}
+                  className="bg-white border-2 border-warm-dark p-3 flex flex-col items-center gap-2 shadow-[4px_4px_0px_#3A2A22] active:translate-y-1 active:shadow-none transition-all"
+                >
+                   <div className="w-10 h-10 bg-warm-bg rounded-full flex items-center justify-center border border-warm-dark/10">
+                      <ShoppingBag className="w-5 h-5 text-warm-accent" />
+                   </div>
+                   <span className="text-[8px] font-bold uppercase tracking-widest">{cat}</span>
+                </Link>
+             ))}
+          </div>
         </div>
 
         <div className="flex-1 w-full relative max-w-[90vw] lg:max-w-none mx-auto min-h-[300px] mb-8 md:mb-0 ml-2 md:ml-0 mr-4 md:mr-0 pl-2 lg:pl-0 pr-6 md:pr-0">

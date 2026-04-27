@@ -1,22 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingCart, Menu, X, Plus, Minus, MapPin, Phone, Mail, User as UserIcon, LogOut } from 'lucide-react';
+import { ShoppingCart, ShoppingBag, Home, Menu, X, Plus, Minus, MapPin, Phone, Mail, User as UserIcon, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { Heart } from 'lucide-react';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { cart, isCartOpen, setIsCartOpen, updateQuantity, cartTotal, cartCount } = useCart();
   const { user, logout } = useAuth();
   const { wishlistCount } = useWishlist();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [announcement, setAnnouncement] = useState('🔥 Traditional Flavors Delivered to Your Doorstep. Free Shipping on Orders Above ₹999.');
   const location = useLocation();
 
   useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+
     const fetchSettings = async () => {
       try {
         const docRef = doc(db, 'settings', 'general');
@@ -45,7 +51,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const KOLAM_PATTERN = `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,0 Q20,0 20,20 T40,40 M0,40 Q20,40 20,20 T40,0' stroke='%233A2A22' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round' /%3E%3Ccircle cx='10' cy='20' r='1.5' fill='%233A2A22' /%3E%3Ccircle cx='30' cy='20' r='1.5' fill='%233A2A22' /%3E%3Ccircle cx='20' cy='10' r='1.5' fill='%233A2A22' /%3E%3Ccircle cx='20' cy='30' r='1.5' fill='%233A2A22' /%3E%3C/svg%3E")`;
 
   return (
-    <div className="min-h-screen relative overflow-x-hidden flex flex-col max-w-[100vw]">
+    <div className="min-h-screen relative overflow-x-hidden flex flex-col max-w-[100vw] bg-warm-bg">
       {/* KOLAM LEFT BORDER */}
       <div 
         className="fixed top-0 left-0 bottom-0 w-[12px] sm:w-[32px] md:w-[60px] lg:w-[80px] z-0 pointer-events-none opacity-[0.08]"
@@ -62,13 +68,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {announcement}
       </div>
 
-      {/* NAVBAR */}
+      {/* NAVBAR (Desktop & Mobile Header) */}
       <header 
         className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${
           isScrolled || location.pathname !== '/' ? 'bg-warm-bg/95 backdrop-blur-sm border-b-2 border-warm-dark py-3 md:py-4' : 'bg-transparent py-4 md:py-6'
         }`}
       >
-        <div className="max-w-7xl mx-auto pl-10 pr-4 sm:px-6 md:px-12 flex justify-between items-center w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex justify-between items-center w-full">
           <Link to="/" className="flex items-center gap-2 z-50">
             <span className="font-serif font-bold text-xl md:text-2xl tracking-tight text-warm-dark bg-[#F4EBE1] px-2 py-1 md:px-3 md:py-1 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] transform -rotate-1 relative">
               <span className="absolute -left-1 -top-1 md:-left-2 md:-top-2 w-2 h-2 md:w-3 md:h-3 bg-warm-accent rounded-full border border-warm-dark shadow-sm"></span>
@@ -76,13 +82,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </span>
           </Link>
 
+          {/* Desktop Nav Links */}
           <nav className="hidden md:flex gap-8 items-center font-bold text-xs tracking-widest uppercase bg-[#F4EBE1] px-8 py-3 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22]">
             <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Home</Link>
             <Link to="/about" className={`${location.pathname === '/about' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Our Story</Link>
             <Link to="/shop" className={`${location.pathname === '/shop' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Shop</Link>
           </nav>
 
-          <div className="flex items-center gap-4 z-50">
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center gap-4 z-50">
             {user ? (
               <div className="flex items-center gap-2">
                 <Link 
@@ -97,7 +105,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   className="p-2 bg-white border-2 border-warm-dark text-warm-dark hover:bg-warm-bg transition-colors shadow-[4px_4px_0px_#3A2A22]"
                   title="My Orders"
                 >
-                  <ShoppingCart className="w-5 h-5 opacity-50" /> 
+                  <ShoppingBag className="w-5 h-5 opacity-50" /> 
                 </Link>
                 <button 
                   onClick={() => logout()}
@@ -141,16 +149,47 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </span>
               )}
             </button>
-            
-            <button 
-              className="md:hidden p-2 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark shadow-[4px_4px_0px_#3A2A22]"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
           </div>
+
+          {/* Mobile Cart Button (Header) */}
+          <button 
+            onClick={() => setIsCartOpen(true)}
+            className="md:hidden relative p-2 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark shadow-[4px_4px_0px_#3A2A22]"
+          >
+            <ShoppingCart className="w-5 h-5" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-warm-accent text-white text-[8px] font-bold w-5 h-5 flex items-center justify-center border-2 border-warm-dark transform rotate-3">
+                {cartCount}
+              </span>
+            )}
+          </button>
         </div>
       </header>
+
+      {/* MOBILE BOTTOM NAVIGATION */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-t-2 border-warm-dark pb-safe">
+        <div className="flex items-center justify-around p-2">
+          <Link to="/" className={`p-3 flex flex-col items-center gap-1 ${location.pathname === '/' ? 'text-warm-accent' : 'text-warm-dark/60'}`}>
+            <Home className="w-6 h-6" />
+            <span className="text-[8px] font-bold uppercase tracking-widest">Home</span>
+          </Link>
+          <Link to="/shop" className={`p-3 flex flex-col items-center gap-1 ${location.pathname === '/shop' ? 'text-warm-accent' : 'text-warm-dark/60'}`}>
+            <ShoppingBag className="w-6 h-6" />
+            <span className="text-[8px] font-bold uppercase tracking-widest">Shop</span>
+          </Link>
+          <Link to="/wishlist" className={`p-3 flex flex-col items-center gap-1 relative ${location.pathname === '/wishlist' ? 'text-warm-accent' : 'text-warm-dark/60'}`}>
+            <Heart className={`w-6 h-6 ${wishlistCount > 0 && location.pathname !== '/wishlist' ? 'fill-warm-accent/20' : ''}`} />
+            {wishlistCount > 0 && (
+              <span className="absolute top-2 right-2 w-2 h-2 bg-warm-accent rounded-full border border-white"></span>
+            )}
+            <span className="text-[8px] font-bold uppercase tracking-widest">Wishlist</span>
+          </Link>
+          <Link to={user ? "/profile" : "/login"} className={`p-3 flex flex-col items-center gap-1 ${location.pathname === '/profile' || location.pathname === '/login' ? 'text-warm-accent' : 'text-warm-dark/60'}`}>
+            <UserIcon className="w-6 h-6" />
+            <span className="text-[8px] font-bold uppercase tracking-widest">{user ? 'Me' : 'Login'}</span>
+          </Link>
+        </div>
+      </div>
 
       {/* MOBILE MENU */}
       <AnimatePresence>
@@ -168,7 +207,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 mt-16 md:mt-24">
+      <main className="flex-1 mt-16 md:mt-24 pb-24 md:pb-0">
         {children}
       </main>
 
@@ -218,11 +257,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             />
             
             <motion.div 
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
+              initial={isMobile ? { y: '100%' } : { x: '100%' }}
+              animate={isMobile ? { y: 0 } : { x: 0 }}
+              exit={isMobile ? { y: '100%' } : { x: '100%' }}
               transition={{ type: "spring", damping: 30, stiffness: 300, mass: 0.8 }}
-              className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-warm-bg border-l-4 border-warm-dark shadow-2xl z-50 flex flex-col pt-safe px-safe"
+              className="fixed bottom-0 md:top-0 right-0 w-full max-w-md bg-warm-bg border-t-4 md:border-t-0 md:border-l-4 border-warm-dark shadow-2xl z-50 flex flex-col pt-safe px-safe h-[85vh] md:h-full"
             >
               <div className="p-6 border-b-2 border-warm-dark flex justify-between items-center bg-[#F4EBE1] relative">
                 <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22/%3E%3C/svg%3E')]"></div>

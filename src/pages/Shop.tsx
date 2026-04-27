@@ -44,16 +44,16 @@ export default function Shop() {
         </p>
       </div>
 
-      <div className="flex justify-center mb-16 relative z-20 w-full max-w-[95vw] mx-auto overflow-x-auto pb-4">
-        <div className="flex gap-3 md:gap-4 p-2 bg-[#F4EBE1] border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] w-max mx-auto">
+      <div className="sticky top-20 z-30 -mx-4 px-4 bg-warm-bg/80 backdrop-blur-md border-b-2 border-warm-dark/5 mb-8 md:mb-16 py-4 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-3 w-max mx-auto md:mx-0">
           {(['all', 'pickle', 'podi', 'bundle'] as const).map(filter => (
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`px-6 md:px-8 py-3 text-sm font-bold tracking-widest uppercase transition-all whitespace-nowrap border-2 border-transparent ${
+              className={`px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all border-2 ${
                 activeFilter === filter 
-                  ? 'bg-warm-dark text-[#F4EBE1] border-warm-dark shadow-[4px_4px_0px_rgba(58,42,34,0.3)]' 
-                  : 'text-warm-dark bg-white border-warm-dark shadow-[2px_2px_0px_#3A2A22] hover:-translate-y-1 hover:shadow-[4px_4px_0px_#3A2A22]'
+                  ? 'bg-warm-dark text-white border-warm-dark shadow-[4px_4px_0px_rgba(58,42,34,0.3)]' 
+                  : 'bg-white text-warm-dark border-warm-dark/20 hover:border-warm-dark'
               }`}
             >
               {filter}
