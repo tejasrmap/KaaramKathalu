@@ -3,6 +3,7 @@ import { Search, Filter, Eye, MoreVertical } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { db } from '../../firebase';
 import { collection, onSnapshot, query, orderBy, doc, updateDoc } from 'firebase/firestore';
+import { X } from 'lucide-react';
 
 const STATUSES = ['All', 'Pending', 'Processing', 'Shipped', 'Delivered'];
 
@@ -12,6 +13,7 @@ export default function Orders() {
   const [activeTab, setActiveTab] = useState('All');
   const [search, setSearch] = useState('');
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
 
   useEffect(() => {
     const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
@@ -142,7 +144,10 @@ export default function Orders() {
                     </td>
                     <td className="px-6 py-4 relative">
                       <div className="flex items-center justify-center gap-2">
-                        <button className="px-3 py-1.5 border-2 border-warm-dark bg-white hover:bg-warm-dark hover:text-white transition-colors shadow-[2px_2px_0px_#3A2A22] hover:translate-y-px text-warm-dark font-bold uppercase tracking-widest text-[10px] flex items-center gap-1">
+                        <button 
+                          onClick={() => setSelectedOrder(order)}
+                          className="px-3 py-1.5 border-2 border-warm-dark bg-white hover:bg-warm-dark hover:text-white transition-colors shadow-[2px_2px_0px_#3A2A22] hover:translate-y-px text-warm-dark font-bold uppercase tracking-widest text-[10px] flex items-center gap-1"
+                        >
                           <Eye className="w-3 h-3" /> View
                         </button>
                         
@@ -189,6 +194,96 @@ export default function Orders() {
           </table>
         </div>
       </div>
+      {/* Order Details Modal */}
+      <AnimatePresence>
+        {selectedOrder && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              onClick={() => setSelectedOrder(null)}
+              className="absolute inset-0 bg-warm-dark/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }} 
+              animate={{ opacity: 1, scale: 1, y: 0 }} 
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white rounded-3xl shadow-2xl relative z-10 w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh] border-4 border-warm-dark"
+            >
+              <div className="p-6 border-b-2 border-warm-dark bg-[#F4EBE1] flex justify-between items-center">
+                <div>
+                  <h2 className="text-2xl font-serif font-bold text-warm-dark">Order #{selectedOrder.id.slice(0, 8)}</h2>
+                  <p className="text-xs font-bold uppercase tracking-widest text-warm-dark/40">{selectedOrder.date}</p>
+                </div>
+                <button onClick={() => setSelectedOrder(null)} className="p-2 hover:bg-warm-dark/10 rounded-full transition-colors">
+                  <X className="w-6 h-6 text-warm-dark" />
+                </button>
+              </div>
+
+              <div className="p-8 overflow-y-auto bg-white">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-10">
+                  <div className="space-y-4">
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-warm-accent border-b-2 border-dashed border-warm-accent/20 pb-2">Patron Details</h3>
+                    <div className="bg-warm-bg/30 p-4 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22]">
+                      <p className="font-serif font-bold text-xl text-warm-dark">{selectedOrder.customer?.name}</p>
+                      <p className="text-sm font-bold text-warm-dark/60">{selectedOrder.customer?.email}</p>
+                      <p className="text-sm font-bold text-warm-dark/60 mt-1">{selectedOrder.customer?.phone}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-warm-accent border-b-2 border-dashed border-warm-accent/20 pb-2">Delivery Address</h3>
+                    <div className="bg-warm-bg/30 p-4 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22]">
+                      <p className="text-sm font-serif italic text-warm-dark/80 whitespace-pre-wrap">{selectedOrder.customer?.address}</p>
+                      <p className="text-sm font-bold text-warm-dark uppercase tracking-widest mt-2">{selectedOrder.customer?.city}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-warm-accent border-b-2 border-dashed border-warm-accent/20 pb-2">Order Items</h3>
+                  <div className="border-2 border-warm-dark overflow-hidden">
+                    <table className="w-full text-left">
+                      <thead className="bg-warm-dark text-white text-[10px] uppercase tracking-[0.2em]">
+                        <tr>
+                          <th className="px-4 py-3">Item</th>
+                          <th className="px-4 py-3 text-center">Qty</th>
+                          <th className="px-4 py-3 text-right">Price</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y-2 divide-dashed divide-warm-dark/10">
+                        {selectedOrder.items?.map((item: any, idx: number) => (
+                          <tr key={idx} className="bg-white">
+                            <td className="px-4 py-4 font-serif font-bold text-warm-dark">{item.name}</td>
+                            <td className="px-4 py-4 text-center font-bold">{item.quantity}</td>
+                            <td className="px-4 py-4 text-right font-bold">₹{item.price * item.quantity}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot className="bg-[#F4EBE1] border-t-2 border-warm-dark">
+                        <tr>
+                          <td colSpan={2} className="px-4 py-4 text-xs font-bold uppercase tracking-widest text-warm-dark">Grand Total</td>
+                          <td className="px-4 py-4 text-right font-bold text-xl text-warm-accent">₹{selectedOrder.total}</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 border-t-2 border-warm-dark bg-warm-bg flex justify-end">
+                 <button 
+                  onClick={() => setSelectedOrder(null)}
+                  className="px-8 py-3 bg-warm-dark text-white font-bold uppercase tracking-widest text-xs shadow-[4px_4px_0px_#B83A20] hover:translate-y-1 hover:shadow-none transition-all"
+                >
+                  Close Register
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
