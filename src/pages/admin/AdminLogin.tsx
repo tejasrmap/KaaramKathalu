@@ -30,8 +30,9 @@ export default function AdminLogin() {
 
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
-          <span className="font-serif font-bold text-4xl tracking-tight text-warm-dark">
-            Kaaram<span className="text-warm-accent italic">Kathalu</span>
+          <span className="font-serif font-bold text-4xl tracking-tight text-warm-dark flex items-baseline justify-center gap-2">
+            <span>Kaaram</span>
+            <span className="text-warm-accent text-5xl leading-none ml-1">కథలు</span>
           </span>
           <p className="text-warm-dark/60 mt-3 font-medium uppercase tracking-widest text-sm text-center">
             Admin Portal

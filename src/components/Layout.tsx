@@ -78,9 +78,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex justify-between items-center w-full">
             <Link to="/" className="flex items-center gap-2">
-              <span className="font-serif font-bold text-xl md:text-2xl tracking-tight text-warm-dark bg-[#F4EBE1] px-2 py-1 md:px-3 md:py-1 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] transform -rotate-1 relative">
+              <span className="font-serif font-bold text-xl md:text-2xl tracking-tight text-warm-dark bg-[#F4EBE1] px-2 py-1 md:px-3 md:py-1 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] transform -rotate-1 relative flex items-baseline gap-1">
                 <span className="absolute -left-1 -top-1 md:-left-2 md:-top-2 w-2 h-2 md:w-3 md:h-3 bg-warm-accent rounded-full border border-warm-dark shadow-sm"></span>
-                Kaaram<span className="text-warm-accent italic">Kathalu</span>
+                <span>Kaaram</span>
+                <span className="text-warm-accent text-2xl md:text-3xl leading-none ml-1">కథలు</span>
               </span>
             </Link>
 

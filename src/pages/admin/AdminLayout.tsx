@@ -31,8 +31,9 @@ export default function AdminLayout() {
     <>
       <div className="p-6">
         <Link to="/" className="flex items-center gap-2">
-          <span className="font-serif font-bold text-xl tracking-tight text-white">
-            Kaaram<span className="text-warm-accent italic">Kathalu</span>
+          <span className="font-serif font-bold text-xl tracking-tight text-white flex items-baseline gap-1">
+            <span>Kaaram</span>
+            <span className="text-warm-accent text-2xl leading-none ml-1">కథలు</span>
           </span>
           <span className="text-xs bg-warm-accent/20 text-warm-accent px-2 py-1 rounded-full font-medium ml-2">ADMIN</span>
         </Link>
@@ -95,7 +96,10 @@ export default function AdminLayout() {
       {/* Mobile Topbar */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-warm-dark text-white z-30 flex items-center justify-between px-4 shadow-md">
         <Link to="/" className="flex items-center gap-2">
-          <span className="font-serif font-bold text-lg tracking-tight">Kaaram Kathalu</span>
+          <span className="font-serif font-bold text-lg tracking-tight flex items-baseline gap-1 text-white">
+            <span>Kaaram</span>
+            <span className="text-warm-accent text-xl ml-1">కథలు</span>
+          </span>
         </Link>
         <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 hover:bg-white/10 rounded-lg">
           <Menu className="w-6 h-6" />

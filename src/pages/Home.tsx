@@ -150,12 +150,17 @@ export default function Home() {
                       <img 
                         src={product.image} 
                         alt={product.name} 
-                        className="w-full h-full object-cover grayscale-[10%] group-hover:grayscale-0 transition-all duration-700"
+                        className={`w-full h-full object-cover grayscale-[10%] group-hover:grayscale-0 transition-all duration-700 ${product.stock <= 0 ? 'opacity-50 grayscale' : ''}`}
                         referrerPolicy="no-referrer"
                       />
                       <div className="absolute top-4 left-4 bg-warm-accent text-white px-3 py-1 font-bold text-xs shadow-[2px_2px_0px_#3A2A22] transform -rotate-3 border-2 border-warm-dark">
                         ₹{product.price}
                       </div>
+                      {product.stock <= 0 && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px] pointer-events-none">
+                          <span className="font-serif font-bold text-white text-xl border-2 border-white px-2 py-1 transform -rotate-6">SOLD OUT</span>
+                        </div>
+                      )}
                     </div>
                     
                     <h3 className="text-2xl font-serif font-bold text-warm-dark mb-2 group-hover:text-warm-accent transition-colors">{product.name}</h3>

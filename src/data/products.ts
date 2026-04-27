@@ -19,7 +19,7 @@ export const PRODUCTS: Product[] = [
     price: 299, 
     type: 'pickle', 
     spiciness: 3, 
-    image: 'https://images.unsplash.com/photo-1626388416805-40b991ea4518?w=800&q=80', 
+    image: 'https://images.unsplash.com/photo-1626074353765-517a681e40be?w=800&q=80', 
     description: 'Authentic Andhra mango pickle made with freshly ground spices and cold-pressed sesame oil.',
     longDescription: 'Our Traditional Avakaya is crafted using a generations-old recipe from the heartlands of Andhra. We select the finest raw mangoes, sun-dry our spices, and blend them with premium cold-pressed oil to ensure every bite delivers the perfect balance of heat, tang, and tradition. Pairs beautifully with piping hot rice and a dollop of ghee.',
     ingredients: ['Raw Mango', 'Mustard Powder', 'Red Chili Powder', 'Cold-pressed Sesame Oil', 'Garlic', 'Sea Salt', 'Fenugreek Powder']
@@ -52,7 +52,7 @@ export const PRODUCTS: Product[] = [
     price: 199, 
     type: 'pickle', 
     spiciness: 1, 
-    image: 'https://images.unsplash.com/photo-1583344607830-ec85cb2ba2bb?w=800&q=80', 
+    image: 'https://images.unsplash.com/photo-1621447509323-986d5e739916?w=800&q=80', 
     description: 'Aged lemon pickle with a balanced tangy flavor, perfect for your daily meals.',
     longDescription: 'An age-old digestive aid turned culinary delight! Our Nimmakaya is aged for months to let the sharp citrus mellow into a deep, complex zest. Free from artificial souring agents, it relies purely on the natural tartness of farm-fresh lemons preserved in turmeric and salt before being lightly spiced.',
     ingredients: ['Lemons', 'Sea Salt', 'Turmeric', 'Red Chili Powder', 'Fenugreek Powder']

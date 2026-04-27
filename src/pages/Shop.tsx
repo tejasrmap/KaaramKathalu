@@ -90,12 +90,24 @@ export default function Shop() {
                     <img 
                       src={product.image} 
                       alt={product.name} 
-                      className="w-full h-full object-cover grayscale-[10%] contrast-110 sepia-[10%] transition-all duration-700 group-hover:grayscale-0 group-hover:sepia-0 border border-warm-dark/10"
+                      className={`w-full h-full object-cover grayscale-[10%] contrast-110 sepia-[10%] transition-all duration-700 group-hover:grayscale-0 group-hover:sepia-0 border border-warm-dark/10 ${product.stock <= 0 ? 'opacity-50 grayscale' : ''}`}
                       referrerPolicy="no-referrer"
                     />
+                    {product.stock <= 0 && (
+                      <div className="absolute inset-0 bg-warm-dark/20 backdrop-blur-[2px] flex items-center justify-center pointer-events-none">
+                        <span className="font-serif font-bold text-white text-3xl transform -rotate-12 drop-shadow-lg border-4 border-white p-2">OUT OF STOCK</span>
+                      </div>
+                    )}
                     
-                    <div className="absolute top-4 left-4 bg-white border-2 border-warm-dark px-3 py-1 text-[10px] uppercase font-bold tracking-widest text-warm-dark shadow-[2px_2px_0px_#3A2A22]">
-                      {product.type}
+                    <div className="absolute top-4 left-4 flex flex-col gap-2">
+                      <div className="bg-white border-2 border-warm-dark px-3 py-1 text-[10px] uppercase font-bold tracking-widest text-warm-dark shadow-[2px_2px_0px_#3A2A22]">
+                        {product.type}
+                      </div>
+                      {product.stock <= 0 && (
+                        <div className="bg-red-600 text-white border-2 border-warm-dark px-3 py-1 text-[10px] uppercase font-bold tracking-widest shadow-[2px_2px_0px_#3A2A22] animate-pulse">
+                          Sold Out
+                        </div>
+                      )}
                     </div>
 
                     <div className="absolute top-4 right-4 flex gap-1">

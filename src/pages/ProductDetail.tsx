@@ -135,9 +135,10 @@ export default function ProductDetail() {
 
               <button 
                 onClick={handleAddToCart}
-                className="flex-1 w-full bg-warm-accent text-white h-12 border-2 border-warm-dark font-bold tracking-widest uppercase text-xs shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-none transition-all whitespace-nowrap px-4"
+                disabled={product.stock <= 0}
+                className="flex-1 w-full bg-warm-accent text-white h-12 border-2 border-warm-dark font-bold tracking-widest uppercase text-xs shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-none transition-all whitespace-nowrap px-4 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-warm-dark/40"
               >
-                Add to Basket
+                {product.stock <= 0 ? 'Out of Stock' : 'Add to Basket'}
               </button>
             </div>
 

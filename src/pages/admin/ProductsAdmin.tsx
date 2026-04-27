@@ -104,14 +104,16 @@ export default function ProductsAdmin() {
     try {
       if (editingProduct) {
         await updateDoc(doc(db, 'products', editingProduct.docId), productData);
+        alert('Product updated successfully!');
       } else {
         await addDoc(collection(db, 'products'), productData);
+        alert('New product added to inventory!');
       }
       setIsModalOpen(false);
       setEditingProduct(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving product:", error);
-      alert("Failed to save product.");
+      alert(`Failed to save product: ${error.message || 'Unknown error'}. Please check your Firebase rules.`);
     } finally {
       setIsSubmitting(false);
     }
