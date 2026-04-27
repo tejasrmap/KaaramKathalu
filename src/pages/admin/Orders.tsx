@@ -101,16 +101,16 @@ export default function Orders() {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table (Desktop) / Cards (Mobile) */}
       <div className="bg-white border-2 border-warm-dark shadow-[6px_6px_0px_#3A2A22] overflow-hidden w-full max-w-[95vw] md:max-w-none mx-auto relative z-10 p-1">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="bg-[#F4EBE1] text-warm-dark font-bold font-serif border-b-2 border-solid border-warm-dark tracking-widest uppercase">
               <tr>
                 <th className="px-6 py-4 border-r-2 border-dashed border-warm-dark/20 text-xs">Parcel ID</th>
                 <th className="px-6 py-4 border-r-2 border-dashed border-warm-dark/20 text-xs">Patron</th>
                 <th className="px-6 py-4 border-r-2 border-dashed border-warm-dark/20 text-xs">Date</th>
-                <th className="px-6 py-4 border-r-2 border-dashed border-warm-dark/20 text-xs">Jars</th>
                 <th className="px-6 py-4 border-r-2 border-dashed border-warm-dark/20 text-xs text-right">Value</th>
                 <th className="px-6 py-4 border-r-2 border-dashed border-warm-dark/20 text-xs text-center">Status</th>
                 <th className="px-6 py-4 text-center text-xs">Modify</th>
@@ -135,7 +135,6 @@ export default function Orders() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-warm-dark/80 font-serif border-r-2 border-dashed border-warm-dark/20 font-bold">{order.date}</td>
-                    <td className="px-6 py-4 text-warm-dark/80 font-serif border-r-2 border-dashed border-warm-dark/20">{order.items?.length} jars</td>
                     <td className="px-6 py-4 font-bold text-warm-dark text-lg border-r-2 border-dashed border-warm-dark/20 text-right">₹{order.total}</td>
                     <td className="px-6 py-4 border-r-2 border-dashed border-warm-dark/20 text-center">
                       <span className={`inline-block px-3 py-1 border-2 border-warm-dark shadow-[2px_2px_0px_#3A2A22] text-[10px] font-bold uppercase tracking-wider transform rotate-1 bg-warm-bg text-warm-dark`}>
@@ -183,16 +182,70 @@ export default function Orders() {
                   </motion.tr>
                 ))}
               </AnimatePresence>
-              {filteredOrders.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center">
-                    <p className="font-serif font-bold text-xl italic text-warm-dark/50">No parcels found matching your query.</p>
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden divide-y-2 divide-dashed divide-warm-dark/20">
+          {filteredOrders.map(order => (
+            <div key={order.id} className="p-4 bg-white space-y-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-warm-dark/40 mb-1">Parcel #{order.id.slice(0, 8)}</p>
+                  <h3 className="font-serif font-bold text-lg text-warm-dark">{order.customer?.name}</h3>
+                  <p className="text-[10px] text-warm-dark/60 uppercase tracking-widest">{order.date}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-warm-dark text-xl">₹{order.total}</p>
+                  <span className="inline-block px-2 py-0.5 border-2 border-warm-dark shadow-[2px_2px_0px_#3A2A22] text-[8px] font-bold uppercase tracking-wider transform rotate-1 bg-warm-bg text-warm-dark mt-1">
+                    {order.status}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setSelectedOrder(order)}
+                  className="flex-1 px-4 py-3 border-2 border-warm-dark bg-white text-warm-dark font-bold uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 shadow-[4px_4px_0px_#3A2A22]"
+                >
+                  <Eye className="w-4 h-4" /> View Details
+                </button>
+                <div className="relative">
+                  <button 
+                    onClick={() => setOpenDropdown(openDropdown === order.id ? null : order.id)}
+                    className="p-3 border-2 border-warm-dark bg-warm-accent text-white shadow-[4px_4px_0px_#3A2A22]"
+                  >
+                    <MoreVertical className="w-4 h-4" />
+                  </button>
+                  {openDropdown === order.id && (
+                    <>
+                      <div className="fixed inset-0 z-10" onClick={() => setOpenDropdown(null)} />
+                      <div className="absolute right-0 bottom-full mb-2 w-48 bg-[#F4EBE1] border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] z-20 py-2 transform -rotate-1">
+                        <div className="px-4 py-2 border-b-2 border-dashed border-warm-dark/20 text-[10px] font-bold text-warm-dark uppercase tracking-widest mb-1">Update Status:</div>
+                        {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(status => (
+                          <button
+                            key={status}
+                            onClick={() => updateStatus(order.id, status)}
+                            className="w-full text-left px-4 py-2 text-xs font-bold font-serif text-warm-dark hover:bg-white transition-colors"
+                          >
+                            {status}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {filteredOrders.length === 0 && (
+          <div className="px-6 py-12 text-center">
+            <p className="font-serif font-bold text-xl italic text-warm-dark/50">No parcels found matching your query.</p>
+          </div>
+        )}
       </div>
       {/* Order Details Modal */}
       <AnimatePresence>

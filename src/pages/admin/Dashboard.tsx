@@ -68,19 +68,18 @@ export default function Dashboard() {
     };
   }, []);
   const StatCard = ({ title, value, trend, icon: Icon }: any) => (
-    <div className="bg-[#F4EBE1] p-6 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] flex items-start justify-between relative transform rotate-0 hover:-translate-y-1 transition-transform">
-      {/* Texture layover */}
+    <div className="bg-[#F4EBE1] p-4 md:p-6 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] flex flex-col md:flex-row items-start justify-between relative transform rotate-0 hover:-translate-y-1 transition-transform overflow-hidden">
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22/%3E%3C/svg%3E')]"></div>
       
-      <div className="relative z-10">
-        <p className="text-warm-dark/70 font-bold uppercase tracking-widest text-[10px] mb-2">{title}</p>
-        <h3 className="text-3xl font-serif font-bold text-warm-dark">{value}</h3>
-        <div className="flex items-center gap-1 mt-3 text-warm-dark font-medium border-t-2 border-dashed border-warm-dark/20 pt-2 text-[10px] uppercase tracking-wider">
+      <div className="relative z-10 w-full">
+        <p className="text-warm-dark/70 font-bold uppercase tracking-widest text-[8px] md:text-[10px] mb-1 md:mb-2">{title}</p>
+        <h3 className="text-xl md:text-3xl font-serif font-bold text-warm-dark">{value}</h3>
+        <div className="flex items-center gap-1 mt-2 md:mt-3 text-warm-dark font-medium border-t-2 border-dashed border-warm-dark/20 pt-2 text-[8px] md:text-[10px] uppercase tracking-wider">
           <ArrowUpRight className="w-3 h-3 text-warm-accent" />
-          <span>{trend} from last month</span>
+          <span className="truncate">{trend}</span>
         </div>
       </div>
-      <div className="w-12 h-12 bg-white border-2 border-warm-dark shadow-[2px_2px_0px_#3A2A22] flex items-center justify-center text-warm-accent relative z-10 transform rotate-3">
+      <div className="hidden md:flex w-12 h-12 bg-white border-2 border-warm-dark shadow-[2px_2px_0px_#3A2A22] items-center justify-center text-warm-accent relative z-10 transform rotate-3">
         <Icon className="w-5 h-5" />
       </div>
     </div>
@@ -94,11 +93,11 @@ export default function Dashboard() {
         <p className="text-warm-dark/70 mt-2 font-serif">Welcome back, here's what's happening with your pantry today.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 w-full max-w-[95vw] md:max-w-none mx-auto p-1">
-        <StatCard title="Total Cash" value={`₹${stats.totalRevenue.toLocaleString()}`} trend="+12.5%" icon={CreditCard} />
-        <StatCard title="Total Parcels" value={stats.orderCount.toString()} trend="+8.2%" icon={TrendingUp} />
-        <StatCard title="Active Packing" value={stats.activePacking.toString()} trend="+2.4%" icon={ShoppingBag} />
-        <StatCard title="Total Patrons" value={stats.customerCount.toString()} trend="+18.1%" icon={Users} />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full max-w-[95vw] md:max-w-none mx-auto p-1">
+        <StatCard title="Total Cash" value={`₹${Math.round(stats.totalRevenue/1000)}k`} trend="+12%" icon={CreditCard} />
+        <StatCard title="Parcels" value={stats.orderCount.toString()} trend="+8%" icon={TrendingUp} />
+        <StatCard title="Packing" value={stats.activePacking.toString()} trend="+2%" icon={ShoppingBag} />
+        <StatCard title="Patrons" value={stats.customerCount.toString()} trend="+18%" icon={Users} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
