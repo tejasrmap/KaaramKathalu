@@ -180,8 +180,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* INSTAGRAM / GALLERY SECTION */}
-      <div className="w-full border-t-4 border-dashed border-warm-dark/20 my-12"></div>
       
       <section className="py-24 px-6 md:px-12 relative z-10">
         <div className="max-w-7xl mx-auto">

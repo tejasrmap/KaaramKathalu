@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Flame, Plus, Minus, Info, Loader2 } from 'lucide-react';
+import { ArrowLeft, Flame, Plus, Minus, Info, Loader2, ArrowRight } from 'lucide-react';
 import { Product } from '../data/products';
+import { RECIPES } from '../data/recipes';
 import { useCart } from '../context/CartContext';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
@@ -35,7 +36,7 @@ export default function ProductDetail() {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
         <Loader2 className="w-12 h-12 text-warm-accent animate-spin mb-4" />
-        <p className="font-serif italic text-warm-dark/40">Fetching the recipe...</p>
+        <p className="font-serif italic text-warm-dark/40">Fetching the jars...</p>
       </div>
     );
   }
@@ -43,7 +44,7 @@ export default function ProductDetail() {
   if (!product) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
-        <h2 className="text-3xl font-serif text-warm-dark mb-4 p-4 border-2 border-warm-dark bg-white shadow-[6px_6px_0px_#3A2A22] transform -rotate-2">Recipe Not Found</h2>
+        <h2 className="text-3xl font-serif text-warm-dark mb-4 p-4 border-2 border-warm-dark bg-white shadow-[6px_6px_0px_#3A2A22] transform -rotate-2">Product Not Found</h2>
         <p className="text-warm-dark/60 mb-8 font-serif italic text-lg">The jar you are looking for seems to be missing from our pantry.</p>
         <Link to="/shop" className="px-8 py-3 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark font-bold tracking-widest uppercase text-xs shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-[2px_2px_0px_#3A2A22] transition-all">
           Return to Shop
@@ -56,6 +57,12 @@ export default function ProductDetail() {
     addToCart(product, quantity);
     setIsCartOpen(true);
   };
+
+  // Find matching recipes based on product name
+  const matchingRecipes = RECIPES.filter(recipe => 
+    recipe.pairing.toLowerCase().includes(product.name.toLowerCase()) ||
+    product.name.toLowerCase().includes(recipe.pairing.split(' (')[0].toLowerCase())
+  );
 
   return (
     <div className="pt-24 md:pt-32 pb-24 px-4 sm:px-6 md:px-12 max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto">
@@ -135,10 +142,9 @@ export default function ProductDetail() {
 
               <button 
                 onClick={handleAddToCart}
-                disabled={product.stock <= 0}
-                className="flex-1 w-full bg-warm-accent text-white h-12 border-2 border-warm-dark font-bold tracking-widest uppercase text-xs shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-none transition-all whitespace-nowrap px-4 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-warm-dark/40"
+                className="flex-1 w-full bg-warm-accent text-white h-12 border-2 border-warm-dark font-bold tracking-widest uppercase text-xs shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-none transition-all whitespace-nowrap px-4"
               >
-                {product.stock <= 0 ? 'Out of Stock' : 'Add to Basket'}
+                Add to Basket
               </button>
             </div>
 
@@ -177,6 +183,34 @@ export default function ProductDetail() {
                     >
                       {ingredient}
                     </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Culinary Pairings Integration */}
+            {matchingRecipes.length > 0 && (
+              <div className="pt-10 mt-10 border-t-4 border-warm-dark">
+                <h3 className="text-sm font-bold tracking-widest uppercase text-warm-accent mb-6 flex items-center gap-2">
+                   <div className="w-2 h-2 bg-warm-accent rounded-full animate-pulse"></div>
+                   Culinary Pairings
+                </h3>
+                <div className="space-y-4">
+                  {matchingRecipes.map(recipe => (
+                    <Link 
+                      key={recipe.id}
+                      to={`/recipes/${recipe.id}`}
+                      className="group flex items-center gap-4 p-4 bg-white border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-none transition-all"
+                    >
+                      <div className="w-16 h-16 flex-shrink-0 border-2 border-warm-dark overflow-hidden">
+                        <img src={recipe.image} alt={recipe.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-serif font-bold text-warm-dark text-lg group-hover:text-warm-accent transition-colors">{recipe.title}</h4>
+                        <p className="text-xs text-warm-dark/60 font-serif italic line-clamp-1">{recipe.description}</p>
+                      </div>
+                      <ArrowRight className="w-5 h-5 text-warm-dark/20 group-hover:text-warm-accent group-hover:translate-x-1 transition-all" />
+                    </Link>
                   ))}
                 </div>
               </div>

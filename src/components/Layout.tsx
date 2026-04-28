@@ -90,6 +90,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Home</Link>
               <Link to="/about" className={`${location.pathname === '/about' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Our Story</Link>
               <Link to="/shop" className={`${location.pathname === '/shop' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Shop</Link>
+              <Link to="/recipes" className={`${location.pathname === '/recipes' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Recipes</Link>
             </nav>
 
             {/* Desktop Actions */}
@@ -207,6 +208,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Link to="/" className="font-serif text-4xl font-bold border-b-2 border-dashed border-warm-dark/20 pb-4">Home</Link>
             <Link to="/about" className="font-serif text-4xl font-bold border-b-2 border-dashed border-warm-dark/20 pb-4">Our Story</Link>
             <Link to="/shop" className="font-serif text-4xl font-bold border-b-2 border-dashed border-warm-dark/20 pb-4">Shop</Link>
+            <Link to="/recipes" className="font-serif text-4xl font-bold border-b-2 border-dashed border-warm-dark/20 pb-4">Recipes</Link>
           </motion.div>
         )}
       </AnimatePresence>
@@ -228,6 +230,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
           
           <div>
+            <h4 className="font-serif text-lg md:text-xl mb-6 border-b-2 border-warm-accent/50 pb-2 inline-block font-bold">Explore</h4>
+            <ul className="space-y-4 text-[#F4EBE1]/70 text-sm md:text-base font-serif">
+              <li><Link to="/shop" className="hover:text-white transition-colors italic">Our Pantry</Link></li>
+              <li><Link to="/about" className="hover:text-white transition-colors italic">Our Story</Link></li>
+              <li><Link to="/recipes" className="hover:text-white transition-colors italic">Culinary Stories</Link></li>
+            </ul>
+          </div>
+
+          <div>
             <h4 className="font-serif text-lg md:text-xl mb-6 border-b-2 border-warm-accent/50 pb-2 inline-block font-bold">Contact Us</h4>
             <ul className="space-y-4 text-[#F4EBE1]/70 text-sm md:text-base">
               <li className="flex items-start gap-3"><MapPin className="w-5 h-5 text-warm-accent flex-shrink-0 mt-0.5" /> <span>123 Heritage Lane, Hyderabad</span></li>
@@ -235,7 +246,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <li className="flex items-center gap-3"><Mail className="w-5 h-5 text-warm-accent flex-shrink-0" /> <span>order@kaaramkathalu.com</span></li>
             </ul>
           </div>
-          
+
           <div>
             <h4 className="font-serif text-lg md:text-xl mb-6 border-b-2 border-warm-accent/50 pb-2 inline-block font-bold">Follow Us</h4>
             <div className="flex gap-4">
