@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
-import { collection, addDoc, serverTimestamp, runTransaction, doc, getDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, runTransaction, doc, getDoc, query, where, limit, getDocs } from 'firebase/firestore';
 import { ArrowLeft, Package, Send, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 export default function Checkout() {
@@ -50,6 +50,21 @@ export default function Checkout() {
     fetchProfile();
   }, [user]);
 
+  if (!user && !isSuccess) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center max-w-2xl mx-auto">
+        <AlertTriangle className="w-16 h-16 text-warm-accent mb-6 opacity-80" />
+        <h2 className="text-3xl md:text-4xl font-serif text-warm-dark mb-4">Sign In Required</h2>
+        <p className="text-warm-dark/60 mb-8 font-serif italic text-lg leading-relaxed">
+          Please log in or create an account to proceed with your booking and experience our heritage.
+        </p>
+        <Link to="/login" className="px-8 py-4 bg-warm-accent text-white font-bold tracking-widest uppercase text-xs shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-none transition-all">
+          Sign In to Continue
+        </Link>
+      </div>
+    );
+  }
+
   if (cart.length === 0 && !isSuccess) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
@@ -63,13 +78,33 @@ export default function Checkout() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      alert("Please log in to place an order.");
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
+      // Resolve docIds first to prevent transaction read errors
+      const resolvedCartItems = await Promise.all(cart.map(async (item) => {
+        let docId = (item.product as any).docId;
+        if (!docId) {
+          const q = query(collection(db, 'products'), where('id', '==', Number(item.product.id)), limit(1));
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            docId = snap.docs[0].id;
+          } else {
+            throw new Error(`Product ${item.product.name} not found in our pantry.`);
+          }
+        }
+        return { ...item, resolvedDocId: docId };
+      }));
+
       await runTransaction(db, async (transaction) => {
         // 1. Verify all items are in stock
-        const stockChecks = await Promise.all(cart.map(async (item) => {
-          const productRef = doc(db, 'products', (item.product as any).docId);
+        const stockChecks = await Promise.all(resolvedCartItems.map(async (item) => {
+          const productRef = doc(db, 'products', item.resolvedDocId);
           const productSnap = await transaction.get(productRef);
           
           if (!productSnap.exists()) {
@@ -87,6 +122,7 @@ export default function Checkout() {
         // 2. Prepare Order Data
         const orderData = {
           customer: formData,
+          userId: user.uid,
           items: cart.map(item => ({
             id: item.product.id,
             name: item.product.name,
