@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Flame, Plus, Minus, Info, Loader2, ArrowRight } from 'lucide-react';
-import { Product } from '../data/products';
+import { Product, PRODUCTS } from '../data/products';
 import { RECIPES } from '../data/recipes';
 import { useCart } from '../context/CartContext';
 import { db } from '../firebase';
@@ -22,9 +22,18 @@ export default function ProductDetail() {
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
           setProduct(querySnapshot.docs[0].data() as Product);
+        } else {
+          const localProd = PRODUCTS.find(p => p.id === Number(id));
+          if (localProd) {
+            setProduct(localProd);
+          }
         }
       } catch (error) {
-        console.error("Error fetching product:", error);
+        console.error("Error fetching product from firestore, using local fallback:", error);
+        const localProd = PRODUCTS.find(p => p.id === Number(id));
+        if (localProd) {
+          setProduct(localProd);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -142,24 +151,24 @@ export default function ProductDetail() {
 
               <button 
                 onClick={handleAddToCart}
-                className="flex-1 w-full bg-warm-accent text-white h-12 border-2 border-warm-dark font-bold tracking-widest uppercase text-xs shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-none transition-all whitespace-nowrap px-4"
+                className="flex-1 w-full bg-warm-accent text-white h-12 border border-warm-dark font-heading tracking-wider uppercase text-sm shadow-md hover:bg-warm-dark hover:text-white transition-all whitespace-nowrap px-4"
               >
-                Add to Basket
+                Add to Cart
               </button>
             </div>
 
             {/* Mobile Sticky Bottom Bar */}
-            <div className="sm:hidden fixed bottom-16 left-0 right-0 z-40 bg-[#F4EBE1]/90 backdrop-blur-md border-t-2 border-warm-dark p-4 flex gap-3 shadow-[0_-4px_10px_rgba(0,0,0,0.1)]">
-               <div className="flex items-center bg-white border-2 border-warm-dark w-32 h-12">
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="flex-1 h-full flex items-center justify-center border-r-2 border-warm-dark"><Minus className="w-4 h-4" /></button>
+            <div className="sm:hidden fixed bottom-16 left-0 right-0 z-40 bg-[#F5F5EF]/90 backdrop-blur-md border-t border-warm-dark/10 p-4 flex gap-3 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+               <div className="flex items-center bg-white border border-warm-dark/10 w-32 h-12">
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="flex-1 h-full flex items-center justify-center border-r border-warm-dark/10"><Minus className="w-4 h-4" /></button>
                   <span className="w-10 text-center font-bold">{quantity}</span>
-                  <button onClick={() => setQuantity(quantity + 1)} className="flex-1 h-full flex items-center justify-center border-l-2 border-warm-dark"><Plus className="w-4 h-4" /></button>
+                  <button onClick={() => setQuantity(quantity + 1)} className="flex-1 h-full flex items-center justify-center border-l border-warm-dark/10"><Plus className="w-4 h-4" /></button>
                </div>
                <button 
                 onClick={handleAddToCart}
-                className="flex-1 bg-warm-accent text-white h-12 border-2 border-warm-dark font-bold tracking-widest uppercase text-[10px] shadow-[4px_4px_0px_#3A2A22]"
+                className="flex-1 bg-warm-accent text-white h-12 border border-warm-dark font-heading tracking-wider uppercase text-[10px] shadow-md"
               >
-                Add to Basket
+                Add to Cart
               </button>
             </div>
 

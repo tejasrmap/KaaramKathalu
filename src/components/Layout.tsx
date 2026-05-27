@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingCart, ShoppingBag, Home, Menu, X, Plus, Minus, MapPin, Phone, Mail, User as UserIcon, LogOut } from 'lucide-react';
+import { ShoppingCart, ShoppingBag, Home, X, Plus, Minus, MapPin, Phone, Mail, User as UserIcon, LogOut, Heart } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
-import { Heart } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -16,7 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [announcement, setAnnouncement] = useState('🔥 Traditional Flavors Delivered to Your Doorstep. Free Shipping on Orders Above ₹999.');
+  const [announcement, setAnnouncement] = useState('🔥 Traditional Andhra Delicacies. Preservative-Free & Handcrafted. Free Shipping on Orders Above ₹999.');
   const location = useLocation();
 
   useEffect(() => {
@@ -40,7 +39,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -48,72 +50,78 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
-  const KOLAM_PATTERN = `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,0 Q20,0 20,20 T40,40 M0,40 Q20,40 20,20 T40,0' stroke='%233A2A22' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round' /%3E%3Ccircle cx='10' cy='20' r='1.5' fill='%233A2A22' /%3E%3Ccircle cx='30' cy='20' r='1.5' fill='%233A2A22' /%3E%3Ccircle cx='20' cy='10' r='1.5' fill='%233A2A22' /%3E%3Ccircle cx='20' cy='30' r='1.5' fill='%233A2A22' /%3E%3C/svg%3E")`;
-
   return (
-    <div className="min-h-screen relative overflow-x-hidden flex flex-col max-w-[100vw] bg-warm-bg">
-      {/* KOLAM LEFT BORDER */}
-      <div 
-        className="fixed top-0 left-0 bottom-0 w-[12px] sm:w-[32px] md:w-[60px] lg:w-[80px] z-0 pointer-events-none opacity-[0.08]"
-        style={{ backgroundImage: KOLAM_PATTERN, backgroundRepeat: 'repeat', backgroundPosition: 'left center', backgroundSize: '100% auto' }}
-      />
-      {/* KOLAM RIGHT BORDER */}
-      <div 
-        className="fixed top-0 right-0 bottom-0 w-[12px] sm:w-[32px] md:w-[60px] lg:w-[80px] z-0 pointer-events-none opacity-[0.08]"
-        style={{ backgroundImage: KOLAM_PATTERN, backgroundRepeat: 'repeat', backgroundPosition: 'right center', backgroundSize: '100% auto' }}
-      />
-
+    <div className="min-h-screen relative overflow-x-hidden flex flex-col max-w-[100vw] bg-warm-bg font-sans">
       {/* TOP NAVIGATION WRAPPER */}
       <div className="fixed top-0 left-0 right-0 z-50">
         {/* Announcement Bar */}
-        <div className="bg-warm-dark text-[#F4EBE1] py-2 px-4 text-center text-[10px] uppercase font-bold tracking-[0.2em]">
+        <div className="bg-warm-dark text-warm-bg py-2 px-4 text-center text-[10px] uppercase font-bold tracking-[0.2em]">
           {announcement}
         </div>
 
-        {/* NAVBAR (Desktop & Mobile Header) */}
+        {/* NAVBAR */}
         <header 
-          className={`transition-all duration-300 ${
-            isScrolled || location.pathname !== '/' ? 'bg-warm-bg/95 backdrop-blur-sm border-b-2 border-warm-dark py-3 md:py-4' : 'bg-transparent py-4 md:py-6'
+          className={`transition-all duration-300 border-b ${
+            isScrolled || location.pathname !== '/' 
+              ? 'bg-warm-bg/95 backdrop-blur-sm border-warm-dark/10 py-3 md:py-4 shadow-sm' 
+              : 'bg-transparent py-4 md:py-6 border-transparent'
           }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex justify-between items-center w-full">
             <Link to="/" className="flex items-center gap-2">
-              <span className="font-serif font-bold text-xl md:text-2xl tracking-tight text-warm-dark bg-[#F4EBE1] px-2 py-1 md:px-3 md:py-1 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] transform -rotate-1 relative flex items-baseline gap-1">
-                <span className="absolute -left-1 -top-1 md:-left-2 md:-top-2 w-2 h-2 md:w-3 md:h-3 bg-warm-accent rounded-full border border-warm-dark shadow-sm"></span>
-                <span>Kaaram</span>
-                <span className="text-warm-accent text-2xl md:text-3xl leading-none ml-1">కథలు</span>
-              </span>
+              <img 
+                src="https://themanduvaproject.in/cdn/shop/files/TMP-Logo.png?v=1630583399&width=150" 
+                alt="Manduva" 
+                className="h-10 md:h-14 object-contain"
+              />
             </Link>
 
             {/* Desktop Nav Links */}
-            <nav className="hidden md:flex gap-8 items-center font-bold text-xs tracking-widest uppercase bg-[#F4EBE1] px-8 py-3 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22]">
-              <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Home</Link>
-              <Link to="/about" className={`${location.pathname === '/about' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Our Story</Link>
-              <Link to="/shop" className={`${location.pathname === '/shop' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Shop</Link>
-              <Link to="/recipes" className={`${location.pathname === '/recipes' ? 'text-warm-accent underline' : 'text-warm-dark'} hover:text-warm-accent transition-colors underline-offset-4 decoration-2`}>Recipes</Link>
+            <nav className="hidden lg:flex gap-8 items-center font-heading text-base tracking-wider uppercase text-warm-dark font-medium">
+              <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Home</Link>
+              <Link to="/shop" className={`${location.pathname === '/shop' && !location.search ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Shop All</Link>
+              <Link to="/shop?category=pickle" className={`${location.search.includes('pickle') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Pickles</Link>
+              <Link to="/shop?category=podi" className={`${location.search.includes('podi') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Podi & Sprinkles</Link>
+              <Link to="/shop?category=fryums" className={`${location.search.includes('fryums') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Fryums & Crisps</Link>
+              <Link to="/shop?category=snacks" className={`${location.search.includes('snacks') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Snacks</Link>
+              <Link to="/about" className={`${location.pathname === '/about' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Our Story</Link>
             </nav>
 
-            {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-4">
+            {/* Desktop & Mobile Actions */}
+            <div className="flex items-center gap-3 sm:gap-4">
+              {/* Mobile Menu Toggle button */}
+              <button 
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden p-2 text-warm-dark hover:text-warm-accent transition-colors"
+                aria-label="Toggle Menu"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <ShoppingCart className="w-6 h-6 rotate-0 hidden" /* just reference */ /> }
+                {!mobileMenuOpen && (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
+                  </svg>
+                )}
+              </button>
+
               {user ? (
                 <div className="flex items-center gap-2">
                   <Link 
                     to="/profile"
-                    className="p-2 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark hover:bg-warm-dark hover:text-[#F4EBE1] transition-colors shadow-[4px_4px_0px_#3A2A22]"
+                    className="p-2 text-warm-dark hover:text-warm-accent transition-colors"
                     title="My Profile"
                   >
                     <UserIcon className="w-5 h-5" />
                   </Link>
                   <Link 
                     to="/my-orders"
-                    className="p-2 bg-white border-2 border-warm-dark text-warm-dark hover:bg-warm-bg transition-colors shadow-[4px_4px_0px_#3A2A22]"
+                    className="p-2 text-warm-dark hover:text-warm-accent transition-colors hidden sm:inline-block"
                     title="My Orders"
                   >
-                    <ShoppingBag className="w-5 h-5 opacity-50" /> 
+                    <ShoppingBag className="w-5 h-5" /> 
                   </Link>
                   <button 
                     onClick={() => logout()}
-                    className="p-2 bg-white border-2 border-warm-dark text-warm-dark hover:bg-red-50 hover:text-red-600 transition-colors shadow-[4px_4px_0px_#3A2A22]"
+                    className="p-2 text-warm-dark hover:text-red-600 transition-colors hidden sm:inline-block"
                     title="Logout"
                   >
                     <LogOut className="w-5 h-5" />
@@ -122,7 +130,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               ) : (
                 <Link 
                   to="/login"
-                  className="p-2 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark hover:bg-warm-dark hover:text-[#F4EBE1] transition-colors shadow-[4px_4px_0px_#3A2A22]"
+                  className="p-2 text-warm-dark hover:text-warm-accent transition-colors"
                   title="Login"
                 >
                   <UserIcon className="w-5 h-5" />
@@ -131,12 +139,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
               <Link 
                 to="/wishlist"
-                className="relative p-2 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark hover:bg-warm-dark hover:text-[#F4EBE1] transition-colors shadow-[4px_4px_0px_#3A2A22]"
+                className="relative p-2 text-warm-dark hover:text-warm-accent transition-colors"
                 title="My Wishlist"
               >
                 <Heart className={`w-5 h-5 ${wishlistCount > 0 ? 'fill-warm-accent text-warm-accent' : ''}`} />
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-3 -right-3 bg-white text-warm-dark text-[10px] font-bold w-6 h-6 flex items-center justify-center border-2 border-warm-dark transform -rotate-3">
+                  <span className="absolute -top-1 -right-1 bg-warm-accent text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
                     {wishlistCount}
                   </span>
                 )}
@@ -144,118 +152,105 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
               <button 
                 onClick={() => setIsCartOpen(true)}
-                className="relative p-2 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark hover:bg-warm-dark hover:text-[#F4EBE1] transition-colors shadow-[4px_4px_0px_#3A2A22]"
+                className="relative p-2 text-warm-dark hover:text-warm-accent transition-colors"
+                aria-label="View Cart"
               >
                 <ShoppingCart className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-3 -right-3 bg-warm-accent text-white text-[10px] font-bold w-6 h-6 flex items-center justify-center border-2 border-warm-dark transform rotate-3">
+                  <span className="absolute -top-1 -right-1 bg-warm-dark text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
                     {cartCount}
                   </span>
                 )}
               </button>
             </div>
-
-            {/* Mobile Cart Button (Header) */}
-            <button 
-              onClick={() => setIsCartOpen(true)}
-              className="md:hidden relative p-2 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark shadow-[4px_4px_0px_#3A2A22]"
-            >
-              <ShoppingCart className="w-5 h-5" />
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-warm-accent text-white text-[8px] font-bold w-5 h-5 flex items-center justify-center border-2 border-warm-dark transform rotate-3">
-                  {cartCount}
-                </span>
-              )}
-            </button>
           </div>
         </header>
       </div>
 
-      {/* MOBILE BOTTOM NAVIGATION */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-t-2 border-warm-dark pb-safe">
-        <div className="flex items-center justify-around p-2">
-          <Link to="/" className={`p-3 flex flex-col items-center gap-1 ${location.pathname === '/' ? 'text-warm-accent' : 'text-warm-dark/60'}`}>
-            <Home className="w-6 h-6" />
-            <span className="text-[8px] font-bold uppercase tracking-widest">Home</span>
-          </Link>
-          <Link to="/shop" className={`p-3 flex flex-col items-center gap-1 ${location.pathname === '/shop' ? 'text-warm-accent' : 'text-warm-dark/60'}`}>
-            <ShoppingBag className="w-6 h-6" />
-            <span className="text-[8px] font-bold uppercase tracking-widest">Shop</span>
-          </Link>
-          <Link to="/wishlist" className={`p-3 flex flex-col items-center gap-1 relative ${location.pathname === '/wishlist' ? 'text-warm-accent' : 'text-warm-dark/60'}`}>
-            <Heart className={`w-6 h-6 ${wishlistCount > 0 && location.pathname !== '/wishlist' ? 'fill-warm-accent/20' : ''}`} />
-            {wishlistCount > 0 && (
-              <span className="absolute top-2 right-2 w-2 h-2 bg-warm-accent rounded-full border border-white"></span>
-            )}
-            <span className="text-[8px] font-bold uppercase tracking-widest">Wishlist</span>
-          </Link>
-          <Link to={user ? "/profile" : "/login"} className={`p-3 flex flex-col items-center gap-1 ${location.pathname === '/profile' || location.pathname === '/login' ? 'text-warm-accent' : 'text-warm-dark/60'}`}>
-            <UserIcon className="w-6 h-6" />
-            <span className="text-[8px] font-bold uppercase tracking-widest">{user ? 'Me' : 'Login'}</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* MOBILE MENU */}
+      {/* MOBILE MENU DROPDOWN */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-30 bg-warm-bg pt-32 px-6 flex flex-col gap-6 md:hidden border-b-4 border-warm-dark"
+            className="fixed inset-x-0 top-20 z-40 bg-warm-bg/95 backdrop-blur-md border-b border-warm-dark/10 py-6 px-6 flex flex-col gap-4 lg:hidden shadow-lg font-heading text-lg tracking-wide uppercase text-warm-dark"
           >
-            <Link to="/" className="font-serif text-4xl font-bold border-b-2 border-dashed border-warm-dark/20 pb-4">Home</Link>
-            <Link to="/about" className="font-serif text-4xl font-bold border-b-2 border-dashed border-warm-dark/20 pb-4">Our Story</Link>
-            <Link to="/shop" className="font-serif text-4xl font-bold border-b-2 border-dashed border-warm-dark/20 pb-4">Shop</Link>
-            <Link to="/recipes" className="font-serif text-4xl font-bold border-b-2 border-dashed border-warm-dark/20 pb-4">Recipes</Link>
+            <Link to="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2 border-b border-warm-dark/5">Home</Link>
+            <Link to="/shop" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2 border-b border-warm-dark/5">Shop All</Link>
+            <Link to="/shop?category=pickle" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2 border-b border-warm-dark/5">Pickles</Link>
+            <Link to="/shop?category=podi" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2 border-b border-warm-dark/5">Podi & Sprinkles</Link>
+            <Link to="/shop?category=fryums" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2 border-b border-warm-dark/5">Fryums & Crisps</Link>
+            <Link to="/shop?category=snacks" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2 border-b border-warm-dark/5">Snacks</Link>
+            <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2">Our Story</Link>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <main className="flex-1 mt-24 md:mt-32 pb-24 md:pb-0">
+      <main className="flex-1 mt-20 md:mt-24 pb-12">
         {children}
       </main>
 
       {/* FOOTER */}
-      <footer className="bg-warm-dark text-[#F4EBE1] py-16 md:py-24 px-4 sm:px-6 md:px-12 mt-auto border-t-[8px] border-warm-accent relative w-full overflow-hidden">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-24 relative z-10 w-full pl-6 md:pl-0">
-          <div className="flex flex-col gap-6">
-            <span className="font-serif font-bold text-2xl md:text-3xl opacity-90 text-white">
-              Kaaram<span className="text-warm-accent italic">Kathalu</span>
-            </span>
-            <p className="text-[#F4EBE1]/70 leading-relaxed max-w-sm font-serif text-base md:text-lg">
-              Preserving the heritage of Indian culinary traditions, one jar at a time. Crafted with love, spices, and string.
+      <footer className="bg-warm-dark text-warm-bg py-16 px-6 md:px-12 mt-auto border-t-4 border-warm-accent relative w-full overflow-hidden">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-16 relative z-10 w-full">
+          
+          {/* Logo / Brand Info */}
+          <div className="flex flex-col gap-4">
+            <img 
+              src="https://themanduvaproject.in/cdn/shop/files/TMP-Logo.png?v=1630583399&width=150" 
+              alt="Manduva" 
+              className="h-12 object-contain mr-auto filter invert brightness-200"
+            />
+            <p className="text-warm-bg/70 leading-relaxed font-serif text-sm">
+              Welcome to The Manduva Project. We specialize in artisanal, handmade, small-batch traditional Andhra pickles, spices, and snacks. Pure recipes, local ingredients, zero preservatives.
             </p>
           </div>
           
+          {/* Quick Shop */}
           <div>
-            <h4 className="font-serif text-lg md:text-xl mb-6 border-b-2 border-warm-accent/50 pb-2 inline-block font-bold">Explore</h4>
-            <ul className="space-y-4 text-[#F4EBE1]/70 text-sm md:text-base font-serif">
-              <li><Link to="/shop" className="hover:text-white transition-colors italic">Our Pantry</Link></li>
-              <li><Link to="/about" className="hover:text-white transition-colors italic">Our Story</Link></li>
-              <li><Link to="/recipes" className="hover:text-white transition-colors italic">Culinary Stories</Link></li>
+            <h4 className="font-heading text-lg tracking-wider text-white uppercase mb-6 font-bold pb-1 border-b border-warm-accent/30 inline-block">Quick Shop</h4>
+            <ul className="space-y-3 text-warm-bg/70 text-sm font-serif">
+              <li><Link to="/shop?category=pickle" className="hover:text-white transition-colors">Traditional Pickles</Link></li>
+              <li><Link to="/shop?category=podi" className="hover:text-white transition-colors">Spice Sprinkles</Link></li>
+              <li><Link to="/shop?category=snacks" className="hover:text-white transition-colors">Savoury Snacks</Link></li>
+              <li><Link to="/shop?category=fryums" className="hover:text-white transition-colors">Fryums & Crisps</Link></li>
             </ul>
           </div>
 
+          {/* Help Links */}
           <div>
-            <h4 className="font-serif text-lg md:text-xl mb-6 border-b-2 border-warm-accent/50 pb-2 inline-block font-bold">Contact Us</h4>
-            <ul className="space-y-4 text-[#F4EBE1]/70 text-sm md:text-base">
-              <li className="flex items-start gap-3"><MapPin className="w-5 h-5 text-warm-accent flex-shrink-0 mt-0.5" /> <span>123 Heritage Lane, Hyderabad</span></li>
-              <li className="flex items-center gap-3"><Phone className="w-5 h-5 text-warm-accent flex-shrink-0" /> <span>+91 98765 43210</span></li>
-              <li className="flex items-center gap-3"><Mail className="w-5 h-5 text-warm-accent flex-shrink-0" /> <span>order@kaaramkathalu.com</span></li>
+            <h4 className="font-heading text-lg tracking-wider text-white uppercase mb-6 font-bold pb-1 border-b border-warm-accent/30 inline-block">Helpful Links</h4>
+            <ul className="space-y-3 text-warm-bg/70 text-sm font-serif">
+              <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
+              <li><Link to="/about" className="hover:text-white transition-colors">Our Story</Link></li>
+              <li><Link to="/shop" className="hover:text-white transition-colors">Online Store</Link></li>
+              <li><Link to="/recipes" className="hover:text-white transition-colors">Traditional Recipes</Link></li>
             </ul>
           </div>
 
+          {/* Contact info */}
           <div>
-            <h4 className="font-serif text-lg md:text-xl mb-6 border-b-2 border-warm-accent/50 pb-2 inline-block font-bold">Follow Us</h4>
-            <div className="flex gap-4">
-              <a href="https://www.instagram.com/kaaram.kathalu/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-10 md:w-12 h-10 md:h-12 bg-[#F4EBE1] text-warm-dark border-2 border-[#F4EBE1] flex items-center justify-center hover:bg-warm-accent hover:border-warm-accent hover:text-white transition-colors cursor-pointer text-xs md:text-sm font-bold shadow-[4px_4px_0px_#B83A20] transform rotate-3">IN</a>
-            </div>
+            <h4 className="font-heading text-lg tracking-wider text-white uppercase mb-6 font-bold pb-1 border-b border-warm-accent/30 inline-block">Contact Info</h4>
+            <ul className="space-y-3 text-warm-bg/70 text-sm">
+              <li className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-warm-accent flex-shrink-0 mt-1" />
+                <span className="font-serif">Plot no . 55, Guttala Begampet, Srilingampalli Municipality, Kavuri Hills Madhapur, 500033</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-warm-accent flex-shrink-0" />
+                <span className="font-serif">+91 73373 18106</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-warm-accent flex-shrink-0" />
+                <span className="font-serif text-xs">unigourmet2020@gmail.com, nehaa@unigourmet.in</span>
+              </li>
+            </ul>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto mt-16 md:mt-24 pt-8 border-t-2 border-dashed border-[#F4EBE1]/20 text-center font-bold tracking-widest uppercase text-[#F4EBE1]/40 text-[10px] md:text-xs px-8">
-          &copy; {new Date().getFullYear()} Kaaram Kathalu. All rights reserved.
+        
+        <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-warm-bg/10 text-center font-heading tracking-wider uppercase text-warm-bg/40 text-xs">
+          &copy; {new Date().getFullYear()} The Manduva Project. All rights reserved.
         </div>
       </footer>
 
@@ -268,7 +263,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsCartOpen(false)}
-              className="fixed inset-0 bg-warm-dark/80 z-50 mix-blend-multiply"
+              className="fixed inset-0 bg-black/60 z-50 backdrop-blur-[2px]"
             />
             
             <motion.div 
@@ -276,62 +271,61 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               animate={isMobile ? { y: 0 } : { x: 0 }}
               exit={isMobile ? { y: '100%' } : { x: '100%' }}
               transition={{ type: "spring", damping: 30, stiffness: 300, mass: 0.8 }}
-              className="fixed bottom-0 md:top-0 right-0 w-full max-w-md bg-warm-bg border-t-4 md:border-t-0 md:border-l-4 border-warm-dark shadow-2xl z-50 flex flex-col pt-safe px-safe h-[85vh] md:h-full"
+              className="fixed bottom-0 md:top-0 right-0 w-full max-w-md bg-warm-bg border-t-2 md:border-t-0 md:border-l border-warm-dark/10 shadow-2xl z-50 flex flex-col h-[85vh] md:h-full"
             >
-              <div className="p-6 border-b-2 border-warm-dark flex justify-between items-center bg-[#F4EBE1] relative">
-                <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22/%3E%3C/svg%3E')]"></div>
-                <h2 className="font-serif text-3xl font-bold text-warm-dark tracking-wide relative z-10">Basket</h2>
+              <div className="p-6 border-b border-warm-dark/10 flex justify-between items-center bg-[#eaeada]">
+                <h2 className="font-heading text-2xl font-bold text-warm-dark uppercase tracking-wider">Your Cart</h2>
                 <button 
                   onClick={() => setIsCartOpen(false)}
-                  className="relative z-10 p-2 border-2 border-transparent hover:border-warm-dark bg-[#F4EBE1] shadow-[2px_2px_0px_#3A2A22] transition-colors"
+                  className="p-2 border border-warm-dark/10 hover:border-warm-dark bg-warm-bg transition-colors"
                 >
                   <X className="w-5 h-5 text-warm-dark" />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+              <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-5">
                 {cart.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-warm-dark/50 gap-4">
-                    <ShoppingCart className="w-16 h-16 opacity-30" />
-                    <p className="font-medium font-serif text-xl italic">Your basket is empty.</p>
+                    <ShoppingBag className="w-16 h-16 opacity-30 text-warm-dark" />
+                    <p className="font-serif italic text-base">Your cart is currently empty.</p>
                     <Link 
                       to="/shop"
                       onClick={() => setIsCartOpen(false)}
-                      className="mt-6 px-8 py-3 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark font-bold tracking-widest uppercase text-xs shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-[2px_2px_0px_#3A2A22] transition-all"
+                      className="mt-4 px-6 py-2.5 bg-warm-dark text-white font-heading tracking-wider uppercase text-sm hover:bg-warm-accent transition-colors"
                     >
-                      Explore Pantry
+                      Continue Shopping
                     </Link>
                   </div>
                 ) : (
                   cart.map(item => (
-                    <div key={item.product.id} className="flex gap-4 items-center bg-[#F4EBE1] p-4 border-2 border-warm-dark shadow-[4px_4px_0px_rgba(58,42,34,0.15)] relative">
-                      <div className="w-20 h-20 border-2 border-warm-dark p-1 bg-white">
+                    <div key={item.product.id} className="flex gap-4 items-center bg-[#eaeada]/50 p-4 border border-warm-dark/10 relative">
+                      <div className="w-16 h-16 border border-warm-dark/10 bg-white flex-shrink-0">
                         <img 
                           src={item.product.image} 
                           alt={item.product.name} 
-                          className="w-full h-full object-cover grayscale-[20%] contrast-125"
+                          className="w-full h-full object-cover"
                           referrerPolicy="no-referrer"
                         />
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <Link to={`/product/${item.product.id}`} onClick={() => setIsCartOpen(false)}>
-                          <h4 className="font-serif font-bold text-lg text-warm-dark hover:text-warm-accent transition-colors leading-tight mb-1">{item.product.name}</h4>
+                          <h4 className="font-heading font-bold text-base text-warm-dark hover:text-warm-accent transition-colors leading-tight mb-1 truncate">{item.product.name}</h4>
                         </Link>
-                        <div className="font-bold text-warm-accent mb-3 text-sm tracking-widest">₹{item.product.price}</div>
+                        <div className="font-bold text-warm-accent text-sm mb-2">₹{item.product.price}</div>
                         
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
                           <button 
                             onClick={() => updateQuantity(item.product.id, -1)}
-                            className="w-8 h-8 bg-[#F4EBE1] border-2 border-warm-dark flex items-center justify-center hover:bg-warm-dark hover:text-white transition-colors shadow-[2px_2px_0px_#3A2A22]"
+                            className="w-6 h-6 bg-warm-bg border border-warm-dark/10 flex items-center justify-center hover:bg-warm-dark hover:text-white transition-colors"
                           >
-                            <Minus className="w-4 h-4" />
+                            <Minus className="w-3 h-3" />
                           </button>
-                          <span className="w-4 text-center font-bold tracking-widest">{item.quantity}</span>
+                          <span className="w-6 text-center font-bold text-sm">{item.quantity}</span>
                           <button 
                             onClick={() => updateQuantity(item.product.id, 1)}
-                            className="w-8 h-8 bg-[#F4EBE1] border-2 border-warm-dark flex items-center justify-center hover:bg-warm-dark hover:text-white transition-colors shadow-[2px_2px_0px_#3A2A22]"
+                            className="w-6 h-6 bg-warm-bg border border-warm-dark/10 flex items-center justify-center hover:bg-warm-dark hover:text-white transition-colors"
                           >
-                            <Plus className="w-4 h-4" />
+                            <Plus className="w-3 h-3" />
                           </button>
                         </div>
                       </div>
@@ -341,15 +335,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </div>
 
               {cart.length > 0 && (
-                <div className="p-6 bg-[#F4EBE1] border-t-4 border-warm-dark">
-                  <div className="flex justify-between items-center mb-6 pb-4 border-b-2 border-dashed border-warm-dark/20">
-                    <span className="text-warm-dark font-bold uppercase tracking-widest text-xs">Total Due</span>
-                    <span className="font-serif text-3xl font-bold text-warm-dark">₹{cartTotal}</span>
+                <div className="p-6 bg-[#eaeada] border-t border-warm-dark/10">
+                  <div className="flex justify-between items-center mb-6">
+                    <span className="text-warm-dark font-heading font-bold uppercase tracking-wider text-xs">Estimated Total</span>
+                    <span className="font-serif text-2xl font-bold text-warm-dark">₹{cartTotal}</span>
                   </div>
                   <Link 
                     to="/checkout"
                     onClick={() => setIsCartOpen(false)}
-                    className="w-full bg-warm-accent text-white py-4 border-2 border-warm-dark font-bold tracking-widest uppercase text-sm shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-[2px_2px_0px_#3A2A22] transition-all flex items-center justify-center"
+                    className="w-full bg-warm-dark text-white py-3.5 font-heading tracking-wider uppercase text-center text-sm hover:bg-warm-accent transition-colors block"
                   >
                     Proceed to Checkout
                   </Link>

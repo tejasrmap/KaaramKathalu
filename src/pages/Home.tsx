@@ -1,225 +1,373 @@
-import React from 'react';
-import { motion } from 'motion/react';
-import { ArrowRight, Instagram, ShoppingBag } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { ArrowRight, Flame, ChevronDown, Award, ShieldCheck, BadgeAlert } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { collection, query, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 import SEO from '../components/SEO';
+import { PRODUCTS } from '../data/products';
 
 export default function Home() {
-  const [featuredProducts, setFeaturedProducts] = React.useState<any[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [bestsellers, setBestsellers] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const q = query(collection(db, 'products'), limit(3));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const products = snapshot.docs.map(doc => ({
-        id: doc.id,
+      let products = snapshot.docs.map(doc => ({
+        docId: doc.id,
         ...doc.data()
       }));
-      setFeaturedProducts(products);
+      // Fallback
+      if (products.length === 0) {
+        products = PRODUCTS.slice(0, 3).map(p => ({
+          docId: `static_${p.id}`,
+          ...p
+        }));
+      }
+      setBestsellers(products);
+      setIsLoading(false);
+    }, (error) => {
+      console.error("Firestore read error, using local fallback products:", error);
+      const products = PRODUCTS.slice(0, 3).map(p => ({
+        docId: `static_${p.id}`,
+        ...p
+      }));
+      setBestsellers(products);
       setIsLoading(false);
     });
     return unsubscribe;
   }, []);
 
-  const galleryImages = [
-    "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600&q=80",
-    "https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?w=600&q=80",
-    "https://images.unsplash.com/photo-1626388416805-40b991ea4518?w=600&q=80",
-    "https://images.unsplash.com/photo-1589923158776-cb4485d99fd6?w=600&q=80"
+  const circularCategories = [
+    {
+      name: 'Pickles',
+      image: 'https://themanduvaproject.in/cdn/shop/files/jar_3387912.png?v=1776152279&width=100',
+      link: '/shop?category=pickle'
+    },
+    {
+      name: 'Podi & Sprinkles',
+      image: 'https://themanduvaproject.in/cdn/shop/files/party_6700769.png?v=1776152279&width=100',
+      link: '/shop?category=podi'
+    },
+    {
+      name: 'Fryums & Crisps',
+      image: 'https://themanduvaproject.in/cdn/shop/files/jar_3387912.png?v=1776152279&width=100',
+      link: '/shop?category=fryums'
+    },
+    {
+      name: 'Snacks',
+      image: 'https://themanduvaproject.in/cdn/shop/files/snacks_17016572.png?v=1776152278&width=100',
+      link: '/shop?category=snacks'
+    }
+  ];
+
+  const snacksHighlights = PRODUCTS.filter(p => p.type === 'snacks').slice(0, 4);
+
+  const testimonials = [
+    {
+      quote: "The best mango pickle EVER!!! Manduva’s avakaya mango hot and spicy pickle is the best pickle I have come across recently. We south Indians truly appreciate the whole garlic, chunky mango spices and the awesome kick from the Guntur chilies.",
+      author: "Parinitha Prathap"
+    },
+    {
+      quote: "Greetings Manduva team! Your pickle taste is very good... like amma cheti pickles (mother's hand-made). I am also from Andhra and my mother makes the same style pickle. I like your products very much... your craft is great!",
+      author: "Ratna Rao"
+    },
+    {
+      quote: "I’m a huge huge fan, especially of the mint chili podi! I recommend it to everyone. Cheers and thanks for bringing such an amazing brand to life.",
+      author: "Anubhutie Singh"
+    }
+  ];
+
+  const faqs = [
+    {
+      q: "Are your pickles handmade?",
+      a: "Yes! All our pickles are handcrafted in small batches in rural Andhra villages by local women. We use traditional family heirloom recipes, sun-dry our ingredients, and hand-mix with pure cold-pressed oils."
+    },
+    {
+      q: "Do your products contain preservatives or chemicals?",
+      a: "Absolutely not. All products at The Manduva Project are completely free of artificial preservatives, vinegar, acidity regulators, chemical colors, or MSG. We preserve using traditional natural agents like sea salt, turmeric, lemon juice, and pure oils."
+    },
+    {
+      q: "What is the difference between a podi and a sprinkle?",
+      a: "Podis are traditional spice powders cooked down with roasted lentils and typically hand-mixed with hot rice and ghee. Sprinkles are finer seasoning blends specifically crafted to be dusted as a garnish on breakfast tiffins (idli, dosa), snacks, or curries."
+    },
+    {
+      q: "How should I store the pickles?",
+      a: "Store the pickle jar in a cool, dry place away from direct sunlight. Always use a clean, completely dry spoon to scoop the pickle. Ensure there is a thin layer of oil on top of the pickle to maintain freshness."
+    },
+    {
+      q: "How long do the pickles stay fresh?",
+      a: "Since our products are preservative-free and natural, our pickles stay completely fresh for up to 9-12 months when stored properly. Our podis and sprinkles maintain their aromatic flavors for up to 6 months."
+    }
   ];
 
   return (
     <>
       <SEO />
-      {/* HERO SECTION */}
-      <section className="pt-24 md:pt-32 pb-12 md:pb-20 px-4 sm:px-6 md:px-12 w-full max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-24 min-h-[90vh]">
-        <div className="flex-1 flex flex-col gap-4 md:gap-8 z-10 w-full lg:max-w-none">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="p-6 md:p-8 border-2 border-warm-dark bg-white shadow-[4px_4px_0px_#3A2A22] md:shadow-[8px_8px_0px_#3A2A22] relative w-full"
-          >
-            <div className="absolute -top-3 -left-3 w-6 h-6 border-b border-r border-warm-dark bg-warm-bg transform -rotate-45 hidden md:block"></div>
-            <p className="uppercase tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-xs font-bold text-warm-dark/60 mb-4 md:mb-6 border-b-2 border-dashed border-warm-dark/20 pb-3 md:pb-4 inline-block">Authentic Homemade Recipes</p>
-            <h1 className="text-5xl sm:text-6xl md:text-8xl font-serif leading-[1] md:leading-[0.9] text-warm-dark mb-4 md:mb-6 break-words">
-              Taste the <br className="hidden md:block" />
-              <span className="italic text-warm-accent">Tradition.</span>
-            </h1>
-            <p className="text-base sm:text-lg md:text-xl text-warm-dark/80 max-w-md font-serif leading-relaxed pr-2 md:pr-0">
-              We bring back the nostalgic flavors of grandmother's kitchen. Handcrafted pickles and podis made with love, patience, and the purest ingredients.
-            </p>
-          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-            className="flex gap-4 md:ml-4"
-          >
+      {/* HERO BANNER SECTION */}
+      <section className="relative w-full overflow-hidden bg-[#eaeada]">
+        <div className="max-w-[1920px] mx-auto relative min-h-[35vh] sm:min-h-[50vh] md:min-h-[70vh] flex items-center">
+          {/* Desktop Banner */}
+          <img 
+            src="https://themanduvaproject.in/cdn/shop/files/Savor_traditional_flavors_of_Manduva_pickles.png?v=1776151892&width=1920" 
+            alt="Savor traditional flavors of Manduva pickles" 
+            className="hidden md:block w-full h-auto object-cover"
+          />
+          {/* Mobile Banner */}
+          <img 
+            src="https://themanduvaproject.in/cdn/shop/files/ChatGPT_Image_Apr_14_2026_01_02_13_PM.png?v=1776151959&width=600" 
+            alt="Traditional Andhra pickles" 
+            className="block md:hidden w-full h-auto object-cover"
+          />
+          
+          {/* Text Overlay for premium boutique touch */}
+          <div className="absolute inset-0 bg-gradient-to-r from-warm-dark/50 via-warm-dark/20 to-transparent flex items-center px-6 sm:px-12 md:px-24">
+            <div className="max-w-xl text-white drop-shadow-lg flex flex-col gap-4 mt-12 md:mt-0">
+              <span className="font-heading tracking-[0.2em] text-xs md:text-sm uppercase font-bold text-warm-accent">Handmade Heritage</span>
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif leading-tight">Fresh Traditions, <br/>Bold Flavors.</h1>
+              <p className="font-serif italic text-sm md:text-base text-white/90 leading-relaxed max-w-sm hidden sm:block">
+                We preserve the culinary marvels of ancestral Manduva homes, handcrafting zero-preservative Andhra pachadis, spice mixes, and crunchy savouries.
+              </p>
+              <Link 
+                to="/shop" 
+                className="w-fit bg-warm-accent text-white px-6 py-3 rounded-lg font-heading uppercase text-xs sm:text-sm tracking-wider hover:bg-white hover:text-warm-dark transition-all mt-2 shadow-md"
+              >
+                Shop Authentic Jars
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CIRCULAR CATEGORIES */}
+      <section className="py-12 md:py-16 px-4 bg-white border-b border-warm-dark/5">
+        <div className="max-w-5xl mx-auto flex flex-wrap justify-around items-center gap-6 md:gap-10">
+          {circularCategories.map((cat, idx) => (
             <Link 
-              to="/shop" 
-              className="bg-[#F4EBE1] text-warm-dark border-2 border-warm-dark px-6 py-3 font-bold tracking-widest uppercase text-[10px] md:text-xs md:px-8 md:py-4 hover:bg-warm-dark hover:text-[#F4EBE1] transition-all flex items-center gap-2 shadow-[2px_2px_0px_#3A2A22] md:shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-none"
+              key={idx} 
+              to={cat.link}
+              className="flex flex-col items-center gap-3 group transition-transform hover:scale-105"
             >
-              Explore Shop <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
-            </Link>
-          </motion.div>
-
-          {/* Mobile Quick Categories */}
-          <div className="md:hidden grid grid-cols-3 gap-3 mt-4">
-             {['Pickles', 'Podis', 'Bundles'].map((cat) => (
-                <Link 
-                  key={cat}
-                  to={`/shop?filter=${cat.toLowerCase().slice(0,-1)}`}
-                  className="bg-white border-2 border-warm-dark p-3 flex flex-col items-center gap-2 shadow-[4px_4px_0px_#3A2A22] active:translate-y-1 active:shadow-none transition-all"
-                >
-                   <div className="w-10 h-10 bg-warm-bg rounded-full flex items-center justify-center border border-warm-dark/10">
-                      <ShoppingBag className="w-5 h-5 text-warm-accent" />
-                   </div>
-                   <span className="text-[8px] font-bold uppercase tracking-widest">{cat}</span>
-                </Link>
-             ))}
-          </div>
-        </div>
-
-        <div className="flex-1 w-full relative max-w-[90vw] lg:max-w-none mx-auto min-h-[300px] mb-8 md:mb-0 ml-2 md:ml-0 mr-4 md:mr-0 pl-2 lg:pl-0 pr-6 md:pr-0">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1 }}
-            className="relative p-3 md:p-6 bg-white border-2 border-warm-dark shadow-[6px_6px_0px_#3A2A22] md:shadow-[12px_12px_0px_#3A2A22] transform rotate-1 md:rotate-2 w-full max-w-[500px] mx-auto lg:ml-auto"
-          >
-            {/* "Tape" at top */}
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-32 h-8 bg-white/60 backdrop-blur-sm border border-warm-dark/20 transform -rotate-3 z-30 opacity-70"></div>
-            
-            <img 
-              src="https://images.unsplash.com/photo-1543362906-acfc16c67564?w=800&q=80" 
-              alt="Traditional Pickles" 
-              className="w-full aspect-[4/5] object-cover border-2 border-warm-dark grayscale-[10%] contrast-125 sepia-[20%] relative z-10"
-              referrerPolicy="no-referrer"
-            />
-            
-            <motion.div 
-              animate={{ rotate: [-6, -2, -6] }}
-              transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-              className="absolute -bottom-8 -left-8 bg-warm-accent text-white p-6 z-20 w-36 h-36 flex flex-col items-center justify-center border-4 border-warm-bg rounded-full shadow-xl transform -rotate-6"
-            >
-              <div className="w-full h-full border-2 border-dashed border-white/50 rounded-full flex flex-col items-center justify-center">
-                <span className="font-serif text-4xl font-bold text-white">100%</span>
-                <span className="text-[10px] uppercase tracking-widest font-bold text-white/90 text-center">Natural<br/>Ingredients</span>
+              <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full border border-warm-dark/10 p-2 bg-[#eaeada] flex items-center justify-center shadow-sm overflow-hidden group-hover:border-warm-accent transition-colors">
+                <img 
+                  src={cat.image} 
+                  alt={cat.name} 
+                  className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
+                />
               </div>
-            </motion.div>
-          </motion.div>
+              <span className="font-heading text-sm sm:text-base tracking-wider uppercase font-bold text-warm-dark group-hover:text-warm-accent transition-colors">
+                {cat.name}
+              </span>
+            </Link>
+          ))}
         </div>
       </section>
 
-      {/* FEATURED SECTION */}
-      <div className="w-full border-t-4 border-dashed border-warm-dark/20 my-12"></div>
-      
-      <section className="py-24 px-6 md:px-12 relative z-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-16 px-4">
-            <div className="p-6 bg-white border-2 border-warm-dark shadow-[6px_6px_0px_#3A2A22] relative inline-block">
-              <div className="absolute -top-2 left-4 w-4 h-4 rounded-full border-2 border-warm-dark bg-warm-bg"></div>
-              <div className="absolute -top-2 right-4 w-4 h-4 rounded-full border-2 border-warm-dark bg-warm-bg"></div>
-              <h2 className="text-4xl md:text-5xl font-serif text-warm-dark mb-2">Our Favorites</h2>
-              <p className="text-warm-dark/60 max-w-md font-serif italic text-lg border-t border-warm-dark/10 pt-2">Our best-selling recipes, crafted with carefully sourced ingredients.</p>
+      {/* BESTSELLERS SECTION */}
+      <section className="py-20 md:py-28 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
+        <div className="text-center mb-16 max-w-2xl mx-auto">
+          <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">Curated Favorites</span>
+          <h2 className="text-3xl sm:text-5xl font-heading font-bold text-warm-dark mt-2 mb-4 uppercase">Our Bestsellers</h2>
+          <div className="w-16 h-0.5 bg-warm-accent mx-auto mb-6"></div>
+          <p className="font-serif italic text-warm-dark/70 text-base md:text-lg">
+            Introducing several creations with bold flavors and fresh traditions! Our bestsellers and loved products change every month!
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {isLoading ? (
+            [1, 2, 3].map(i => (
+              <div key={i} className="h-[400px] bg-warm-dark/5 animate-pulse rounded-lg border border-warm-dark/10"></div>
+            ))
+          ) : bestsellers.map((product) => (
+            <div 
+              key={product.docId}
+              className="bg-[#eaeada]/40 border border-warm-dark/10 p-4 rounded-xl flex flex-col group hover:shadow-lg transition-all"
+            >
+              <Link to={`/product/${product.id}`} className="block relative aspect-square bg-white border border-warm-dark/5 rounded-lg overflow-hidden p-2 mb-4">
+                <img 
+                  src={product.image} 
+                  alt={product.name} 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute top-4 left-4 bg-white px-3 py-1 font-heading text-xs font-bold uppercase tracking-wider text-warm-dark rounded border border-warm-dark/5">
+                  ₹{product.price}
+                </div>
+                <div className="absolute top-4 right-4 flex gap-0.5">
+                  {[...Array(product.spiciness)].map((_, i) => (
+                    <Flame key={i} className="w-4 h-4 text-warm-accent fill-warm-accent" />
+                  ))}
+                </div>
+              </Link>
+              
+              <Link to={`/product/${product.id}`} className="flex-1 flex flex-col">
+                <h3 className="font-heading font-bold text-xl text-warm-dark mb-2 group-hover:text-warm-accent transition-colors leading-tight">{product.name}</h3>
+                <p className="text-warm-dark/70 font-serif italic text-sm line-clamp-2 mb-4">{product.description}</p>
+                <div className="mt-auto pt-4 border-t border-warm-dark/5 flex justify-between items-center text-xs font-heading font-bold uppercase tracking-wider text-warm-dark">
+                  <span>Experience Heritage</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-all text-warm-accent" />
+                </div>
+              </Link>
             </div>
-            
-            <Link to="/shop" className="px-8 py-3 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark font-bold tracking-widest hover:bg-warm-dark hover:text-white transition-all uppercase text-xs shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-[2px_2px_0px_#3A2A22]">
-              View All
+          ))}
+        </div>
+      </section>
+
+      {/* SNACKS SECTION */}
+      <section className="py-20 md:py-24 bg-[#eaeada]/30 border-t border-b border-warm-dark/5 px-4 sm:px-6 md:px-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
+            <div>
+              <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">Crispy Evening Bites</span>
+              <h2 className="text-3xl sm:text-4xl font-heading font-bold text-warm-dark mt-2 uppercase">Our Freshly Launched Snacks Await!</h2>
+            </div>
+            <Link 
+              to="/shop?category=snacks" 
+              className="px-6 py-2.5 bg-white border border-warm-dark/20 hover:border-warm-dark text-warm-dark font-heading uppercase tracking-wider text-xs rounded transition-colors"
+            >
+              View All Snacks
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {isLoading ? (
-               [1, 2, 3].map(i => (
-                 <div key={i} className="h-[400px] bg-warm-bg/50 animate-pulse border-2 border-warm-dark/10"></div>
-               ))
-            ) : featuredProducts.map((product) => (
-              <motion.div
-                key={product.id}
-                whileHover={{ y: -10 }}
-                className="group"
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {snacksHighlights.map((product) => (
+              <Link 
+                key={product.id} 
+                to={`/product/${product.id}`}
+                className="bg-white border border-warm-dark/10 p-3 rounded-xl flex flex-col group hover:shadow-md transition-all"
               >
-                <Link to={`/product/${product.id}`} className="block h-full">
-                  <div className="bg-white border-2 border-warm-dark p-4 flex flex-col h-full relative transition-transform duration-300 group-hover:-translate-y-1 shadow-[4px_4px_0px_#3A2A22] md:shadow-[8px_8px_0px_#3A2A22]">
-                    <div className="relative aspect-square border-2 border-dashed border-warm-dark/30 mb-6 bg-warm-bg overflow-hidden p-2">
-                      <img 
-                        src={product.image} 
-                        alt={product.name} 
-                        className={`w-full h-full object-cover grayscale-[10%] group-hover:grayscale-0 transition-all duration-700 ${product.stock <= 0 ? 'opacity-50 grayscale' : ''}`}
-                        referrerPolicy="no-referrer"
-                      />
-                      <div className="absolute top-4 left-4 bg-warm-accent text-white px-3 py-1 font-bold text-xs shadow-[2px_2px_0px_#3A2A22] transform -rotate-3 border-2 border-warm-dark">
-                        ₹{product.price}
-                      </div>
-                      {product.stock <= 0 && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px] pointer-events-none">
-                          <span className="font-serif font-bold text-white text-xl border-2 border-white px-2 py-1 transform -rotate-6">SOLD OUT</span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <h3 className="text-2xl font-serif font-bold text-warm-dark mb-2 group-hover:text-warm-accent transition-colors">{product.name}</h3>
-                    <p className="text-warm-dark/60 text-sm font-serif italic mb-6 line-clamp-2">
-                      {product.description}
-                    </p>
-                    
-                    <div className="mt-auto pt-6 border-t-2 border-dashed border-warm-dark/10 flex justify-between items-center">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-warm-dark/40 group-hover:text-warm-accent transition-colors">Experience Heritage</span>
-                      <ArrowRight className="w-4 h-4 text-warm-dark/20 group-hover:text-warm-accent group-hover:translate-x-1 transition-all" />
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      
-      <section className="py-24 px-6 md:px-12 relative z-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col items-center text-center mb-16 w-full max-w-[95vw] mx-auto">
-            <div className="border-4 border-warm-dark p-4 md:p-6 rounded-full bg-white mb-6 shadow-[4px_4px_0px_#3A2A22] transform rotate-3">
-              <Instagram className="w-8 h-8 md:w-12 md:h-12 text-warm-accent" />
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif text-warm-dark mb-4 bg-white px-4 py-2 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] transform -rotate-1">Follow the Flavour</h2>
-            <p className="text-warm-dark/70 max-w-md font-serif italic text-lg md:text-xl mt-6 px-4 border-l-4 border-warm-accent">
-              Join us on Instagram <a href="https://www.instagram.com/kaaram.kathalu/" target="_blank" rel="noopener noreferrer" className="text-warm-accent font-bold not-italic hover:underline">@kaaram.kathalu</a> for behind-the-scenes, recipes, and more spicy tales.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-8 w-full max-w-[95vw] mx-auto">
-            {galleryImages.map((src, idx) => (
-              <motion.a 
-                href="https://www.instagram.com/kaaram.kathalu/"
-                target="_blank"
-                rel="noopener noreferrer"
-                key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1, duration: 0.5 }}
-                className={`group relative aspect-square bg-white border-2 border-warm-dark p-2 shadow-[6px_6px_0px_#3A2A22] hover:shadow-[2px_2px_0px_#3A2A22] hover:translate-y-1 transition-all ${idx%2===0 ? 'rotate-[-3deg]' : 'rotate-[2deg]'}`}
-              >
-                <div className="w-full h-full border border-dashed border-warm-dark/30 relative overflow-hidden bg-warm-bg">
+                <div className="relative aspect-square bg-[#eaeada]/20 rounded-lg overflow-hidden p-2 mb-3">
                   <img 
-                    src={src} 
-                    alt={`Instagram gallery post ${idx + 1}`} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale-[20%] sepia-[10%] contrast-125"
+                    src={product.image} 
+                    alt={product.name} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute inset-0 bg-warm-dark/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <Instagram className="w-8 h-8 text-white" />
+                  <div className="absolute bottom-2 left-2 bg-warm-dark text-white px-2 py-0.5 text-[10px] font-bold rounded">
+                    ₹{product.price}
                   </div>
                 </div>
-              </motion.a>
+                <h3 className="font-heading font-bold text-base text-warm-dark leading-tight group-hover:text-warm-accent transition-colors truncate">{product.name}</h3>
+                <span className="text-[10px] text-warm-dark/40 font-heading uppercase tracking-wider mt-1">{product.type}</span>
+              </Link>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* VALUE PROPOSITIONS */}
+      <section className="py-20 md:py-28 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="flex flex-col items-center text-center p-6 bg-white border border-warm-dark/5 rounded-2xl shadow-sm">
+          <div className="w-12 h-12 bg-warm-accent/10 rounded-full flex items-center justify-center text-warm-accent mb-6">
+            <Award className="w-6 h-6" />
+          </div>
+          <h3 className="font-heading text-xl font-bold uppercase tracking-wider text-warm-dark mb-3">Farm-Fresh Flavors</h3>
+          <p className="font-serif italic text-warm-dark/70 text-sm leading-relaxed">
+            We are dedicated to making products bursting with authentic, rich flavours. Our commitment to using fresh, natural ingredients from local farmers guarantees a truly delicious taste in every bite.
+          </p>
+        </div>
+
+        <div className="flex flex-col items-center text-center p-6 bg-white border border-warm-dark/5 rounded-2xl shadow-sm">
+          <div className="w-12 h-12 bg-warm-accent/10 rounded-full flex items-center justify-center text-warm-accent mb-6">
+            <ShieldCheck className="w-6 h-6" />
+          </div>
+          <h3 className="font-heading text-xl font-bold uppercase tracking-wider text-warm-dark mb-3">Quality You Can Taste</h3>
+          <p className="font-serif italic text-warm-dark/70 text-sm leading-relaxed">
+            We don't compromise on quality. Every bite reflects our commitment to using the finest ingredients. We source fresh seasonal offerings, ensuring peak flavor and support local farmers. We sample before we use ingredients.
+          </p>
+        </div>
+
+        <div className="flex flex-col items-center text-center p-6 bg-white border border-warm-dark/5 rounded-2xl shadow-sm">
+          <div className="w-12 h-12 bg-warm-accent/10 rounded-full flex items-center justify-center text-warm-accent mb-6">
+            <BadgeAlert className="w-6 h-6" />
+          </div>
+          <h3 className="font-heading text-xl font-bold uppercase tracking-wider text-warm-dark mb-3">Seasonal Availability</h3>
+          <p className="font-serif italic text-warm-dark/70 text-sm leading-relaxed">
+            The journey of the fresh ingredients, from the farm directly into your product, highlights the connection to quality, traditional preservation and the authentic, seasonal taste without chemicals.
+          </p>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="py-20 md:py-28 bg-[#eaeada]/40 px-4 sm:px-6 md:px-12 border-t border-b border-warm-dark/5">
+        <div className="max-w-4xl mx-auto text-center">
+          <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">Love from Homes</span>
+          <h2 className="text-3xl sm:text-4xl font-heading font-bold text-warm-dark mt-2 mb-16 uppercase">Let Our Customer Speak for Us</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+            {testimonials.map((t, idx) => (
+              <div key={idx} className="bg-white border border-warm-dark/10 p-6 rounded-2xl shadow-sm flex flex-col justify-between">
+                <p className="font-serif italic text-warm-dark/80 text-sm leading-relaxed mb-6">
+                  "{t.quote}"
+                </p>
+                <div className="pt-4 border-t border-warm-dark/5 font-heading text-xs font-bold uppercase tracking-wider text-warm-accent">
+                  - {t.author}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* PRESS SHOWCASE */}
+      <section className="py-16 bg-white px-4 border-b border-warm-dark/5">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="font-heading text-sm font-bold tracking-[0.3em] uppercase text-warm-dark/40 mb-8">We're Showcased In & Available At</h2>
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 hover:opacity-80 transition-opacity">
+            <a href="https://www.asianage.com/life/food/140222/flavours-of-south-india.html" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
+              <span className="font-serif font-semibold text-lg tracking-widest text-warm-dark uppercase border border-warm-dark/25 px-3 py-1">THE ASIAN AGE</span>
+            </a>
+            <a href="https://www.qmart.in/" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
+              <span className="font-heading font-black text-2xl tracking-tighter text-warm-dark flex items-baseline">QMART<span className="w-1.5 h-1.5 bg-warm-accent rounded-full ml-0.5"></span></span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ SECTION */}
+      <section className="py-20 md:py-28 px-4 sm:px-6 md:px-12 max-w-3xl mx-auto">
+        <div className="text-center mb-16">
+          <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">Pantry Queries</span>
+          <h2 className="text-3xl sm:text-4xl font-heading font-bold text-warm-dark mt-2 uppercase">FAQ</h2>
+        </div>
+
+        <div className="space-y-4">
+          {faqs.map((faq, idx) => (
+            <div 
+              key={idx}
+              className="border border-warm-dark/10 rounded-xl overflow-hidden bg-white shadow-sm"
+            >
+              <button
+                onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+                className="w-full px-6 py-4 flex justify-between items-center text-left hover:bg-warm-bg/20 transition-colors"
+              >
+                <span className="font-heading font-bold text-base md:text-lg text-warm-dark tracking-wide">{faq.q}</span>
+                <ChevronDown 
+                  className={`w-5 h-5 text-warm-dark/40 transition-transform duration-300 ${activeFaq === idx ? 'rotate-180 text-warm-accent' : ''}`}
+                />
+              </button>
+              
+              <AnimatePresence initial={false}>
+                {activeFaq === idx && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="overflow-hidden border-t border-warm-dark/5"
+                  >
+                    <div className="p-6 font-serif italic text-warm-dark/70 text-sm md:text-base leading-relaxed bg-warm-bg/5">
+                      {faq.a}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
         </div>
       </section>
     </>

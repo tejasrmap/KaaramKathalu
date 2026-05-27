@@ -1,47 +1,54 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Abel&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-serif: "Cormorant Garamond", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-serif: "Merriweather", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-heading: "Abel", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   
-  /* Rustic, Kraft Paper & Ink Palette */
-  --color-warm-bg: #F4EBE1;    /* Kraft paper base */
-  --color-warm-dark: #3A2A22;  /* Deep roasted coffee/ink */
-  --color-warm-accent: #B83A20; /* Faded chili red */
-  --color-olive: #565E42;      /* Dried leaf green */
+  /* The Manduva Project Color Palette */
+  --color-warm-bg: #F5F5EF;      /* Earthy warm cream background */
+  --color-warm-dark: #2F4930;    /* Deep forest/olive green */
+  --color-warm-accent: #B83A20;  /* Traditional terracotta red */
+  --color-olive: #606E5C;        /* Sage leaf green */
 }
 
 @layer base {
   body {
     @apply font-sans text-warm-dark bg-warm-bg antialiased selection:bg-warm-accent selection:text-white;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
     background-attachment: fixed;
+  }
+  
+  h1, h2, h3, h4, .font-heading {
+    font-family: var(--font-heading), var(--font-sans);
+    letter-spacing: 0.05em;
   }
 }
 
-/* Custom Scrollbar for Rustic Feel */
+/* Custom Premium Scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 ::-webkit-scrollbar-track {
   background: var(--color-warm-bg);
-  border-left: 2px solid var(--color-warm-dark);
+  border-left: 1px solid rgba(47, 73, 48, 0.1);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-warm-dark);
+  background: rgba(47, 73, 48, 0.3);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-warm-accent);
+  background: var(--color-warm-dark);
 }
 
-/* Rustic Utilities */
+/* Premium Manduva UI Utilities */
 @layer utilities {
   .rustic-shadow {
-    box-shadow: 4px 4px 0px #3A2A22;
+    box-shadow: 4px 4px 0px #2F4930;
   }
   .rustic-shadow-hover:hover {
-    box-shadow: 2px 2px 0px #3A2A22;
+    box-shadow: 2px 2px 0px #2F4930;
     transform: translate(2px, 2px);
   }
   .rustic-border {
@@ -55,10 +62,10 @@
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #3A2A2233;
+    background: rgba(47, 73, 48, 0.2);
     border-radius: 10px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #B83A2066;
+    background: var(--color-warm-dark);
   }
 }
