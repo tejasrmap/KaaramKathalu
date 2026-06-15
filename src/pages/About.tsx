@@ -21,7 +21,7 @@ export default function About() {
     section2Content2: 'As times changed, afternoons like these slowly started disappearing. We cannot save those old homes or hold onto the ways of life they sustained, but we can certainly keep their food alive! And that’s exactly what we, at the Manduva Project, intend to do. Just like the tall ornate wooden pillars, we stand as guardians of the region\'s cultural heritage.',
     section2Image: '',
 
-    foundersTitle: 'Usha Sarvarayalu & Neha Alluri',
+    foundersTitle: 'Deepthi Vaishnavy ',
     foundersSubtitle: 'Co-Founders & Mission',
     foundersContent: 'Co-founded by Usha Sarvarayalu and Neha Alluri, The Manduva Project emerged from a desire to keep the food traditions of Andhra Pradesh alive. The production is largely driven by local women, supporting rural livelihoods in traditional kitchens across villages like Annadevarapeta and Uppalametta.',
     foundersBadges: 'Artisanal & Small Batch, Preservative Free, Supporting Women-led Kitchens',
