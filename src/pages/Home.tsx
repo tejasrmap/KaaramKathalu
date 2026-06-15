@@ -108,36 +108,20 @@ export default function Home() {
       <SEO />
 
       {/* HERO BANNER SECTION */}
-      <section className="relative w-full overflow-hidden bg-[#eaeada]">
-        <div className="max-w-[1920px] mx-auto relative min-h-[35vh] sm:min-h-[50vh] md:min-h-[70vh] flex items-center">
-          {/* Desktop Banner */}
-          <img 
-            src="https://themanduvaproject.in/cdn/shop/files/Savor_traditional_flavors_of_Manduva_pickles.png?v=1776151892&width=1920" 
-            alt="Savor traditional flavors of Manduva pickles" 
-            className="hidden md:block w-full h-auto object-cover"
-          />
-          {/* Mobile Banner */}
-          <img 
-            src="https://themanduvaproject.in/cdn/shop/files/ChatGPT_Image_Apr_14_2026_01_02_13_PM.png?v=1776151959&width=600" 
-            alt="Traditional Andhra pickles" 
-            className="block md:hidden w-full h-auto object-cover"
-          />
-          
-          {/* Text Overlay for premium boutique touch */}
-          <div className="absolute inset-0 bg-gradient-to-r from-warm-dark/50 via-warm-dark/20 to-transparent flex items-center px-6 sm:px-12 md:px-24">
-            <div className="max-w-xl text-white drop-shadow-lg flex flex-col gap-4 mt-12 md:mt-0">
-              <span className="font-heading tracking-[0.2em] text-xs md:text-sm uppercase font-bold text-warm-accent">Handmade Heritage</span>
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif leading-tight">Fresh Traditions, <br/>Bold Flavors.</h1>
-              <p className="font-serif italic text-sm md:text-base text-white/90 leading-relaxed max-w-sm hidden sm:block">
-                We preserve the culinary marvels of ancestral Manduva homes, handcrafting zero-preservative Andhra pachadis, spice mixes, and crunchy savouries.
-              </p>
-              <Link 
-                to="/shop" 
-                className="w-fit bg-warm-accent text-white px-6 py-3 rounded-lg font-heading uppercase text-xs sm:text-sm tracking-wider hover:bg-white hover:text-warm-dark transition-all mt-2 shadow-md"
-              >
-                Shop Authentic Jars
-              </Link>
-            </div>
+      <section className="relative w-full overflow-hidden bg-warm-light py-20 md:py-32 border-b border-warm-dark/5">
+        <div className="max-w-7xl mx-auto px-6 sm:px-12 md:px-24 flex items-center min-h-[30vh] sm:min-h-[40vh]">
+          <div className="max-w-2xl flex flex-col gap-5">
+            <span className="font-heading tracking-[0.2em] text-xs md:text-sm uppercase font-bold text-warm-accent">Handmade Heritage</span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif leading-tight text-warm-dark">Fresh Traditions, <br/>Bold Flavors.</h1>
+            <p className="font-serif italic text-sm md:text-base text-warm-dark/80 leading-relaxed max-w-md">
+              We preserve the culinary marvels of ancestral homes, handcrafting zero-preservative Andhra pachadis, spice mixes, and crunchy savouries.
+            </p>
+            <Link 
+              to="/shop" 
+              className="w-fit bg-warm-accent text-white px-8 py-3.5 rounded-lg font-heading uppercase text-xs sm:text-sm tracking-wider hover:bg-warm-dark transition-all mt-2 shadow-[4px_4px_0px_var(--color-warm-dark)]"
+            >
+              Shop Authentic Jars
+            </Link>
           </div>
         </div>
       </section>
