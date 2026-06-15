@@ -48,7 +48,7 @@ export default function Shop({ category }: { category?: 'pickle' | 'podi' }) {
         <div className="w-12 h-0.5 bg-warm-accent mx-auto mt-4 mb-6"></div>
       </div>
 
-      <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+      <motion.div layout className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-10">
         <AnimatePresence>
           {isLoading ? (
             <div className="col-span-full flex flex-col items-center justify-center py-20 gap-4">
@@ -115,7 +115,7 @@ export default function Shop({ category }: { category?: 'pickle' | 'podi' }) {
                   
                   <div className="pt-2 flex flex-col text-left">
                     <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-warm-accent mb-1">{product.type}</span>
-                    <h3 className="font-heading font-bold text-base text-warm-dark group-hover:text-warm-accent transition-colors leading-tight mb-1">{product.name}</h3>
+                    <h3 className="font-heading font-bold text-sm sm:text-base text-warm-dark group-hover:text-warm-accent transition-colors leading-tight mb-1">{product.name}</h3>
                     <span className="font-serif text-sm text-warm-dark/60">From ₹{product.price}.00</span>
                   </div>
                 </div>

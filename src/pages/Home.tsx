@@ -149,7 +149,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
           {isLoading ? (
             [1, 2, 3].map(i => (
               <div key={i} className="h-[400px] bg-warm-dark/5 animate-pulse rounded-lg border border-warm-dark/10"></div>
@@ -177,7 +177,7 @@ export default function Home() {
               
               <div className="pt-2 flex flex-col text-left">
                 <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-warm-accent mb-1">Traditional Recipe</span>
-                <h3 className="font-heading font-bold text-base text-warm-dark group-hover:text-warm-accent transition-colors leading-tight mb-1">{product.name}</h3>
+                <h3 className="font-heading font-bold text-sm sm:text-base text-warm-dark group-hover:text-warm-accent transition-colors leading-tight mb-1">{product.name}</h3>
                 <span className="font-serif text-sm text-warm-dark/60">From ₹{product.price}.00</span>
               </div>
             </Link>
