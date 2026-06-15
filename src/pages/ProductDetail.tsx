@@ -159,16 +159,18 @@ export default function ProductDetail() {
           {/* Action Buttons */}
           <button 
             onClick={handleAddToCart}
-            className="w-full bg-white hover:bg-warm-light/40 text-warm-dark h-12 border border-warm-dark rounded-xl font-heading tracking-widest uppercase text-xs font-bold transition-all duration-200 cursor-pointer mb-3.5 shadow-sm"
+            disabled={product.stock <= 0}
+            className="w-full bg-white hover:bg-warm-light/40 text-warm-dark h-12 border border-warm-dark rounded-xl font-heading tracking-widest uppercase text-xs font-bold transition-all duration-200 cursor-pointer mb-3.5 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Add to cart
+            {product.stock <= 0 ? 'Out of Stock' : 'Add to cart'}
           </button>
           
           <button 
             onClick={handleAddToCart}
-            className="w-full bg-warm-dark hover:bg-warm-dark/95 text-white h-12 rounded-xl font-heading tracking-widest uppercase text-xs font-bold transition-all duration-200 cursor-pointer mb-8 shadow-sm"
+            disabled={product.stock <= 0}
+            className="w-full bg-warm-dark hover:bg-warm-dark/95 text-white h-12 rounded-xl font-heading tracking-widest uppercase text-xs font-bold transition-all duration-200 cursor-pointer mb-8 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Buy it now
+            {product.stock <= 0 ? 'Sold Out' : 'Buy it now'}
           </button>
 
           {/* Value Badges */}
@@ -200,9 +202,10 @@ export default function ProductDetail() {
              </div>
              <button 
               onClick={handleAddToCart}
-              className="flex-1 bg-warm-accent hover:bg-warm-dark text-white h-12 rounded-xl font-heading tracking-wider uppercase text-xs transition-colors cursor-pointer shadow-sm"
+              disabled={product.stock <= 0}
+              className="flex-1 bg-warm-accent hover:bg-warm-dark text-white h-12 rounded-xl font-heading tracking-wider uppercase text-xs transition-colors cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Add to Cart
+              {product.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
             </button>
           </div>
 
