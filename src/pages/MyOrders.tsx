@@ -85,7 +85,7 @@ export default function MyOrders() {
         <div className="space-y-8">
           {orders.map(order => (
             <div key={order.id} className="bg-white border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] md:shadow-[8px_8px_0px_#3A2A22] flex flex-col md:flex-row overflow-hidden transform hover:-translate-y-1 transition-transform group">
-              <div className="bg-[#F4EBE1] p-6 md:w-64 border-b-2 md:border-b-0 md:border-r-2 border-warm-dark flex flex-col justify-between relative overflow-hidden">
+              <div className="bg-warm-light p-6 md:w-64 border-b-2 md:border-b-0 md:border-r-2 border-warm-dark flex flex-col justify-between relative overflow-hidden">
                  <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22/%3E%3C/svg%3E')]"></div>
                  <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-warm-dark/40 mb-1">Order ID</p>

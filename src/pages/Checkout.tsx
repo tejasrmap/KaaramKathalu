@@ -69,7 +69,7 @@ export default function Checkout() {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
         <h2 className="text-3xl font-serif text-warm-dark mb-4">Your basket is empty</h2>
-        <Link to="/shop" className="px-8 py-3 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark font-bold tracking-widest uppercase text-xs shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-none transition-all">
+        <Link to="/shop" className="px-8 py-3 bg-warm-light border-2 border-warm-dark text-warm-dark font-bold tracking-widest uppercase text-xs shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-none transition-all">
           Return to Shop
         </Link>
       </div>
@@ -190,7 +190,7 @@ export default function Checkout() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
         {/* Checkout Form */}
-        <div className="bg-[#F4EBE1] border-2 border-warm-dark p-8 md:p-12 shadow-[8px_8px_0px_#3A2A22]">
+        <div className="bg-warm-light border-2 border-warm-dark p-8 md:p-12 shadow-[8px_8px_0px_#3A2A22]">
           <h1 className="text-4xl font-serif text-warm-dark mb-8">Delivery Details</h1>
           
           <form onSubmit={handleSubmit} className="space-y-6">

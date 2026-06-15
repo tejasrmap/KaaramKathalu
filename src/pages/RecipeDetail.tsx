@@ -58,7 +58,7 @@ export default function RecipeDetail() {
                 <p className="text-[10px] uppercase tracking-widest text-white/40 mb-2">Perfect Pairing</p>
                 <p className="text-xl font-serif italic text-warm-accent">{recipe.pairing}</p>
               </div>
-              <div className="p-6 bg-[#F4EBE1] border-2 border-warm-dark rounded-2xl flex flex-col justify-center">
+              <div className="p-6 bg-warm-light border-2 border-warm-dark rounded-2xl flex flex-col justify-center">
                 <div className="flex items-center gap-4 text-warm-dark">
                   <div className="text-center">
                     <p className="text-[10px] uppercase font-bold text-warm-dark/40">Time</p>

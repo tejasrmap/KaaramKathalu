@@ -95,7 +95,7 @@ export default function Profile() {
       </div>
 
       <div className="bg-white border-2 border-warm-dark shadow-[8px_8px_0px_#3A2A22] transform rotate-1 overflow-hidden">
-        <div className="bg-[#F4EBE1] p-8 border-b-2 border-warm-dark flex items-center gap-6">
+        <div className="bg-warm-light p-8 border-b-2 border-warm-dark flex items-center gap-6">
           <div className="w-20 h-20 bg-white border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] overflow-hidden">
             {user.photoURL ? (
               <img src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" referrerPolicy="no-referrer" />

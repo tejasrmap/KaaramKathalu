@@ -55,7 +55,7 @@ export default function ProductDetail() {
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
         <h2 className="text-3xl font-serif text-warm-dark mb-4 p-4 border-2 border-warm-dark bg-white shadow-[6px_6px_0px_#3A2A22] transform -rotate-2">Product Not Found</h2>
         <p className="text-warm-dark/60 mb-8 font-serif italic text-lg">The jar you are looking for seems to be missing from our pantry.</p>
-        <Link to="/shop" className="px-8 py-3 bg-[#F4EBE1] border-2 border-warm-dark text-warm-dark font-bold tracking-widest uppercase text-xs shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-[2px_2px_0px_#3A2A22] transition-all">
+        <Link to="/shop" className="px-8 py-3 bg-warm-light border-2 border-warm-dark text-warm-dark font-bold tracking-widest uppercase text-xs shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-[2px_2px_0px_#3A2A22] transition-all">
           Return to Shop
         </Link>
       </div>
@@ -92,7 +92,7 @@ export default function ProductDetail() {
               referrerPolicy="no-referrer"
             />
             {/* Stamp Badge */}
-            <div className="absolute top-8 right-8 bg-[#F4EBE1] w-24 h-24 rounded-full flex flex-col items-center justify-center border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] transform rotate-12 z-20">
+            <div className="absolute top-8 right-8 bg-warm-light w-24 h-24 rounded-full flex flex-col items-center justify-center border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] transform rotate-12 z-20">
               <span className="font-serif font-bold text-2xl text-warm-dark mb-[-4px]">₹{product.price}</span>
               <span className="text-[10px] font-bold tracking-widest uppercase text-warm-dark/60">Per Jar</span>
             </div>
@@ -101,7 +101,7 @@ export default function ProductDetail() {
 
         {/* Product Info */}
         <div className="w-full lg:w-1/2 flex flex-col justify-center">
-          <div className="bg-[#F4EBE1] border-2 border-warm-dark p-8 md:p-12 shadow-[8px_8px_0px_#3A2A22] relative">
+          <div className="bg-warm-light border-2 border-warm-dark p-8 md:p-12 shadow-[8px_8px_0px_#3A2A22] relative">
             
             {/* "Tape" top */}
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-white/40 border border-warm-dark/20 shadow-sm transform rotate-2"></div>
@@ -158,7 +158,7 @@ export default function ProductDetail() {
             </div>
 
             {/* Mobile Sticky Bottom Bar */}
-            <div className="sm:hidden fixed bottom-16 left-0 right-0 z-40 bg-[#F5F5EF]/90 backdrop-blur-md border-t border-warm-dark/10 p-4 flex gap-3 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+            <div className="sm:hidden fixed bottom-16 left-0 right-0 z-40 bg-warm-bg/90 backdrop-blur-md border-t border-warm-dark/10 p-4 flex gap-3 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
                <div className="flex items-center bg-white border border-warm-dark/10 w-32 h-12">
                   <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="flex-1 h-full flex items-center justify-center border-r border-warm-dark/10"><Minus className="w-4 h-4" /></button>
                   <span className="w-10 text-center font-bold">{quantity}</span>

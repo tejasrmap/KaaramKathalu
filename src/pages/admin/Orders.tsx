@@ -67,7 +67,7 @@ export default function Orders() {
       </div>
 
       {/* Toolbar */}
-      <div className="bg-[#F4EBE1] border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] p-4 flex flex-col lg:flex-row justify-between items-center gap-4 w-full max-w-[95vw] md:max-w-none mx-auto transform rotate-1 relative z-10">
+      <div className="bg-warm-light border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] p-4 flex flex-col lg:flex-row justify-between items-center gap-4 w-full max-w-[95vw] md:max-w-none mx-auto transform rotate-1 relative z-10">
         <div className="flex w-full lg:w-auto gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
           {STATUSES.map(status => (
             <button
@@ -106,7 +106,7 @@ export default function Orders() {
         {/* Desktop Table View */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-[#F4EBE1] text-warm-dark font-bold font-serif border-b-2 border-solid border-warm-dark tracking-widest uppercase">
+            <thead className="bg-warm-light text-warm-dark font-bold font-serif border-b-2 border-solid border-warm-dark tracking-widest uppercase">
               <tr>
                 <th className="px-6 py-4 border-r-2 border-dashed border-warm-dark/20 text-xs">Parcel ID</th>
                 <th className="px-6 py-4 border-r-2 border-dashed border-warm-dark/20 text-xs">Patron</th>
@@ -161,7 +161,7 @@ export default function Orders() {
                           {openDropdown === order.id && (
                             <>
                               <div className="fixed inset-0 z-10" onClick={() => setOpenDropdown(null)} />
-                              <div className="absolute right-0 mt-2 w-48 bg-[#F4EBE1] border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] z-20 py-2 transform rotate-1">
+                              <div className="absolute right-0 mt-2 w-48 bg-warm-light border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] z-20 py-2 transform rotate-1">
                                 <div className="px-4 py-2 border-b-2 border-dashed border-warm-dark/20 text-[10px] font-bold text-warm-dark uppercase tracking-widest mb-1">Update Status To:</div>
                                 {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(status => (
                                   <button
@@ -221,7 +221,7 @@ export default function Orders() {
                   {openDropdown === order.id && (
                     <>
                       <div className="fixed inset-0 z-10" onClick={() => setOpenDropdown(null)} />
-                      <div className="absolute right-0 bottom-full mb-2 w-48 bg-[#F4EBE1] border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] z-20 py-2 transform -rotate-1">
+                      <div className="absolute right-0 bottom-full mb-2 w-48 bg-warm-light border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] z-20 py-2 transform -rotate-1">
                         <div className="px-4 py-2 border-b-2 border-dashed border-warm-dark/20 text-[10px] font-bold text-warm-dark uppercase tracking-widest mb-1">Update Status:</div>
                         {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(status => (
                           <button
@@ -264,7 +264,7 @@ export default function Orders() {
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="bg-white rounded-3xl shadow-2xl relative z-10 w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh] border-4 border-warm-dark"
             >
-              <div className="p-6 border-b-2 border-warm-dark bg-[#F4EBE1] flex justify-between items-center">
+              <div className="p-6 border-b-2 border-warm-dark bg-warm-light flex justify-between items-center">
                 <div>
                   <h2 className="text-2xl font-serif font-bold text-warm-dark">Order #{selectedOrder.id.slice(0, 8)}</h2>
                   <p className="text-xs font-bold uppercase tracking-widest text-warm-dark/40">{selectedOrder.date}</p>
@@ -314,7 +314,7 @@ export default function Orders() {
                           </tr>
                         ))}
                       </tbody>
-                      <tfoot className="bg-[#F4EBE1] border-t-2 border-warm-dark">
+                      <tfoot className="bg-warm-light border-t-2 border-warm-dark">
                         <tr>
                           <td colSpan={2} className="px-4 py-4 text-xs font-bold uppercase tracking-widest text-warm-dark">Grand Total</td>
                           <td className="px-4 py-4 text-right font-bold text-xl text-warm-accent">₹{selectedOrder.total}</td>

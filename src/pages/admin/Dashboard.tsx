@@ -68,7 +68,7 @@ export default function Dashboard() {
     };
   }, []);
   const StatCard = ({ title, value, trend, icon: Icon }: any) => (
-    <div className="bg-[#F4EBE1] p-4 md:p-6 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] flex flex-col md:flex-row items-start justify-between relative transform rotate-0 hover:-translate-y-1 transition-transform overflow-hidden">
+    <div className="bg-warm-light p-4 md:p-6 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] flex flex-col md:flex-row items-start justify-between relative transform rotate-0 hover:-translate-y-1 transition-transform overflow-hidden">
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22/%3E%3C/svg%3E')]"></div>
       
       <div className="relative z-10 w-full">
@@ -101,7 +101,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-[#F4EBE1] p-6 border-2 border-warm-dark shadow-[6px_6px_0px_#3A2A22] relative z-10">
+        <div className="lg:col-span-2 bg-warm-light p-6 border-2 border-warm-dark shadow-[6px_6px_0px_#3A2A22] relative z-10">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-white/40 border border-warm-dark/20 shadow-sm transform -rotate-2"></div>
           <h3 className="text-xl font-bold text-warm-dark font-serif mb-6 border-b-2 border-dashed border-warm-dark/20 pb-4">Revenue Over Time</h3>
           <div className="h-[300px] w-full">

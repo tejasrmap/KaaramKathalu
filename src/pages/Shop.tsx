@@ -128,7 +128,7 @@ export default function Shop() {
                     </button>
                   </div>
                   
-                  <div className="p-4 flex-1 flex flex-col items-center text-center border-2 border-warm-dark bg-[#F4EBE1]">
+                  <div className="p-4 flex-1 flex flex-col items-center text-center border-2 border-warm-dark bg-warm-light">
                     <h3 className="font-serif text-2xl font-bold text-warm-dark mb-2">{product.name}</h3>
                     <span className="font-bold text-lg tracking-widest text-warm-accent mb-4 block border-b-2 border-warm-dark/20 pb-4 w-full">₹{product.price}</span>
                     <p className="text-warm-dark/70 text-sm font-serif italic">{product.description}</p>

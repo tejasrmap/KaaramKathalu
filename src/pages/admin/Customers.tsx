@@ -37,7 +37,7 @@ export default function Customers() {
         </div>
       </div>
 
-      <div className="bg-[#F4EBE1] border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] p-4 flex justify-between items-center transform rotate-1 relative z-10">
+      <div className="bg-warm-light border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] p-4 flex justify-between items-center transform rotate-1 relative z-10">
         <div className="relative w-full max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-dark/40" />
           <input 

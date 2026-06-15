@@ -156,7 +156,7 @@ export default function ProductsAdmin() {
       </div>
 
       {/* Toolbar */}
-      <div className="bg-[#F4EBE1] border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] p-4 flex flex-col md:flex-row justify-between items-center gap-4 w-full max-w-[95vw] md:max-w-none mx-auto transform rotate-1 relative z-10">
+      <div className="bg-warm-light border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] p-4 flex flex-col md:flex-row justify-between items-center gap-4 w-full max-w-[95vw] md:max-w-none mx-auto transform rotate-1 relative z-10">
         <div className="relative w-full md:w-96">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-dark/40" />
           <input 
@@ -189,7 +189,7 @@ export default function ProductsAdmin() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-[#F4EBE1] border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] overflow-hidden flex flex-col group hover:-translate-y-1 transition-transform relative z-0"
+                className="bg-warm-light border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] overflow-hidden flex flex-col group hover:-translate-y-1 transition-transform relative z-0"
               >
                 <div className="h-48 relative border-b-2 border-dashed border-warm-dark/20 p-2 m-2 bg-white transform -rotate-1 group-hover:rotate-0 transition-transform">
                   <img 

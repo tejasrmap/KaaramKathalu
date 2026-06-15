@@ -70,7 +70,7 @@ export default function Settings() {
       <form onSubmit={handleSave} className="space-y-8">
         {/* Business Info */}
         <div className="bg-white border-2 border-warm-dark shadow-[6px_6px_0px_#3A2A22] overflow-hidden">
-          <div className="bg-[#F4EBE1] p-4 border-b-2 border-warm-dark flex items-center gap-2">
+          <div className="bg-warm-light p-4 border-b-2 border-warm-dark flex items-center gap-2">
             <Globe className="w-5 h-5 text-warm-dark" />
             <h2 className="font-serif font-bold text-warm-dark uppercase tracking-widest text-sm">Business Identity</h2>
           </div>
@@ -122,7 +122,7 @@ export default function Settings() {
 
         {/* Storefront Features */}
         <div className="bg-white border-2 border-warm-dark shadow-[6px_6px_0px_#3A2A22] overflow-hidden">
-          <div className="bg-[#F4EBE1] p-4 border-b-2 border-warm-dark flex items-center gap-2">
+          <div className="bg-warm-light p-4 border-b-2 border-warm-dark flex items-center gap-2">
             <Bell className="w-5 h-5 text-warm-dark" />
             <h2 className="font-serif font-bold text-warm-dark uppercase tracking-widest text-sm">Storefront Features</h2>
           </div>
