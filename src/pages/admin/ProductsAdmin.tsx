@@ -20,6 +20,7 @@ export default function ProductsAdmin() {
   const [categoryType, setCategoryType] = useState<string>('pickle');
   const [spiciness, setSpiciness] = useState<number>(1);
   const [imageTab, setImageTab] = useState<'upload' | 'url'>('upload');
+  const [isBestseller, setIsBestseller] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isModalOpen) {
@@ -33,6 +34,7 @@ export default function ProductsAdmin() {
       if (editingProduct) {
         setCategoryType(editingProduct.type || 'pickle');
         setSpiciness(editingProduct.spiciness || 1);
+        setIsBestseller(!!editingProduct.isBestseller);
         if (editingProduct.image && !editingProduct.image.includes('firebasestorage')) {
           setImageTab('url');
         } else {
@@ -41,6 +43,7 @@ export default function ProductsAdmin() {
       } else {
         setCategoryType('pickle');
         setSpiciness(1);
+        setIsBestseller(false);
         setImageTab('upload');
       }
     }
@@ -120,6 +123,7 @@ export default function ProductsAdmin() {
       description: formData.get('description') as string,
       image: imageUrl,
       spiciness: Number(formData.get('spiciness')),
+      isBestseller: formData.get('isBestseller') === 'true',
       id: editingProduct ? editingProduct.id : Date.now()
     };
 
@@ -219,8 +223,15 @@ export default function ProductsAdmin() {
                     className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-2.5 py-1 text-[10px] uppercase font-bold tracking-wider text-warm-dark rounded-full shadow-sm">
-                    {product.type}
+                  <div className="absolute top-4 left-4 flex gap-1.5 z-10">
+                    <span className="bg-white/95 backdrop-blur-sm px-2.5 py-1 text-[10px] uppercase font-bold tracking-wider text-warm-dark rounded-full shadow-sm">
+                      {product.type}
+                    </span>
+                    {product.isBestseller && (
+                      <span className="bg-warm-accent text-white px-2.5 py-1 text-[10px] uppercase font-bold tracking-wider rounded-full shadow-sm font-sans flex items-center gap-1">
+                        ★ Bestseller
+                      </span>
+                    )}
                   </div>
                   <div className="absolute top-4 right-4 bg-warm-accent text-white px-2.5 py-1 text-xs font-bold rounded-full shadow-sm">
                     ₹{product.price}
@@ -376,6 +387,28 @@ export default function ProductsAdmin() {
                         ))}
                       </div>
                       <input type="hidden" name="type" value={categoryType} />
+                    </div>
+
+                    {/* Bestseller Toggle */}
+                    <div className="flex items-center justify-between p-4 bg-warm-light/40 border border-warm-dark/10 rounded-xl shadow-sm">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold uppercase tracking-wider text-warm-dark">Tag as Bestseller</span>
+                        <span className="text-[10px] text-warm-dark/40 font-serif italic">Should this show in the Home page bestseller section?</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setIsBestseller(!isBestseller)}
+                        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                          isBestseller ? 'bg-warm-accent' : 'bg-warm-dark/10'
+                        }`}
+                      >
+                        <span
+                          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                            isBestseller ? 'translate-x-5' : 'translate-x-0'
+                          }`}
+                        />
+                      </button>
+                      <input type="hidden" name="isBestseller" value={isBestseller ? 'true' : 'false'} />
                     </div>
 
                     {/* Product Image uploads (Tabbed selector) */}

@@ -2,23 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, Flame, ChevronDown, Award, ShieldCheck, BadgeAlert } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { collection, query, limit, onSnapshot } from 'firebase/firestore';
+import { collection, query, limit, onSnapshot, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import SEO from '../components/SEO';
 
 export default function Home() {
   const [bestsellers, setBestsellers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
   useEffect(() => {
-    const q = query(collection(db, 'products'), limit(4));
+    // Try to fetch products marked as bestsellers first
+    const q = query(collection(db, 'products'), where('isBestseller', '==', true), limit(4));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const products = snapshot.docs.map(doc => ({
+      let products = snapshot.docs.map(doc => ({
         docId: doc.id,
         ...doc.data()
       }));
-      setBestsellers(products);
-      setIsLoading(false);
+
+      // Fallback: if no products are explicitly marked as bestsellers, show the first 4 products
+      if (products.length === 0) {
+        const fallbackQuery = query(collection(db, 'products'), limit(4));
+        onSnapshot(fallbackQuery, (fallbackSnapshot) => {
+          const fallbackProducts = fallbackSnapshot.docs.map(doc => ({
+            docId: doc.id,
+            ...doc.data()
+          }));
+          setBestsellers(fallbackProducts);
+          setIsLoading(false);
+        });
+      } else {
+        setBestsellers(products);
+        setIsLoading(false);
+      }
     }, (error) => {
       console.error("Firestore read error:", error);
       setIsLoading(false);
@@ -36,6 +52,29 @@ export default function Home() {
       name: 'Podi & Sprinkles',
       image: 'https://themanduvaproject.in/cdn/shop/files/party_6700769.png?v=1776152279&width=100',
       link: "/podi-sprinkles"
+    }
+  ];
+
+  const faqs = [
+    {
+      q: "Are your pickles handmade?",
+      a: "Yes! All our pickles are handcrafted in small batches in rural Andhra villages by local women. We use traditional family heirloom recipes, sun-dry our ingredients, and hand-mix with pure cold-pressed oils."
+    },
+    {
+      q: "Do your products contain preservatives or chemicals?",
+      a: "Absolutely not. All products at The Manduva Project are completely free of artificial preservatives, vinegar, acidity regulators, chemical colors, or MSG. We preserve using traditional natural agents like sea salt, turmeric, lemon juice, and pure oils."
+    },
+    {
+      q: "What is the difference between a podi and a sprinkle?",
+      a: "Podis are traditional spice powders cooked down with roasted lentils and typically hand-mixed with hot rice and ghee. Sprinkles are finer seasoning blends specifically crafted to be dusted as a garnish on breakfast tiffins (idli, dosa), snacks, or curries."
+    },
+    {
+      q: "How should I store the pickles?",
+      a: "Store the pickle jar in a cool, dry place away from direct sunlight. Always use a clean, completely dry spoon to scoop the pickle. Ensure there is a thin layer of oil on top of the pickle to maintain freshness."
+    },
+    {
+      q: "How long do the pickles stay fresh?",
+      a: "Since our products are preservative-free and natural, our pickles stay completely fresh for up to 9-12 months when stored properly. Our podis and sprinkles maintain their aromatic flavors for up to 6 months."
     }
   ];
 
@@ -170,6 +209,48 @@ export default function Home() {
       </section>
 
 
+      {/* FAQ SECTION */}
+      <section className="py-20 md:py-28 px-4 sm:px-6 md:px-12 max-w-3xl mx-auto">
+        <div className="text-center mb-16">
+          <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">Pantry Queries</span>
+          <h2 className="text-3xl sm:text-4xl font-heading font-bold text-warm-dark mt-2 uppercase">FAQ</h2>
+        </div>
+
+        <div className="space-y-4">
+          {faqs.map((faq, idx) => (
+            <div 
+              key={idx}
+              className="border border-warm-dark/10 rounded-xl overflow-hidden bg-white shadow-sm"
+            >
+              <button
+                onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+                className="w-full px-6 py-4 flex justify-between items-center text-left hover:bg-warm-bg/20 transition-colors"
+              >
+                <span className="font-heading font-bold text-base md:text-lg text-warm-dark tracking-wide">{faq.q}</span>
+                <ChevronDown 
+                  className={`w-5 h-5 text-warm-dark/40 transition-transform duration-300 ${activeFaq === idx ? 'rotate-180 text-warm-accent' : ''}`}
+                />
+              </button>
+              
+              <AnimatePresence initial={false}>
+                {activeFaq === idx && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="overflow-hidden border-t border-warm-dark/5"
+                  >
+                    <div className="p-6 font-serif italic text-warm-dark/70 text-sm md:text-base leading-relaxed bg-warm-bg/5">
+                      {faq.a}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
+      </section>
     </>
   );
 }
