@@ -3,7 +3,6 @@ import { motion } from 'motion/react';
 import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import SEO from '../components/SEO';
-import { Quote, Sparkles, Heart, Star, Compass } from 'lucide-react';
 
 export default function About() {
   const [storySettings, setStorySettings] = useState({
@@ -49,106 +48,68 @@ export default function About() {
     : [];
 
   return (
-    <div className="pt-24 md:pt-32 pb-24 px-4 sm:px-6 md:px-12 w-full max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto min-h-screen bg-warm-bg/30">
+    <div className="pt-24 md:pt-32 pb-24 px-4 sm:px-6 md:px-12 w-full max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto min-h-screen">
       <SEO title={`${storySettings.title} - Traditional Andhra Culinary Heritage`} />
       
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="space-y-24 md:space-y-36"
+        transition={{ duration: 0.6 }}
       >
-        {/* Page Title & Hero Header */}
-        <div className="text-center relative w-full max-w-4xl mx-auto px-4 mt-6">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-8 w-24 h-24 bg-warm-accent/5 rounded-full blur-2xl -z-10" />
-          
-          <motion.span 
-            initial={{ opacity: 0, letterSpacing: '0.1em' }}
-            animate={{ opacity: 1, letterSpacing: '0.2em' }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            className="font-heading text-warm-accent text-xs font-bold uppercase tracking-[0.2em] block mb-3"
-          >
+        {/* Page Title */}
+        <div className="text-center mb-16 relative w-full max-w-[95vw] mx-auto">
+          <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">
             {storySettings.legacyTitle}
-          </motion.span>
-          
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-heading font-black text-warm-dark uppercase tracking-tight leading-none">
+          </span>
+          <h1 className="text-4xl md:text-5xl lg:text-7xl font-heading font-bold text-warm-dark mt-2 mb-4 uppercase">
             {storySettings.title.split(' ').slice(0, -1).join(' ')}{' '}
-            <span className="text-warm-accent italic font-light relative">
+            <span className="text-warm-accent italic">
               {storySettings.title.split(' ').slice(-1)[0]}
-              <svg className="absolute -bottom-2 left-0 w-full h-2 text-warm-accent/35" viewBox="0 0 100 10" preserveAspectRatio="none">
-                <path d="M0,5 Q50,0 100,5" stroke="currentColor" strokeWidth="4" fill="none" />
-              </svg>
             </span>
           </h1>
-          
-          <div className="w-16 h-1 bg-warm-accent/80 mx-auto mt-6 mb-8 rounded-full"></div>
-          
-          <p className="font-serif italic text-warm-dark/70 text-lg md:text-2xl max-w-3xl mx-auto whitespace-pre-line leading-relaxed">
+          <div className="w-16 h-0.5 bg-warm-accent mx-auto mb-6"></div>
+          <p className="font-serif italic text-warm-dark/70 text-lg md:text-xl max-w-2xl mx-auto whitespace-pre-line">
             {storySettings.subtitle}
           </p>
         </div>
         
-        {/* Main Banner Image with Hero Stamp */}
+        {/* Main Banner Image */}
         {storySettings.bannerImage && (
-          <div className="relative w-full max-w-[90vw] mx-auto group">
-            <div className="absolute -inset-4 bg-gradient-to-tr from-warm-accent/10 to-transparent rounded-[36px] blur-xl opacity-75 group-hover:opacity-100 transition-opacity duration-700 -z-10" />
-            
-            <div className="bg-white border-[8px] sm:border-[16px] border-white shadow-2xl relative z-10 w-full rounded-[24px] sm:rounded-[36px] overflow-hidden transform group-hover:scale-[1.01] transition-transform duration-700">
+          <div className="relative w-full max-w-[90vw] mx-auto mb-20 md:mb-32">
+            <div className="bg-white border-8 border-white shadow-lg relative z-10 w-full rounded-2xl overflow-hidden">
               <img 
                 src={storySettings.bannerImage} 
                 alt="Traditional Andhra Culinary Banner" 
-                className="w-full aspect-[16/9] md:aspect-[21/9] object-cover transition-transform duration-700 group-hover:scale-105"
+                className="w-full aspect-[16/9] md:aspect-[21/9] object-cover border border-warm-dark/5"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-warm-dark/30 via-transparent to-transparent pointer-events-none" />
-            </div>
-
-            {/* Decorative Heritage Stamp */}
-            <div className="absolute -bottom-6 -right-2 md:-right-8 bg-warm-accent text-white p-4 md:p-6 rounded-full w-24 h-24 md:w-36 md:h-36 flex flex-col items-center justify-center text-center shadow-2xl border-[6px] border-white transform rotate-12 hover:rotate-6 transition-transform duration-500 z-20 cursor-pointer select-none">
-              <Compass className="w-5 h-5 md:w-8 md:h-8 mb-1 animate-spin-slow text-white/95" />
-              <span className="text-[8px] md:text-[10px] font-heading font-black tracking-wider uppercase text-white/90">100% Traditional</span>
             </div>
           </div>
         )}
 
         {/* Narrative Section 1 */}
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-20 items-center w-full max-w-[95vw] mx-auto">
-          <div className="lg:col-span-7 bg-white/95 border border-warm-dark/5 p-8 md:p-14 rounded-[32px] shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-            {/* Background quote mark decoration */}
-            <div className="absolute -top-4 -right-4 text-warm-accent/[0.03] select-none pointer-events-none transform translate-x-4 -translate-y-4">
-              <Quote className="w-48 h-48 fill-current rotate-180" />
-            </div>
-            
-            <div className="flex items-center gap-2 mb-6 text-warm-accent">
-              <Sparkles className="w-5 h-5 animate-pulse" />
-              <span className="font-heading text-xs font-bold tracking-widest uppercase">The Heritage</span>
-            </div>
-
-            <h2 className="font-heading text-2xl md:text-3xl font-extrabold uppercase tracking-wide text-warm-dark mb-6 leading-tight">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-24 items-center mb-24 w-full max-w-[95vw] mx-auto">
+          <div className="lg:col-span-7 bg-warm-light/30 border border-warm-dark/10 p-8 md:p-12 rounded-2xl flex flex-col justify-center">
+            <h2 className="font-heading text-2xl font-bold uppercase tracking-wider text-warm-dark mb-6">
               {storySettings.section1Title}
             </h2>
-            
             {storySettings.section1Quote && (
-              <div className="border-l-4 border-warm-accent pl-6 mb-8 py-1">
-                <p className="text-base md:text-xl font-serif leading-relaxed text-warm-dark/80 italic">
-                  {storySettings.section1Quote}
-                </p>
-              </div>
+              <p className="text-base md:text-lg font-serif leading-relaxed text-warm-dark/80 italic mb-6">
+                {storySettings.section1Quote}
+              </p>
             )}
-            
             <p className="text-warm-dark/70 font-serif leading-relaxed text-sm md:text-base whitespace-pre-line">
               {storySettings.section1Content}
             </p>
           </div>
           
           {storySettings.section1Image && (
-            <div className="lg:col-span-5 relative w-[85%] sm:w-[70%] mx-auto lg:w-full">
-              <div className="absolute -inset-4 bg-warm-accent/5 rounded-[24px] blur-lg transform -rotate-2" />
-              <div className="bg-white border-[12px] border-white shadow-xl rounded-[24px] overflow-hidden transform rotate-2 hover:rotate-0 transition-transform duration-500 cursor-pointer group">
+            <div className="lg:col-span-5 relative w-[80%] mx-auto lg:w-full">
+              <div className="bg-white border-4 border-white shadow-md rounded-2xl overflow-hidden">
                 <img 
                   src={storySettings.section1Image} 
                   alt="Narrative Section 1 Media" 
-                  className="w-full aspect-[4/5] object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="w-full aspect-square md:aspect-[4/5] object-cover"
                   referrerPolicy="no-referrer"
                 />
               </div>
@@ -157,41 +118,29 @@ export default function About() {
         </div>
 
         {/* Narrative Section 2 */}
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-20 items-center w-full max-w-[95vw] mx-auto">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-24 items-center mb-20 w-full max-w-[95vw] mx-auto">
           {storySettings.section2Image && (
-            <div className="lg:col-span-5 order-last lg:order-first relative w-[85%] sm:w-[70%] mx-auto lg:w-full">
-              <div className="absolute -inset-4 bg-warm-accent/5 rounded-[24px] blur-lg transform rotate-3" />
-              <div className="bg-white border-[12px] border-white shadow-xl rounded-[24px] overflow-hidden transform -rotate-3 hover:rotate-0 transition-transform duration-500 cursor-pointer group">
+            <div className="lg:col-span-5 order-last lg:order-first relative w-[80%] mx-auto lg:w-full">
+              <div className="bg-white border-4 border-white shadow-md rounded-2xl overflow-hidden">
                 <img 
                   src={storySettings.section2Image} 
                   alt="Narrative Section 2 Media" 
-                  className="w-full aspect-[4/5] object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="w-full aspect-[4/5] object-cover"
                   referrerPolicy="no-referrer"
                 />
               </div>
             </div>
           )}
           
-          <div className="lg:col-span-7 bg-white/95 border border-warm-dark/5 p-8 md:p-14 rounded-[32px] shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-            {/* Background quote mark decoration */}
-            <div className="absolute -top-4 -left-4 text-warm-accent/[0.03] select-none pointer-events-none transform -translate-x-4 -translate-y-4">
-              <Quote className="w-48 h-48 fill-current" />
-            </div>
-
-            <div className="flex items-center gap-2 mb-6 text-warm-accent">
-              <Star className="w-5 h-5 fill-current" />
-              <span className="font-heading text-xs font-bold tracking-widest uppercase">The Courtyard</span>
-            </div>
-
-            <h2 className="font-heading text-2xl md:text-3xl font-extrabold uppercase tracking-wide text-warm-dark mb-6 leading-tight">
+          <div className="lg:col-span-7 bg-warm-light/30 border border-warm-dark/10 p-8 md:p-12 rounded-2xl flex flex-col justify-center">
+            <h2 className="font-heading text-2xl font-bold uppercase tracking-wider text-warm-dark mb-6">
               {storySettings.section2Title}
             </h2>
-            
             <p className="text-warm-dark/70 font-serif leading-relaxed text-sm md:text-base mb-6 whitespace-pre-line">
               {storySettings.section2Content1}
             </p>
             {storySettings.section2Content2 && (
-              <p className="text-warm-dark/70 font-serif leading-relaxed text-sm md:text-base whitespace-pre-line border-t border-warm-dark/5 pt-6 mt-6">
+              <p className="text-warm-dark/70 font-serif leading-relaxed text-sm md:text-base whitespace-pre-line">
                 {storySettings.section2Content2}
               </p>
             )}
@@ -199,58 +148,36 @@ export default function About() {
         </div>
 
         {/* Co-Founders & Livelihoods Section */}
-        <section className="relative py-16 md:py-24 bg-gradient-to-br from-white to-warm-light/40 border border-warm-accent/10 rounded-[40px] p-8 md:p-16 max-w-4xl mx-auto shadow-xl overflow-hidden group">
-          <div className="absolute top-0 right-0 -translate-y-6 translate-x-6 w-32 h-32 bg-warm-accent/5 rounded-full blur-xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 translate-y-6 -translate-x-6 w-32 h-32 bg-warm-accent/5 rounded-full blur-xl pointer-events-none" />
-
-          <div className="flex justify-center mb-6">
-            <div className="w-12 h-12 rounded-full bg-warm-accent/10 flex items-center justify-center text-warm-accent shadow-inner">
-              <Heart className="w-6 h-6 fill-current" />
-            </div>
-          </div>
-
-          <span className="font-heading text-warm-accent text-xs font-black tracking-[0.25em] uppercase block mb-3">
+        <section className="py-16 md:py-24 bg-white border border-warm-dark/5 rounded-3xl p-8 md:p-12 mb-20 text-center max-w-4xl mx-auto shadow-sm">
+          <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">
             {storySettings.foundersSubtitle}
           </span>
-          
-          <h2 className="text-3xl md:text-4xl font-heading font-black text-warm-dark mb-6 uppercase tracking-wide leading-tight">
+          <h2 className="text-3xl font-heading font-bold text-warm-dark mt-2 mb-6 uppercase">
             {storySettings.foundersTitle}
           </h2>
-          
-          <p className="font-serif italic text-warm-dark/70 text-base md:text-xl leading-relaxed max-w-2xl mx-auto mb-10 whitespace-pre-line">
+          <p className="font-serif italic text-warm-dark/70 text-base md:text-lg leading-relaxed max-w-2xl mx-auto mb-8 whitespace-pre-line">
             {storySettings.foundersContent}
           </p>
-          
           {badges.length > 0 && (
             <div className="flex flex-wrap justify-center gap-4">
               {badges.map((badge, idx) => (
-                <motion.span 
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  key={idx} 
-                  className="bg-white border border-warm-accent/10 hover:border-warm-accent hover:shadow-md text-warm-dark px-6 py-3 font-serif italic text-sm rounded-full shadow-sm transition-all duration-300 cursor-default"
-                >
-                  🌶️ {badge}
-                </motion.span>
+                <span key={idx} className="bg-warm-bg border text-warm-dark px-4 py-2 font-serif italic text-sm rounded-full shadow-sm">
+                  {badge}
+                </span>
               ))}
             </div>
           )}
         </section>
 
-        {/* Dynamic Signature Quote Block */}
+        {/* Quote Block */}
         {storySettings.bottomQuote && (
-          <div className="bg-warm-dark text-white p-12 md:p-20 rounded-[40px] shadow-2xl relative overflow-hidden mt-16 md:mt-24 mb-8 max-w-5xl mx-auto text-center border-t-8 border-warm-accent group">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-radial-gradient from-white/[0.02] to-transparent pointer-events-none" />
-            <div className="absolute -top-10 -left-10 text-white/[0.02] select-none pointer-events-none">
-              <Quote className="w-64 h-64 fill-current" />
+          <div className="text-center max-w-3xl mx-auto w-full max-w-[95vw] bg-white border border-warm-dark/10 p-8 md:p-12 rounded-2xl shadow-sm relative mt-16 md:mt-24 mb-8">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border border-warm-dark/10 bg-warm-bg flex items-center justify-center">
+              <div className="w-2.5 h-2.5 bg-warm-accent rounded-full"></div>
             </div>
-
-            <Quote className="w-10 h-10 text-warm-accent mx-auto mb-8 animate-pulse" />
-            
-            <h2 className="text-xl md:text-3xl lg:text-4xl font-serif text-warm-bg/90 italic leading-relaxed max-w-4xl mx-auto relative z-10">
+            <h2 className="text-xl md:text-3xl font-serif text-warm-dark italic leading-relaxed">
               {storySettings.bottomQuote}
             </h2>
-            
-            <div className="w-12 h-0.5 bg-warm-accent mx-auto mt-10 rounded-full opacity-60"></div>
           </div>
         )}
       </motion.div>
