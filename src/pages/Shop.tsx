@@ -84,36 +84,30 @@ export default function Shop() {
               className="group"
             >
               <Link to={`/product/${product.id}`} className="block h-full">
-                <div className="bg-white border-2 border-warm-dark p-3 flex flex-col h-full relative z-10 transition-transform duration-300 group-hover:-translate-y-2 group-hover:-translate-x-1 shadow-[4px_4px_0px_#3A2A22] md:shadow-[8px_8px_0px_#3A2A22]">
+                <div className="bg-transparent flex flex-col h-full transition-transform duration-300 group-hover:-translate-y-1">
                   
-                  <div className="relative aspect-square border-2 border-dashed border-warm-dark/30 mb-4 bg-warm-bg overflow-hidden p-2">
+                  <div className="relative aspect-square overflow-hidden bg-warm-light border border-warm-dark/5 rounded-xl mb-4">
                     <img 
                       src={product.image} 
                       alt={product.name} 
-                      className={`w-full h-full object-cover grayscale-[10%] contrast-110 sepia-[10%] transition-all duration-700 group-hover:grayscale-0 group-hover:sepia-0 border border-warm-dark/10 ${product.stock <= 0 ? 'opacity-50 grayscale' : ''}`}
+                      className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${product.stock <= 0 ? 'opacity-50 grayscale' : ''}`}
                       referrerPolicy="no-referrer"
                     />
                     {product.stock <= 0 && (
                       <div className="absolute inset-0 bg-warm-dark/20 backdrop-blur-[2px] flex items-center justify-center pointer-events-none">
-                        <span className="font-serif font-bold text-white text-3xl transform -rotate-12 drop-shadow-lg border-4 border-white p-2">OUT OF STOCK</span>
+                        <span className="font-serif font-bold text-white text-xl border-2 border-white px-3 py-1.5">OUT OF STOCK</span>
                       </div>
                     )}
                     
-                    <div className="absolute top-4 left-4 flex flex-col gap-2">
-                      <div className="bg-white border-2 border-warm-dark px-3 py-1 text-[10px] uppercase font-bold tracking-widest text-warm-dark shadow-[2px_2px_0px_#3A2A22]">
+                    <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-20">
+                      <span className="bg-warm-dark text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded">
                         {product.type}
-                      </div>
+                      </span>
                       {product.stock <= 0 && (
-                        <div className="bg-red-600 text-white border-2 border-warm-dark px-3 py-1 text-[10px] uppercase font-bold tracking-widest shadow-[2px_2px_0px_#3A2A22] animate-pulse">
+                        <span className="bg-red-600 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded animate-pulse">
                           Sold Out
-                        </div>
+                        </span>
                       )}
-                    </div>
-
-                    <div className="absolute top-4 right-4 flex gap-1">
-                      {[...Array(product.spiciness)].map((_, i) => (
-                        <Flame key={i} className="w-5 h-5 text-warm-accent fill-warm-accent drop-shadow-md" />
-                      ))}
                     </div>
 
                     <button 
@@ -122,21 +116,21 @@ export default function Shop() {
                         e.stopPropagation();
                         isInWishlist(product.id) ? removeFromWishlist(product.id) : addToWishlist(product);
                       }}
-                      className="absolute bottom-4 right-4 z-20 p-2 bg-white border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] hover:translate-y-px hover:shadow-none transition-all group/heart"
+                      className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/90 hover:bg-white text-warm-dark flex items-center justify-center shadow-sm transition-colors group/heart"
+                      aria-label="Wishlist"
                     >
-                      <Heart className={`w-5 h-5 transition-colors ${isInWishlist(product.id) ? 'fill-warm-accent text-warm-accent' : 'text-warm-dark group-hover/heart:text-warm-accent'}`} />
+                      <Heart className={`w-4 h-4 transition-colors ${isInWishlist(product.id) ? 'fill-warm-accent text-warm-accent' : 'text-warm-dark group-hover/heart:text-warm-accent'}`} />
                     </button>
+
+                    <div className="absolute bottom-3 right-3 z-20 w-8 h-8 rounded-full bg-warm-accent text-white flex items-center justify-center shadow-md transition-transform duration-300 group-hover:scale-110">
+                      <span className="text-lg font-bold font-sans">+</span>
+                    </div>
                   </div>
                   
-                  <div className="p-4 flex-1 flex flex-col items-center text-center border-2 border-warm-dark bg-warm-light">
-                    <h3 className="font-serif text-2xl font-bold text-warm-dark mb-2">{product.name}</h3>
-                    <span className="font-bold text-lg tracking-widest text-warm-accent mb-4 block border-b-2 border-warm-dark/20 pb-4 w-full">₹{product.price}</span>
-                    <p className="text-warm-dark/70 text-sm font-serif italic">{product.description}</p>
-                    
-                    <div className="w-full mt-6 pt-4 border-t-2 border-dashed border-warm-dark/20 flex justify-between items-center px-2">
-                       <span className="text-[10px] uppercase font-bold tracking-widest text-warm-dark">View Details</span>
-                       <span className="text-[10px] uppercase font-bold tracking-widest text-warm-accent underline underline-offset-4">Add →</span>
-                    </div>
+                  <div className="pt-2 flex flex-col text-left">
+                    <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-warm-accent mb-1">{product.type}</span>
+                    <h3 className="font-heading font-bold text-base text-warm-dark group-hover:text-warm-accent transition-colors leading-tight mb-1">{product.name}</h3>
+                    <span className="font-serif text-sm text-warm-dark/60">From ₹{product.price}.00</span>
                   </div>
                 </div>
               </Link>

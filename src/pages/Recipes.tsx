@@ -49,44 +49,41 @@ export default function Recipes() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white border-2 border-warm-dark shadow-[8px_8px_0px_#3A2A22] overflow-hidden group flex flex-col h-full"
+              className="group flex flex-col h-full transition-transform duration-300 hover:-translate-y-1"
             >
-              <div className="h-64 overflow-hidden relative">
+              <div className="h-64 overflow-hidden relative rounded-xl border border-warm-dark/5 bg-warm-light">
                 <img 
                   src={recipe.image} 
                   alt={recipe.title} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute top-4 left-4">
-                  <span className="bg-warm-accent text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest border border-warm-dark shadow-[2px_2px_0px_#3A2A22]">
+                <div className="absolute top-3 left-3 z-20">
+                  <span className="bg-warm-accent text-white px-2.5 py-0.5 text-[8px] font-bold uppercase tracking-widest rounded">
                     {recipe.pairing}
                   </span>
                 </div>
               </div>
               
-              <div className="p-8 flex-1 flex flex-col">
-                <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-warm-dark/40 mb-4">
+              <div className="pt-4 flex-1 flex flex-col text-left">
+                <div className="flex items-center gap-4 text-[9px] font-bold uppercase tracking-widest text-warm-dark/40 mb-2">
                   <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {recipe.prepTime}</span>
                   <span className="flex items-center gap-1"><ChefHat className="w-3 h-3" /> {recipe.difficulty}</span>
                 </div>
                 
-                <h3 className="text-2xl font-serif font-bold text-warm-dark mb-4 group-hover:text-warm-accent transition-colors italic">
+                <h3 className="text-lg font-heading font-bold text-warm-dark mb-2 group-hover:text-warm-accent transition-colors leading-tight">
                   {recipe.title}
                 </h3>
                 
-                <p className="text-warm-dark/60 font-serif italic mb-8 line-clamp-3">
+                <p className="text-warm-dark/60 font-serif italic text-sm mb-4 line-clamp-2">
                   "{recipe.description}"
                 </p>
 
-                <div className="mt-auto pt-6 border-t border-warm-dark/5">
+                <div className="mt-auto pt-4 border-t border-warm-dark/5">
                   <Link 
                     to={`/recipes/${recipe.id}`}
                     className="flex items-center justify-between group/link"
                   >
-                    <span className="text-xs font-bold uppercase tracking-widest text-warm-dark group-hover/link:text-warm-accent transition-colors">View Full Story</span>
-                    <div className="w-8 h-8 rounded-full border border-warm-dark/20 flex items-center justify-center group-hover/link:bg-warm-dark group-hover/link:text-white transition-all">
-                      <ArrowRight className="w-4 h-4" />
-                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-warm-dark group-hover/link:text-warm-accent transition-colors">View Full Story →</span>
                   </Link>
                 </div>
               </div>

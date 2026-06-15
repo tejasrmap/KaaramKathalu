@@ -155,36 +155,32 @@ export default function Home() {
               <div key={i} className="h-[400px] bg-warm-dark/5 animate-pulse rounded-lg border border-warm-dark/10"></div>
             ))
           ) : bestsellers.map((product) => (
-            <div 
+            <Link 
               key={product.docId}
-              className="bg-warm-light/40 border border-warm-dark/10 p-4 rounded-xl flex flex-col group hover:shadow-lg transition-all"
+              to={`/product/${product.id}`}
+              className="group flex flex-col transition-transform duration-300 hover:-translate-y-1"
             >
-              <Link to={`/product/${product.id}`} className="block relative aspect-square bg-white border border-warm-dark/5 rounded-lg overflow-hidden p-2 mb-4">
+              <div className="relative aspect-square overflow-hidden bg-warm-light border border-warm-dark/5 rounded-xl mb-4">
                 <img 
                   src={product.image} 
                   alt={product.name} 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   referrerPolicy="no-referrer"
                 />
-                <div className="absolute top-4 left-4 bg-white px-3 py-1 font-heading text-xs font-bold uppercase tracking-wider text-warm-dark rounded border border-warm-dark/5">
-                  ₹{product.price}
+                <div className="absolute top-3 left-3 bg-warm-dark text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded">
+                  Bestseller
                 </div>
-                <div className="absolute top-4 right-4 flex gap-0.5">
-                  {[...Array(product.spiciness)].map((_, i) => (
-                    <Flame key={i} className="w-4 h-4 text-warm-accent fill-warm-accent" />
-                  ))}
+                <div className="absolute bottom-3 right-3 z-20 w-8 h-8 rounded-full bg-warm-accent text-white flex items-center justify-center shadow-md transition-transform duration-300 group-hover:scale-110">
+                  <span className="text-lg font-bold font-sans">+</span>
                 </div>
-              </Link>
+              </div>
               
-              <Link to={`/product/${product.id}`} className="flex-1 flex flex-col">
-                <h3 className="font-heading font-bold text-xl text-warm-dark mb-2 group-hover:text-warm-accent transition-colors leading-tight">{product.name}</h3>
-                <p className="text-warm-dark/70 font-serif italic text-sm line-clamp-2 mb-4">{product.description}</p>
-                <div className="mt-auto pt-4 border-t border-warm-dark/5 flex justify-between items-center text-xs font-heading font-bold uppercase tracking-wider text-warm-dark">
-                  <span>Experience Heritage</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-all text-warm-accent" />
-                </div>
-              </Link>
-            </div>
+              <div className="pt-2 flex flex-col text-left">
+                <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-warm-accent mb-1">Traditional Recipe</span>
+                <h3 className="font-heading font-bold text-base text-warm-dark group-hover:text-warm-accent transition-colors leading-tight mb-1">{product.name}</h3>
+                <span className="font-serif text-sm text-warm-dark/60">From ₹{product.price}.00</span>
+              </div>
+            </Link>
           ))}
         </div>
       </section>

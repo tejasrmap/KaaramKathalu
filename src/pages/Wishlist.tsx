@@ -41,35 +41,39 @@ export default function Wishlist() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {wishlist.map(product => (
-            <div key={product.id} className="bg-white border-2 border-warm-dark shadow-[6px_6px_0px_#3A2A22] group flex flex-col">
-              <div className="relative aspect-square border-b-2 border-warm-dark overflow-hidden">
+            <div 
+              key={product.id} 
+              className="group flex flex-col transition-transform duration-300 hover:-translate-y-1"
+            >
+              <div className="relative aspect-square overflow-hidden bg-warm-light border border-warm-dark/5 rounded-xl mb-4">
                 <img 
                   src={product.image} 
                   alt={product.name} 
-                  className="w-full h-full object-cover grayscale-[10%] group-hover:grayscale-0 transition-all duration-700"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <button 
                   onClick={() => removeFromWishlist(product.id)}
-                  className="absolute top-4 right-4 p-2 bg-white border-2 border-warm-dark text-warm-dark hover:bg-red-50 hover:text-red-600 transition-colors shadow-[4px_4px_0px_#3A2A22]"
+                  className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-white text-warm-dark flex items-center justify-center shadow-md transition-colors"
+                  aria-label="Remove from Wishlist"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-4 h-4 hover:text-red-600 transition-colors" />
                 </button>
-                <div className="absolute top-4 left-4 bg-warm-accent border-2 border-warm-dark text-white px-3 py-1 font-bold text-xs shadow-[4px_4px_0px_#3A2A22] transform -rotate-3">
+                <div className="absolute top-3 left-3 bg-warm-dark text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded">
                   ₹{product.price}
                 </div>
               </div>
               
-              <div className="p-6 flex-1 flex flex-col">
-                <h3 className="text-2xl font-serif font-bold text-warm-dark mb-2">{product.name}</h3>
-                <p className="text-warm-dark/60 text-sm font-serif italic mb-6 line-clamp-2">
-                  {product.description}
-                </p>
+              <div className="pt-2 flex flex-col text-left">
+                <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-warm-accent mb-1">{product.type || 'Pantry'}</span>
+                <Link to={`/product/${product.id}`}>
+                  <h3 className="font-heading font-bold text-base text-warm-dark hover:text-warm-accent transition-colors leading-tight mb-2">{product.name}</h3>
+                </Link>
                 
                 <button 
                   onClick={() => handleMoveToCart(product)}
-                  className="mt-auto w-full flex items-center justify-center gap-3 py-4 bg-warm-dark text-white font-bold tracking-widest uppercase text-xs shadow-[4px_4px_0px_#B83A20] hover:translate-y-1 hover:shadow-none transition-all"
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-warm-accent hover:bg-warm-dark text-white font-bold tracking-widest uppercase text-xs rounded-lg transition-colors shadow-sm"
                 >
-                  <ShoppingCart className="w-4 h-4" /> Move to Cart
+                  <ShoppingCart className="w-3.5 h-3.5" /> Move to Cart
                 </button>
               </div>
             </div>
