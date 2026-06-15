@@ -56,8 +56,8 @@ export default function Shop({ category }: { category?: 'pickle' | 'podi' }) {
               <p className="font-serif italic text-warm-dark/40">Opening the pantry door...</p>
             </div>
           ) : filteredProducts.length === 0 ? (
-             <div className="col-span-full py-20 text-center bg-white border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22]">
-              <p className="font-serif font-bold text-2xl italic text-warm-dark/30">No jars found in this section.</p>
+             <div className="col-span-full py-20 text-center bg-white border border-warm-dark/5 rounded-[24px] shadow-sm max-w-xl mx-auto w-full">
+              <p className="font-serif font-bold text-xl italic text-warm-dark/30">No jars found in this section.</p>
             </div>
           ) : filteredProducts.map(product => (
             <motion.div
