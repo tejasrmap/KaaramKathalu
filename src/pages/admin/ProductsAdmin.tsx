@@ -121,9 +121,9 @@ export default function ProductsAdmin() {
           .getPublicUrl(filePath);
 
         imageUrl = publicUrl;
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error uploading image to Supabase:", error);
-        alert("Failed to upload image.");
+        alert("Failed to upload image: " + (error?.message || error?.error_description || JSON.stringify(error)));
         setIsSubmitting(false);
         setIsUploading(false);
         return;
