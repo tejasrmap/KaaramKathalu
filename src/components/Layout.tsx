@@ -86,8 +86,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <header 
           className={`transition-all duration-300 border-b bg-warm-bg/95 backdrop-blur-sm border-warm-dark/10 shadow-sm ${
             isScrolled || location.pathname !== '/' 
-              ? 'py-3.5 md:py-4.5' 
-              : 'py-5.5 md:py-7'
+              ? 'py-3 md:py-4' 
+              : 'py-5 md:py-6'
           }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex justify-between items-center w-full">
