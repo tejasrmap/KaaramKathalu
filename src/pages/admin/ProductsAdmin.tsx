@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Image as ImageIcon, Loader2, Database, X } from 'lucide-react';
 import { PRODUCTS, Product, ProductType } from '../../data/products';
 import { motion, AnimatePresence } from 'motion/react';
-import { db, storage } from '../../firebase';
+import { db } from '../../firebase';
 import { collection, onSnapshot, query, doc, addDoc, updateDoc, deleteDoc, writeBatch } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { supabase } from '../../supabase';
 
 export default function ProductsAdmin() {
   const [products, setProducts] = useState<any[]>([]);
@@ -35,7 +35,7 @@ export default function ProductsAdmin() {
         setCategoryType(editingProduct.type || 'pickle');
         setSpiciness(editingProduct.spiciness || 1);
         setIsBestseller(!!editingProduct.isBestseller);
-        if (editingProduct.image && !editingProduct.image.includes('firebasestorage')) {
+        if (editingProduct.image && !editingProduct.image.includes('supabase.co') && !editingProduct.image.includes('firebasestorage')) {
           setImageTab('url');
         } else {
           setImageTab('upload');
@@ -98,15 +98,31 @@ export default function ProductsAdmin() {
     
     let imageUrl = formData.get('image') as string;
 
-    // Handle File Upload
+    // Handle File Upload to Supabase Storage
     if (imageFile) {
       setIsUploading(true);
       try {
-        const fileRef = ref(storage, `products/${Date.now()}_${imageFile.name}`);
-        const uploadResult = await uploadBytes(fileRef, imageFile);
-        imageUrl = await getDownloadURL(uploadResult.ref);
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+        const filePath = `products/${fileName}`;
+
+        const { data, error } = await supabase.storage
+          .from('media')
+          .upload(filePath, imageFile, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (error) throw error;
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('media')
+          .getPublicUrl(filePath);
+
+        imageUrl = publicUrl;
       } catch (error) {
-        console.error("Error uploading image:", error);
+        console.error("Error uploading image to Supabase:", error);
         alert("Failed to upload image.");
         setIsSubmitting(false);
         setIsUploading(false);
