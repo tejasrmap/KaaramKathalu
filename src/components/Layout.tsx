@@ -86,8 +86,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <header 
           className={`transition-all duration-300 border-b ${
             isScrolled || location.pathname !== '/' 
-              ? 'bg-warm-bg/95 backdrop-blur-sm border-warm-dark/10 py-3 md:py-4 shadow-sm' 
-              : 'bg-transparent py-4 md:py-6 border-transparent'
+              ? 'bg-warm-bg/95 backdrop-blur-sm border-warm-dark/10 pt-3 pb-2 md:pt-4 md:pb-3 shadow-sm' 
+              : 'bg-transparent pt-4 pb-2 md:pt-5 md:pb-3.5 border-transparent'
           }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex justify-between items-center w-full">
@@ -97,8 +97,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 alt="Kaaram Kathalu" 
                 className={`transition-all duration-300 object-contain ${
                   isScrolled || location.pathname !== '/' 
-                    ? 'h-12 md:h-16' 
-                    : 'h-16 md:h-20'
+                    ? 'h-10 md:h-12' 
+                    : 'h-12 md:h-16'
                 }`}
               />
             </Link>
