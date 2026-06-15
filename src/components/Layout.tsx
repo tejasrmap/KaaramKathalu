@@ -70,8 +70,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex justify-between items-center w-full">
             <Link to="/" className="flex items-center gap-2">
               <img 
-                src="https://themanduvaproject.in/cdn/shop/files/TMP-Logo.png?v=1630583399&width=150" 
-                alt="Manduva" 
+                src="/logo.jpg" 
+                alt="Kaaram Kathalu" 
                 className="h-10 md:h-14 object-contain"
               />
             </Link>
@@ -197,13 +197,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           
           {/* Logo / Brand Info */}
           <div className="flex flex-col gap-4">
-            <img 
-              src="https://themanduvaproject.in/cdn/shop/files/TMP-Logo.png?v=1630583399&width=150" 
-              alt="Manduva" 
-              className="h-12 object-contain mr-auto filter invert brightness-200"
-            />
+            <div className="bg-white p-2 inline-block rounded border border-warm-accent/20 w-fit max-w-[180px]">
+              <img 
+                src="/logo.jpg" 
+                alt="Kaaram Kathalu" 
+                className="h-10 md:h-12 object-contain"
+              />
+            </div>
             <p className="text-warm-bg/70 leading-relaxed font-serif text-sm">
-              Welcome to The Manduva Project. We specialize in artisanal, handmade, small-batch traditional Andhra pickles, spices, and snacks. Pure recipes, local ingredients, zero preservatives.
+              Welcome to Kaaram Kathalu. We specialize in artisanal, handmade, small-batch traditional Andhra pickles, spices, and snacks. Pure recipes, local ingredients, zero preservatives.
             </p>
           </div>
           
@@ -250,7 +252,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
         
         <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-warm-bg/10 text-center font-heading tracking-wider uppercase text-warm-bg/40 text-xs">
-          &copy; {new Date().getFullYear()} The Manduva Project. All rights reserved.
+          &copy; {new Date().getFullYear()} Kaaram Kathalu. All rights reserved.
         </div>
       </footer>
 
@@ -273,7 +275,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               transition={{ type: "spring", damping: 30, stiffness: 300, mass: 0.8 }}
               className="fixed bottom-0 md:top-0 right-0 w-full max-w-md bg-warm-bg border-t-2 md:border-t-0 md:border-l border-warm-dark/10 shadow-2xl z-50 flex flex-col h-[85vh] md:h-full"
             >
-              <div className="p-6 border-b border-warm-dark/10 flex justify-between items-center bg-[#eaeada]">
+              <div className="p-6 border-b border-warm-dark/10 flex justify-between items-center bg-warm-light">
                 <h2 className="font-heading text-2xl font-bold text-warm-dark uppercase tracking-wider">Your Cart</h2>
                 <button 
                   onClick={() => setIsCartOpen(false)}
@@ -298,7 +300,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </div>
                 ) : (
                   cart.map(item => (
-                    <div key={item.product.id} className="flex gap-4 items-center bg-[#eaeada]/50 p-4 border border-warm-dark/10 relative">
+                    <div key={item.product.id} className="flex gap-4 items-center bg-warm-light/50 p-4 border border-warm-dark/10 relative">
                       <div className="w-16 h-16 border border-warm-dark/10 bg-white flex-shrink-0">
                         <img 
                           src={item.product.image} 
@@ -335,7 +337,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </div>
 
               {cart.length > 0 && (
-                <div className="p-6 bg-[#eaeada] border-t border-warm-dark/10">
+                <div className="p-6 bg-warm-light border-t border-warm-dark/10">
                   <div className="flex justify-between items-center mb-6">
                     <span className="text-warm-dark font-heading font-bold uppercase tracking-wider text-xs">Estimated Total</span>
                     <span className="font-serif text-2xl font-bold text-warm-dark">₹{cartTotal}</span>

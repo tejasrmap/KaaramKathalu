@@ -9,12 +9,12 @@ interface SEOProps {
 }
 
 export default function SEO({ 
-  title = 'Shop Authentic Andhra Delicacies: Pickles, Sprinkle & Podis – Manduva', 
+  title = 'Shop Authentic Andhra Delicacies: Pickles, Sprinkle & Podis – Kaaram Kathalu', 
   description = 'Explore our exquisite range of handcrafted pickles, sprinkle, and podis, made with authentic Andhra recipes, crafted by locals. Our organic products, richness with zero preservatives, bring you the true essence of Andhra Pradesh. Shop now!',
   image = 'https://themanduvaproject.in/cdn/shop/files/Manduva.png?v=1706617092',
   url = 'https://themanduvaproject.in'
 }: SEOProps) {
-  const siteTitle = title.includes('Manduva') ? title : `${title} | Manduva`;
+  const siteTitle = title.includes('Kaaram Kathalu') ? title : `${title} | Kaaram Kathalu`;
 
   return (
     <Helmet>
