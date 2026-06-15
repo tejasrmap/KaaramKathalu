@@ -50,20 +50,8 @@ export default function Home() {
       name: 'Podi & Sprinkles',
       image: 'https://themanduvaproject.in/cdn/shop/files/party_6700769.png?v=1776152279&width=100',
       link: '/shop?category=podi'
-    },
-    {
-      name: 'Fryums & Crisps',
-      image: 'https://themanduvaproject.in/cdn/shop/files/jar_3387912.png?v=1776152279&width=100',
-      link: '/shop?category=fryums'
-    },
-    {
-      name: 'Snacks',
-      image: 'https://themanduvaproject.in/cdn/shop/files/snacks_17016572.png?v=1776152278&width=100',
-      link: '/shop?category=snacks'
     }
   ];
-
-  const snacksHighlights = PRODUCTS.filter(p => p.type === 'snacks').slice(0, 4);
 
   const testimonials = [
     {
@@ -201,47 +189,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SNACKS SECTION */}
-      <section className="py-20 md:py-24 bg-[#eaeada]/30 border-t border-b border-warm-dark/5 px-4 sm:px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
-            <div>
-              <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">Crispy Evening Bites</span>
-              <h2 className="text-3xl sm:text-4xl font-heading font-bold text-warm-dark mt-2 uppercase">Our Freshly Launched Snacks Await!</h2>
-            </div>
-            <Link 
-              to="/shop?category=snacks" 
-              className="px-6 py-2.5 bg-white border border-warm-dark/20 hover:border-warm-dark text-warm-dark font-heading uppercase tracking-wider text-xs rounded transition-colors"
-            >
-              View All Snacks
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {snacksHighlights.map((product) => (
-              <Link 
-                key={product.id} 
-                to={`/product/${product.id}`}
-                className="bg-white border border-warm-dark/10 p-3 rounded-xl flex flex-col group hover:shadow-md transition-all"
-              >
-                <div className="relative aspect-square bg-[#eaeada]/20 rounded-lg overflow-hidden p-2 mb-3">
-                  <img 
-                    src={product.image} 
-                    alt={product.name} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute bottom-2 left-2 bg-warm-dark text-white px-2 py-0.5 text-[10px] font-bold rounded">
-                    ₹{product.price}
-                  </div>
-                </div>
-                <h3 className="font-heading font-bold text-base text-warm-dark leading-tight group-hover:text-warm-accent transition-colors truncate">{product.name}</h3>
-                <span className="text-[10px] text-warm-dark/40 font-heading uppercase tracking-wider mt-1">{product.type}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* VALUE PROPOSITIONS */}
       <section className="py-20 md:py-28 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
