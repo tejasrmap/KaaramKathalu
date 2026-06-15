@@ -9,18 +9,18 @@ export default function About() {
     title: 'Our Story',
     subtitle: 'Storytellers preserving the vibrant tapestry of Andhra\'s rich history, architectural marvels, and culinary traditions.',
     legacyTitle: 'The Manduva Legacy',
-    bannerImage: 'https://themanduvaproject.in/cdn/shop/files/58a7s9w56qhc1.jpg?v=1753097183&width=3200',
-    
+    bannerImage: '',
+
     section1Title: 'Allure of South Indian Heritage',
     section1Quote: '"At The Manduva Project, we are more than just a brand. We are storytellers, preserving the vibrant tapestry of Andhra\'s rich history, culture, and traditions."',
     section1Content: 'Our roots return to the lush fields of coastal Andhra Pradesh, and our palates still crave those hearty meals at ancestral homes, traditionally known as Manduva houses, which dotted every village. There, in the sun-kissed courtyard, grandmothers and mothers spent afternoons grinding spices to a fine podi or powder and pickling fruits and vegetables into irreplaceable staples.',
-    section1Image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&q=80',
-    
+    section1Image: '',
+
     section2Title: 'The Courtyard Symphony',
     section2Content1: 'Their furtive hands, busy with the rokali banda or stone mortar and pestle, produced a constant hum that would mingle with their chattering voices. Children scurried around them, playing hide and seek or hunting for a quiet corner for a game of caroms. And the air was filled with delicious promise – whiffs of ginger, garlic, mustard, sesame, chili, lemon, curry leaf and so much more wafted through the house.',
     section2Content2: 'As times changed, afternoons like these slowly started disappearing. We cannot save those old homes or hold onto the ways of life they sustained, but we can certainly keep their food alive! And that’s exactly what we, at the Manduva Project, intend to do. Just like the tall ornate wooden pillars, we stand as guardians of the region\'s cultural heritage.',
-    section2Image: 'https://themanduvaproject.in/cdn/shop/files/Manduvawebsitepicture_1.png?v=1749711321&width=533',
-    
+    section2Image: '',
+
     foundersTitle: 'Usha Sarvarayalu & Neha Alluri',
     foundersSubtitle: 'Co-Founders & Mission',
     foundersContent: 'Co-founded by Usha Sarvarayalu and Neha Alluri, The Manduva Project emerged from a desire to keep the food traditions of Andhra Pradesh alive. The production is largely driven by local women, supporting rural livelihoods in traditional kitchens across villages like Annadevarapeta and Uppalametta.',
@@ -43,14 +43,14 @@ export default function About() {
     fetchStorySettings();
   }, []);
 
-  const badges = storySettings.foundersBadges 
+  const badges = storySettings.foundersBadges
     ? storySettings.foundersBadges.split(',').map(b => b.trim()).filter(Boolean)
     : [];
 
   return (
     <div className="pt-24 md:pt-32 pb-24 px-4 sm:px-6 md:px-12 w-full max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto min-h-screen">
       <SEO title={`${storySettings.title} - Traditional Andhra Culinary Heritage`} />
-      
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -72,14 +72,14 @@ export default function About() {
             {storySettings.subtitle}
           </p>
         </div>
-        
+
         {/* Main Banner Image */}
         {storySettings.bannerImage && (
           <div className="relative w-full max-w-[90vw] mx-auto mb-20 md:mb-32">
             <div className="bg-white border-8 border-white shadow-lg relative z-10 w-full rounded-2xl overflow-hidden">
-              <img 
-                src={storySettings.bannerImage} 
-                alt="Traditional Andhra Culinary Banner" 
+              <img
+                src={storySettings.bannerImage}
+                alt="Traditional Andhra Culinary Banner"
                 className="w-full aspect-[16/9] md:aspect-[21/9] object-cover border border-warm-dark/5"
                 referrerPolicy="no-referrer"
               />
@@ -102,13 +102,13 @@ export default function About() {
               {storySettings.section1Content}
             </p>
           </div>
-          
+
           {storySettings.section1Image && (
             <div className="lg:col-span-5 relative w-[80%] mx-auto lg:w-full">
               <div className="bg-white border-4 border-white shadow-md rounded-2xl overflow-hidden">
-                <img 
-                  src={storySettings.section1Image} 
-                  alt="Narrative Section 1 Media" 
+                <img
+                  src={storySettings.section1Image}
+                  alt="Narrative Section 1 Media"
                   className="w-full aspect-square md:aspect-[4/5] object-cover"
                   referrerPolicy="no-referrer"
                 />
@@ -122,16 +122,16 @@ export default function About() {
           {storySettings.section2Image && (
             <div className="lg:col-span-5 order-last lg:order-first relative w-[80%] mx-auto lg:w-full">
               <div className="bg-white border-4 border-white shadow-md rounded-2xl overflow-hidden">
-                <img 
-                  src={storySettings.section2Image} 
-                  alt="Narrative Section 2 Media" 
+                <img
+                  src={storySettings.section2Image}
+                  alt="Narrative Section 2 Media"
                   className="w-full aspect-[4/5] object-cover"
                   referrerPolicy="no-referrer"
                 />
               </div>
             </div>
           )}
-          
+
           <div className="lg:col-span-7 bg-warm-light/30 border border-warm-dark/10 p-8 md:p-12 rounded-2xl flex flex-col justify-center">
             <h2 className="font-heading text-2xl font-bold uppercase tracking-wider text-warm-dark mb-6">
               {storySettings.section2Title}
