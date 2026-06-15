@@ -38,7 +38,7 @@ export default function About() {
 
         {/* Narrative Section 1 */}
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-24 items-center mb-24 w-full max-w-[95vw] mx-auto">
-          <div className="lg:col-span-7 bg-[#eaeada]/30 border border-warm-dark/10 p-8 md:p-12 rounded-2xl flex flex-col justify-center">
+          <div className="lg:col-span-7 bg-warm-light/30 border border-warm-dark/10 p-8 md:p-12 rounded-2xl flex flex-col justify-center">
             <h2 className="font-heading text-2xl font-bold uppercase tracking-wider text-warm-dark mb-6">Allure of South Indian Heritage</h2>
             <p className="text-base md:text-lg font-serif leading-relaxed text-warm-dark/80 italic mb-6">
               "At The Manduva Project, we are more than just a brand. We are storytellers, preserving the vibrant tapestry of Andhra's rich history, culture, and traditions."
@@ -73,7 +73,7 @@ export default function About() {
             </div>
           </div>
           
-          <div className="lg:col-span-7 bg-[#eaeada]/30 border border-warm-dark/10 p-8 md:p-12 rounded-2xl flex flex-col justify-center">
+          <div className="lg:col-span-7 bg-warm-light/30 border border-warm-dark/10 p-8 md:p-12 rounded-2xl flex flex-col justify-center">
             <h2 className="font-heading text-2xl font-bold uppercase tracking-wider text-warm-dark mb-6">The Courtyard Symphony</h2>
             <p className="text-warm-dark/70 font-serif leading-relaxed text-sm md:text-base mb-6">
               Their furtive hands, busy with the **rokali banda** or stone mortar and pestle, produced a constant hum that would mingle with their chattering voices. Children scurried around them, playing hide and seek or hunting for a quiet corner for a game of caroms. And the air was filled with delicious promise – whiffs of ginger, garlic, mustard, sesame, chili, lemon, curry leaf and so much more wafted through the house.

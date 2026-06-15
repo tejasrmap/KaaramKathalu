@@ -123,7 +123,7 @@ export default function Home() {
               to={cat.link}
               className="flex flex-col items-center gap-3 group transition-transform hover:scale-105"
             >
-              <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full border border-warm-dark/10 p-2 bg-[#eaeada] flex items-center justify-center shadow-sm overflow-hidden group-hover:border-warm-accent transition-colors">
+              <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full border border-warm-dark/10 p-2 bg-warm-light flex items-center justify-center shadow-sm overflow-hidden group-hover:border-warm-accent transition-colors">
                 <img 
                   src={cat.image} 
                   alt={cat.name} 
@@ -157,7 +157,7 @@ export default function Home() {
           ) : bestsellers.map((product) => (
             <div 
               key={product.docId}
-              className="bg-[#eaeada]/40 border border-warm-dark/10 p-4 rounded-xl flex flex-col group hover:shadow-lg transition-all"
+              className="bg-warm-light/40 border border-warm-dark/10 p-4 rounded-xl flex flex-col group hover:shadow-lg transition-all"
             >
               <Link to={`/product/${product.id}`} className="block relative aspect-square bg-white border border-warm-dark/5 rounded-lg overflow-hidden p-2 mb-4">
                 <img 
@@ -224,7 +224,7 @@ export default function Home() {
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="py-20 md:py-28 bg-[#eaeada]/40 px-4 sm:px-6 md:px-12 border-t border-b border-warm-dark/5">
+      <section className="py-20 md:py-28 bg-warm-light/40 px-4 sm:px-6 md:px-12 border-t border-b border-warm-dark/5">
         <div className="max-w-4xl mx-auto text-center">
           <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">Love from Homes</span>
           <h2 className="text-3xl sm:text-4xl font-heading font-bold text-warm-dark mt-2 mb-16 uppercase">Let Our Customer Speak for Us</h2>
