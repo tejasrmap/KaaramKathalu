@@ -68,11 +68,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex justify-between items-center w-full">
-            <Link to="/" className="flex items-center gap-2">
+            <Link to="/" className="flex items-center">
               <img 
                 src="/logo.jpg" 
                 alt="Kaaram Kathalu" 
-                className="h-10 md:h-14 object-contain"
+                className={`transition-all duration-300 object-contain ${
+                  isScrolled || location.pathname !== '/' 
+                    ? 'h-14 md:h-20' 
+                    : 'h-20 md:h-28'
+                }`}
               />
             </Link>
 
@@ -187,7 +191,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               className="fixed top-0 left-0 bottom-0 w-[80vw] max-w-xs bg-white z-50 flex flex-col h-full lg:hidden border-r border-warm-dark/10"
             >
               <div className="p-5 border-b border-warm-dark/10 flex justify-between items-center bg-warm-light">
-                <img src="/logo.jpg" alt="Kaaram Kathalu" className="h-8 object-contain" />
+                <img src="/logo.jpg" alt="Kaaram Kathalu" className="h-12 object-contain" />
                 <button 
                   onClick={() => setMobileMenuOpen(false)}
                   className="p-2 border border-warm-dark/10 hover:border-warm-dark bg-white transition-colors"
@@ -213,7 +217,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 mt-20 md:mt-24 pb-12">
+      <main className="flex-1 mt-24 md:mt-32 pb-12">
         {children}
       </main>
 
@@ -223,11 +227,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           
           {/* Logo / Brand Info */}
           <div className="flex flex-col gap-4">
-            <div className="bg-white p-2 inline-block rounded border border-warm-accent/20 w-fit max-w-[180px]">
+            <div className="bg-white p-2.5 inline-block rounded border border-warm-accent/20 w-fit max-w-[280px]">
               <img 
                 src="/logo.jpg" 
                 alt="Kaaram Kathalu" 
-                className="h-10 md:h-12 object-contain"
+                className="h-16 md:h-20 object-contain"
               />
             </div>
             <p className="text-warm-bg/70 leading-relaxed font-serif text-sm">
