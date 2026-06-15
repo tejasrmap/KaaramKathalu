@@ -48,7 +48,7 @@ export default function Shop({ category }: { category?: 'pickle' | 'podi' }) {
         <div className="w-12 h-0.5 bg-warm-accent mx-auto mt-4 mb-6"></div>
       </div>
 
-      <motion.div layout className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-10">
+      <motion.div layout className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
         <AnimatePresence>
           {isLoading ? (
             <div className="col-span-full flex flex-col items-center justify-center py-20 gap-4">
