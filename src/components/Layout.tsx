@@ -62,7 +62,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {settings.isMaintenanceMode && !location.pathname.startsWith('/admin') ? (
         <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-warm-bg">
           <div className="max-w-md bg-white p-8 md:p-12 rounded-[32px] shadow-xl border border-warm-dark/5 flex flex-col items-center">
-            <img src="/logo_icon.jpg" alt={settings.companyName} className="h-24 md:h-32 object-contain mb-8 animate-pulse" />
+            <img src="/logo_icon.jpg" alt={settings.companyName} className="h-24 md:h-32 object-contain rounded-full mb-8 animate-pulse" />
             <h1 className="font-serif text-3xl font-bold text-warm-dark mb-4">Pantry Under Maintenance</h1>
             <p className="text-sm font-serif italic text-warm-dark/60 mb-6">
               Our digital courtyard is temporarily closed for maintenance while we restock our jars and refresh our pages. We'll be back shortly!
@@ -214,7 +214,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               className="fixed top-0 left-0 bottom-0 w-[80vw] max-w-xs bg-white z-50 flex flex-col h-full lg:hidden border-r border-warm-dark/10"
             >
               <div className="p-5 border-b border-warm-dark/10 flex justify-between items-center bg-warm-light">
-                <img src="/logo_icon.jpg" alt="Kaaram Kathalu" className="h-12 object-contain" />
+                <img src="/logo_icon.jpg" alt="Kaaram Kathalu" className="h-12 object-contain rounded-full" />
                 <button 
                   onClick={() => setMobileMenuOpen(false)}
                   className="p-2 border border-warm-dark/10 hover:border-warm-dark bg-white transition-colors"
