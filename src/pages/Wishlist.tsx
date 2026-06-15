@@ -30,22 +30,22 @@ export default function Wishlist() {
       </div>
 
       {wishlist.length === 0 ? (
-        <div className="bg-white border-2 border-warm-dark p-12 text-center shadow-[8px_8px_0px_#3A2A22] transform rotate-1">
+        <div className="bg-white border border-warm-dark/5 p-12 md:p-16 rounded-[24px] text-center shadow-md max-w-xl mx-auto">
           <Heart className="w-16 h-16 text-warm-dark/10 mx-auto mb-6" />
-          <h2 className="text-2xl font-serif text-warm-dark mb-4">Your wishlist is empty</h2>
+          <h2 className="text-2xl font-serif text-warm-dark mb-3">Your wishlist is empty</h2>
           <p className="text-warm-dark/60 mb-8 font-serif italic">Start exploring our pantry and save your favorites!</p>
-          <Link to="/shop" className="px-10 py-4 bg-warm-accent text-white font-bold tracking-widest uppercase text-xs shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-none transition-all">
+          <Link to="/shop" className="px-8 py-3.5 bg-warm-accent hover:bg-warm-accent/90 text-white font-bold tracking-widest uppercase text-xs rounded-full transition-colors shadow-sm hover:shadow-md inline-block cursor-pointer">
             Browse Shop
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
           {wishlist.map(product => (
             <div 
               key={product.id} 
-              className="group flex flex-col transition-transform duration-300 hover:-translate-y-1"
+              className="group flex flex-col transition-transform duration-300"
             >
-              <div className="relative aspect-square overflow-hidden bg-warm-light border border-warm-dark/5 rounded-xl mb-4">
+              <div className="relative aspect-square overflow-hidden bg-warm-light border border-warm-dark/5 rounded-2xl mb-4">
                 <img 
                   src={product.image} 
                   alt={product.name} 
@@ -53,25 +53,25 @@ export default function Wishlist() {
                 />
                 <button 
                   onClick={() => removeFromWishlist(product.id)}
-                  className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-white text-warm-dark flex items-center justify-center shadow-md transition-colors"
+                  className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/90 hover:bg-white text-warm-dark flex items-center justify-center shadow-sm transition-colors cursor-pointer"
                   aria-label="Remove from Wishlist"
                 >
-                  <Trash2 className="w-4 h-4 hover:text-red-600 transition-colors" />
+                  <Trash2 className="w-4 h-4 text-warm-dark/60 hover:text-red-600 transition-colors" />
                 </button>
-                <div className="absolute top-3 left-3 bg-warm-dark text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded">
+                <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-warm-dark text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-sm">
                   ₹{product.price}
                 </div>
               </div>
               
-              <div className="pt-2 flex flex-col text-left">
+              <div className="pt-1 flex flex-col text-left">
                 <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-warm-accent mb-1">{product.type || 'Pantry'}</span>
                 <Link to={`/product/${product.id}`}>
-                  <h3 className="font-heading font-bold text-base text-warm-dark hover:text-warm-accent transition-colors leading-tight mb-2">{product.name}</h3>
+                  <h3 className="font-heading font-semibold text-sm sm:text-base text-warm-dark hover:text-warm-accent transition-colors leading-tight mb-3 line-clamp-1">{product.name}</h3>
                 </Link>
                 
                 <button 
                   onClick={() => handleMoveToCart(product)}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-warm-accent hover:bg-warm-dark text-white font-bold tracking-widest uppercase text-xs rounded-lg transition-colors shadow-sm"
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-warm-accent hover:bg-warm-dark text-white font-bold tracking-widest uppercase text-xs rounded-xl transition-colors shadow-sm cursor-pointer"
                 >
                   <ShoppingCart className="w-3.5 h-3.5" /> Move to Cart
                 </button>
