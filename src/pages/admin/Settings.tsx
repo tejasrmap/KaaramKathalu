@@ -16,8 +16,24 @@ export default function Settings() {
     supportPhone: '+91 97708 89608',
     address: '002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu, Bangalore, Karnataka - 560043',
     announcementText: '🔥 New Season Avakaya Pickles Are Here! Free Shipping on Orders Above ₹999.',
-    isMaintenanceMode: false
+    isMaintenanceMode: false,
+    heroBgImage1: '',
+    heroBgImage2: '',
+    heroBgImage3: '',
+    heroOverlayOpacity: '30'
   });
+
+  const [hero1File, setHero1File] = useState<File | null>(null);
+  const [hero1Preview, setHero1Preview] = useState<string | null>(null);
+  const [hero1Tab, setHero1Tab] = useState<'upload' | 'url'>('upload');
+
+  const [hero2File, setHero2File] = useState<File | null>(null);
+  const [hero2Preview, setHero2Preview] = useState<string | null>(null);
+  const [hero2Tab, setHero2Tab] = useState<'upload' | 'url'>('upload');
+
+  const [hero3File, setHero3File] = useState<File | null>(null);
+  const [hero3Preview, setHero3Preview] = useState<string | null>(null);
+  const [hero3Tab, setHero3Tab] = useState<'upload' | 'url'>('upload');
 
   const [storySettings, setStorySettings] = useState({
     title: 'Our Story',
@@ -91,6 +107,18 @@ export default function Settings() {
     }
   }, [storySettings]);
 
+  useEffect(() => {
+    if (settings.heroBgImage1) {
+      setHero1Tab(settings.heroBgImage1.includes('supabase.co') ? 'upload' : 'url');
+    }
+    if (settings.heroBgImage2) {
+      setHero2Tab(settings.heroBgImage2.includes('supabase.co') ? 'upload' : 'url');
+    }
+    if (settings.heroBgImage3) {
+      setHero3Tab(settings.heroBgImage3.includes('supabase.co') ? 'upload' : 'url');
+    }
+  }, [settings.heroBgImage1, settings.heroBgImage2, settings.heroBgImage3]);
+
   const uploadImage = async (file: File, pathPrefix: string): Promise<string> => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
@@ -119,10 +147,30 @@ export default function Settings() {
 
     try {
       if (activeTab === 'general') {
+        setIsUploading(true);
+        let updatedGeneral = { ...settings };
+
+        if (hero1File && hero1Tab === 'upload') {
+          updatedGeneral.heroBgImage1 = await uploadImage(hero1File, 'hero');
+        }
+        if (hero2File && hero2Tab === 'upload') {
+          updatedGeneral.heroBgImage2 = await uploadImage(hero2File, 'hero');
+        }
+        if (hero3File && hero3Tab === 'upload') {
+          updatedGeneral.heroBgImage3 = await uploadImage(hero3File, 'hero');
+        }
+
+        setIsUploading(false);
+
         await setDoc(doc(db, 'settings', 'general'), {
-          ...settings,
+          ...updatedGeneral,
           updatedAt: serverTimestamp()
         });
+
+        setSettings(updatedGeneral);
+        setHero1File(null);
+        setHero2File(null);
+        setHero3File(null);
       } else {
         setIsUploading(true);
         let updatedStory = { ...storySettings };
@@ -290,6 +338,230 @@ export default function Settings() {
                   >
                     <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${settings.isMaintenanceMode ? 'right-1' : 'left-1'}`} />
                   </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Homepage Hero Settings */}
+            <div className="bg-white border border-warm-dark/5 rounded-[24px] overflow-hidden shadow-sm">
+              <div className="bg-warm-light/60 p-4 border-b border-warm-dark/5 flex items-center gap-2">
+                <ImageIcon className="w-5 h-5 text-warm-dark" />
+                <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">Homepage Hero Slideshow</h2>
+              </div>
+              <div className="p-6 space-y-8">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block">Dark Overlay Opacity ({settings.heroOverlayOpacity || '30'}%)</label>
+                  <p className="text-[10px] text-warm-dark/50 font-serif">Adjust this to make text more readable against your background photos.</p>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="90" 
+                    step="5"
+                    value={settings.heroOverlayOpacity || '30'}
+                    onChange={e => setSettings(prev => ({ ...prev, heroOverlayOpacity: e.target.value }))}
+                    className="w-full accent-warm-accent cursor-pointer mt-2"
+                  />
+                </div>
+
+                {/* Background Image 1 */}
+                <div className="space-y-3 pt-4 border-t border-warm-dark/5">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">Background Photo 1</label>
+                  <div className="flex border-b border-warm-dark/10 mb-4 gap-4">
+                    <button
+                      type="button; button"
+                      onClick={() => setHero1Tab('upload')}
+                      className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                        hero1Tab === 'upload' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
+                      }`}
+                    >
+                      Upload File
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHero1Tab('url')}
+                      className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                        hero1Tab === 'url' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
+                      }`}
+                    >
+                      Paste URL
+                    </button>
+                  </div>
+                  {hero1Tab === 'upload' ? (
+                    <div className="space-y-4">
+                      {hero1Preview || (settings.heroBgImage1 && !hero1File && settings.heroBgImage1 !== '') ? (
+                        <div className="relative w-full aspect-[21/9] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                          <img src={hero1Preview || settings.heroBgImage1} alt="Hero 1 Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                          <button 
+                            type="button"
+                            onClick={() => { setHero1File(null); setHero1Preview(null); setSettings(prev => ({ ...prev, heroBgImage1: '' })); }}
+                            className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-4.5 h-4.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div 
+                          onClick={() => document.getElementById('hero1-upload')?.click()}
+                          className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
+                        >
+                          <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
+                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Hero Image 1</span>
+                          <input 
+                            id="hero1-upload"
+                            type="file" 
+                            accept="image/*" 
+                            className="hidden" 
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) { setHero1File(file); setHero1Preview(URL.createObjectURL(file)); }
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <input 
+                      type="text" 
+                      value={settings.heroBgImage1}
+                      onChange={e => setSettings(prev => ({ ...prev, heroBgImage1: e.target.value }))}
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
+                      placeholder="https://..."
+                    />
+                  )}
+                </div>
+
+                {/* Background Image 2 */}
+                <div className="space-y-3 pt-4 border-t border-warm-dark/5">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">Background Photo 2</label>
+                  <div className="flex border-b border-warm-dark/10 mb-4 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setHero2Tab('upload')}
+                      className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                        hero2Tab === 'upload' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
+                      }`}
+                    >
+                      Upload File
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHero2Tab('url')}
+                      className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                        hero2Tab === 'url' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
+                      }`}
+                    >
+                      Paste URL
+                    </button>
+                  </div>
+                  {hero2Tab === 'upload' ? (
+                    <div className="space-y-4">
+                      {hero2Preview || (settings.heroBgImage2 && !hero2File && settings.heroBgImage2 !== '') ? (
+                        <div className="relative w-full aspect-[21/9] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                          <img src={hero2Preview || settings.heroBgImage2} alt="Hero 2 Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                          <button 
+                            type="button"
+                            onClick={() => { setHero2File(null); setHero2Preview(null); setSettings(prev => ({ ...prev, heroBgImage2: '' })); }}
+                            className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-4.5 h-4.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div 
+                          onClick={() => document.getElementById('hero2-upload')?.click()}
+                          className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
+                        >
+                          <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
+                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Hero Image 2</span>
+                          <input 
+                            id="hero2-upload"
+                            type="file" 
+                            accept="image/*" 
+                            className="hidden" 
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) { setHero2File(file); setHero2Preview(URL.createObjectURL(file)); }
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <input 
+                      type="text" 
+                      value={settings.heroBgImage2}
+                      onChange={e => setSettings(prev => ({ ...prev, heroBgImage2: e.target.value }))}
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
+                      placeholder="https://..."
+                    />
+                  )}
+                </div>
+
+                {/* Background Image 3 */}
+                <div className="space-y-3 pt-4 border-t border-warm-dark/5">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">Background Photo 3</label>
+                  <div className="flex border-b border-warm-dark/10 mb-4 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setHero3Tab('upload')}
+                      className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                        hero3Tab === 'upload' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
+                      }`}
+                    >
+                      Upload File
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHero3Tab('url')}
+                      className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                        hero3Tab === 'url' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
+                      }`}
+                    >
+                      Paste URL
+                    </button>
+                  </div>
+                  {hero3Tab === 'upload' ? (
+                    <div className="space-y-4">
+                      {hero3Preview || (settings.heroBgImage3 && !hero3File && settings.heroBgImage3 !== '') ? (
+                        <div className="relative w-full aspect-[21/9] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                          <img src={hero3Preview || settings.heroBgImage3} alt="Hero 3 Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                          <button 
+                            type="button"
+                            onClick={() => { setHero3File(null); setHero3Preview(null); setSettings(prev => ({ ...prev, heroBgImage3: '' })); }}
+                            className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-4.5 h-4.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div 
+                          onClick={() => document.getElementById('hero3-upload')?.click()}
+                          className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
+                        >
+                          <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
+                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Hero Image 3</span>
+                          <input 
+                            id="hero3-upload"
+                            type="file" 
+                            accept="image/*" 
+                            className="hidden" 
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) { setHero3File(file); setHero3Preview(URL.createObjectURL(file)); }
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <input 
+                      type="text" 
+                      value={settings.heroBgImage3}
+                      onChange={e => setSettings(prev => ({ ...prev, heroBgImage3: e.target.value }))}
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
+                      placeholder="https://..."
+                    />
+                  )}
                 </div>
               </div>
             </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, Flame, ChevronDown, Award, ShieldCheck, BadgeAlert } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { collection, query, limit, onSnapshot, where } from 'firebase/firestore';
+import { collection, query, limit, onSnapshot, where, doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import SEO from '../components/SEO';
 
@@ -10,6 +10,13 @@ export default function Home() {
   const [bestsellers, setBestsellers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [heroSettings, setHeroSettings] = useState({
+    heroBgImage1: '',
+    heroBgImage2: '',
+    heroBgImage3: '',
+    heroOverlayOpacity: '30'
+  });
+  const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
 
   useEffect(() => {
     // Try to fetch products marked as bestsellers first
@@ -41,6 +48,44 @@ export default function Home() {
     });
     return unsubscribe;
   }, []);
+
+  // Fetch hero background settings
+  useEffect(() => {
+    const fetchHeroSettings = async () => {
+      try {
+        const docRef = doc(db, 'settings', 'general');
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setHeroSettings({
+            heroBgImage1: data.heroBgImage1 || '',
+            heroBgImage2: data.heroBgImage2 || '',
+            heroBgImage3: data.heroBgImage3 || '',
+            heroOverlayOpacity: data.heroOverlayOpacity || '30'
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching hero settings:', error);
+      }
+    };
+    fetchHeroSettings();
+  }, []);
+
+  // Build array of active hero images
+  const heroImages = [
+    heroSettings.heroBgImage1,
+    heroSettings.heroBgImage2,
+    heroSettings.heroBgImage3
+  ].filter(Boolean);
+
+  // Auto-cycle slides
+  useEffect(() => {
+    if (heroImages.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentHeroSlide(prev => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
 
   const circularCategories = [
     {
@@ -85,17 +130,75 @@ export default function Home() {
       <SEO />
 
       {/* HERO BANNER SECTION */}
-      <section className="relative w-full overflow-hidden bg-warm-light py-20 md:py-32 border-b border-warm-dark/5">
-        <div className="max-w-7xl mx-auto px-6 sm:px-12 md:px-24 flex items-center min-h-[30vh] sm:min-h-[40vh]">
+      <section className="relative w-full overflow-hidden py-20 md:py-32 border-b border-warm-dark/5 min-h-[45vh] sm:min-h-[55vh] flex items-center">
+        
+        {/* Background Slideshow */}
+        {heroImages.length > 0 ? (
+          <>
+            <AnimatePresence mode="sync">
+              <motion.div
+                key={currentHeroSlide}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.2, ease: 'easeInOut' }}
+                className="absolute inset-0 z-0"
+              >
+                <img
+                  src={heroImages[currentHeroSlide]}
+                  alt="Hero Background"
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              </motion.div>
+            </AnimatePresence>
+            {/* Dark overlay */}
+            <div 
+              className="absolute inset-0 z-[1] bg-warm-dark"
+              style={{ opacity: Number(heroSettings.heroOverlayOpacity) / 100 }}
+            />
+            {/* Slide Indicators */}
+            {heroImages.length > 1 && (
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
+                {heroImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentHeroSlide(idx)}
+                    className={`transition-all duration-300 rounded-full cursor-pointer ${
+                      idx === currentHeroSlide
+                        ? 'w-6 h-2 bg-white'
+                        : 'w-2 h-2 bg-white/40 hover:bg-white/70'
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="absolute inset-0 z-0 bg-warm-light" />
+        )}
+
+        {/* Content */}
+        <div className="max-w-7xl mx-auto px-6 sm:px-12 md:px-24 relative z-10 w-full">
           <div className="max-w-2xl flex flex-col gap-5">
-            <span className="font-heading tracking-[0.2em] text-xs md:text-sm uppercase font-bold text-warm-accent">Handmade Heritage</span>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif leading-tight text-warm-dark">Fresh Traditions, <br/>Bold Flavors.</h1>
-            <p className="font-serif italic text-sm md:text-base text-warm-dark/80 leading-relaxed max-w-md">
+            <span className={`font-heading tracking-[0.2em] text-xs md:text-sm uppercase font-bold ${
+              heroImages.length > 0 ? 'text-warm-accent' : 'text-warm-accent'
+            }`}>Handmade Heritage</span>
+            <h1 className={`text-4xl sm:text-5xl md:text-6xl font-serif leading-tight ${
+              heroImages.length > 0 ? 'text-white drop-shadow-lg' : 'text-warm-dark'
+            }`}>Fresh Traditions, <br/>Bold Flavors.</h1>
+            <p className={`font-serif italic text-sm md:text-base leading-relaxed max-w-md ${
+              heroImages.length > 0 ? 'text-white/90 drop-shadow' : 'text-warm-dark/80'
+            }`}>
               We preserve the culinary marvels of ancestral homes, handcrafting zero-preservative Andhra pachadis, spice mixes, and crunchy savouries.
             </p>
             <Link 
               to="/shop" 
-              className="w-fit bg-warm-accent text-white px-8 py-3.5 rounded-lg font-heading uppercase text-xs sm:text-sm tracking-wider hover:bg-warm-dark transition-all mt-2 shadow-[4px_4px_0px_var(--color-warm-dark)]"
+              className={`w-fit px-8 py-3.5 rounded-lg font-heading uppercase text-xs sm:text-sm tracking-wider transition-all mt-2 ${
+                heroImages.length > 0
+                  ? 'bg-warm-accent hover:bg-white hover:text-warm-dark text-white shadow-lg'
+                  : 'bg-warm-accent text-white hover:bg-warm-dark shadow-[4px_4px_0px_var(--color-warm-dark)]'
+              }`}
             >
               Shop Authentic Jars
             </Link>
