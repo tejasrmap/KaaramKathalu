@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Flame, Plus, Minus, Info, Loader2, ArrowRight } from 'lucide-react';
-import { Product, PRODUCTS } from '../data/products';
+import { Product } from '../data/products';
 import { RECIPES } from '../data/recipes';
 import { useCart } from '../context/CartContext';
 import { db } from '../firebase';
@@ -23,18 +23,9 @@ export default function ProductDetail() {
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
           setProduct(querySnapshot.docs[0].data() as Product);
-        } else {
-          const localProd = PRODUCTS.find(p => p.id === Number(id));
-          if (localProd) {
-            setProduct(localProd);
-          }
         }
       } catch (error) {
-        console.error("Error fetching product from firestore, using local fallback:", error);
-        const localProd = PRODUCTS.find(p => p.id === Number(id));
-        if (localProd) {
-          setProduct(localProd);
-        }
+        console.error("Error fetching product from firestore:", error);
       } finally {
         setIsLoading(false);
       }
