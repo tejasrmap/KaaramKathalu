@@ -11,6 +11,7 @@ import SEO from '../components/SEO';
 export default function ProductDetail() {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
+  const [selectedWeight, setSelectedWeight] = useState('150g');
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { addToCart, setIsCartOpen } = useCart();
@@ -53,9 +54,9 @@ export default function ProductDetail() {
   if (!product) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
-        <h2 className="text-3xl font-serif text-warm-dark mb-4 p-4 border-2 border-warm-dark bg-white shadow-[6px_6px_0px_#3A2A22] transform -rotate-2">Product Not Found</h2>
+        <h2 className="text-3xl font-serif text-warm-dark mb-4">Product Not Found</h2>
         <p className="text-warm-dark/60 mb-8 font-serif italic text-lg">The jar you are looking for seems to be missing from our pantry.</p>
-        <Link to="/shop" className="px-8 py-3 bg-warm-light border-2 border-warm-dark text-warm-dark font-bold tracking-widest uppercase text-xs shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-[2px_2px_0px_#3A2A22] transition-all">
+        <Link to="/shop" className="px-8 py-3 bg-warm-accent hover:bg-warm-accent/90 text-white rounded-full font-bold tracking-widest uppercase text-xs transition-colors">
           Return to Shop
         </Link>
       </div>
@@ -76,155 +77,197 @@ export default function ProductDetail() {
   return (
     <div className="pt-24 md:pt-32 pb-24 px-4 sm:px-6 md:px-12 max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto">
       <SEO title={product.name} description={product.description} image={product.image} />
-      <Link to="/shop" className="inline-flex items-center gap-2 text-warm-dark font-bold uppercase tracking-widest text-[10px] md:text-xs mb-8 md:mb-10 hover:text-warm-accent transition-colors bg-white px-3 py-2 md:px-4 md:py-2 border-2 border-warm-dark md:shadow-[2px_2px_0px_#3A2A22] md:hover:translate-y-px md:hover:shadow-none ml-2 md:ml-0 shadow-sm relative z-10 w-fit">
-        <ArrowLeft className="w-3 h-3 md:w-4 md:h-4" /> Back to Pantry
-      </Link>
+      
+      <div className="mb-8">
+        <Link to="/shop" className="inline-flex items-center gap-2 text-warm-dark font-bold uppercase tracking-widest text-xs hover:text-warm-accent transition-colors">
+          <ArrowLeft className="w-4 h-4" /> Back to Pantry
+        </Link>
+      </div>
 
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-20 w-full max-w-[95vw] mx-auto relative z-10">
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 w-full max-w-[95vw] mx-auto relative z-10">
         {/* Product Image */}
         <div className="w-full lg:w-1/2">
-          <div className="relative aspect-square md:aspect-[4/5] bg-white border-[12px] border-white shadow-[12px_12px_0px_#3A2A22] transform -rotate-1 group">
-            <div className="absolute inset-0 border-2 border-dashed border-warm-dark/20 z-10 pointer-events-none m-4"></div>
+          <div className="relative aspect-square bg-white overflow-hidden rounded-[24px] border border-warm-dark/5 shadow-sm">
             <img 
               src={product.image} 
               alt={product.name} 
-              className="w-full h-full object-cover grayscale-[10%] contrast-110 sepia-[10%] group-hover:grayscale-0 transition-all duration-700"
+              className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
             />
-            {/* Stamp Badge */}
-            <div className="absolute top-8 right-8 bg-warm-light w-24 h-24 rounded-full flex flex-col items-center justify-center border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] transform rotate-12 z-20">
-              <span className="font-serif font-bold text-2xl text-warm-dark mb-[-4px]">₹{product.price}</span>
-              <span className="text-[10px] font-bold tracking-widest uppercase text-warm-dark/60">Per Jar</span>
-            </div>
           </div>
         </div>
 
         {/* Product Info */}
-        <div className="w-full lg:w-1/2 flex flex-col justify-center">
-          <div className="bg-warm-light border-2 border-warm-dark p-8 md:p-12 shadow-[8px_8px_0px_#3A2A22] relative">
-            
-            {/* "Tape" top */}
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-white/40 border border-warm-dark/20 shadow-sm transform rotate-2"></div>
-            
-            <div className="flex items-center gap-4 mb-6">
-              <span className="bg-white border-2 border-warm-dark px-3 py-1 text-[10px] uppercase font-bold tracking-widest text-warm-dark shadow-[2px_2px_0px_#3A2A22]">
-                {product.type}
-              </span>
-              <div className="flex gap-1" title={`Spiciness Level: ${product.spiciness}/3`}>
-                {[...Array(3)].map((_, i) => (
-                  <Flame 
-                    key={i} 
-                    className={`w-5 h-5 ${i < product.spiciness ? 'text-warm-accent fill-warm-accent' : 'text-warm-dark/20 fill-warm-dark/10'}`} 
-                  />
+        <div className="w-full lg:w-1/2 flex flex-col justify-start">
+          <div className="flex items-center gap-4 mb-4">
+            <span className="bg-warm-light border border-warm-dark/10 px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-widest text-warm-dark">
+              {product.type}
+            </span>
+            <div className="flex gap-1" title={`Spiciness Level: ${product.spiciness}/3`}>
+              {[...Array(3)].map((_, i) => (
+                <Flame 
+                  key={i} 
+                  className={`w-4 h-4 ${i < product.spiciness ? 'text-warm-accent fill-warm-accent' : 'text-warm-dark/25 fill-warm-dark/10'}`} 
+                />
+              ))}
+            </div>
+          </div>
+
+          <h1 className="text-3xl md:text-4xl font-serif text-warm-dark leading-tight mb-2">
+            {product.name}
+          </h1>
+
+          <div className="text-2xl font-serif font-bold text-warm-accent mb-6">
+            ₹{product.price}
+          </div>
+          
+          <p className="text-base text-warm-dark/70 font-serif mb-8 italic">
+            {product.description}
+          </p>
+
+          {/* Weight Variants Selector */}
+          <div className="mb-6">
+            <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-2.5">Weight</label>
+            <div className="flex gap-2.5">
+              {['150g', '250g'].map((weight) => (
+                <button
+                  key={weight}
+                  onClick={() => setSelectedWeight(weight)}
+                  className={`px-5 py-2.5 rounded-full text-xs font-semibold tracking-wider transition-all duration-200 border cursor-pointer ${
+                    selectedWeight === weight
+                      ? 'bg-warm-dark text-white border-warm-dark shadow-sm'
+                      : 'bg-white text-warm-dark/70 border-warm-dark/15 hover:border-warm-dark/30'
+                  }`}
+                >
+                  {weight}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Quantity Selector */}
+          <div className="mb-6">
+            <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-2.5">Quantity</label>
+            <div className="flex items-center bg-white border border-warm-dark/15 rounded-xl w-32 h-12 shadow-sm">
+              <button 
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="flex-1 h-full flex items-center justify-center text-warm-dark/50 hover:text-warm-dark transition-colors cursor-pointer"
+              >
+                <Minus className="w-3.5 h-3.5" />
+              </button>
+              <span className="w-10 text-center font-bold text-warm-dark text-sm">{quantity}</span>
+              <button 
+                onClick={() => setQuantity(quantity + 1)}
+                className="flex-1 h-full flex items-center justify-center text-warm-dark/50 hover:text-warm-dark transition-colors cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <button 
+            onClick={handleAddToCart}
+            className="w-full bg-white hover:bg-warm-light/40 text-warm-dark h-12 border border-warm-dark rounded-xl font-heading tracking-widest uppercase text-xs font-bold transition-all duration-200 cursor-pointer mb-3.5 shadow-sm"
+          >
+            Add to cart
+          </button>
+          
+          <button 
+            onClick={handleAddToCart}
+            className="w-full bg-warm-dark hover:bg-warm-dark/95 text-white h-12 rounded-xl font-heading tracking-widest uppercase text-xs font-bold transition-all duration-200 cursor-pointer mb-8 shadow-sm"
+          >
+            Buy it now
+          </button>
+
+          {/* Value Badges */}
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            <div className="bg-warm-light/40 border border-warm-dark/5 p-4 rounded-xl flex items-center gap-3 shadow-sm">
+              <div className="w-8 h-8 rounded-full bg-warm-dark/5 flex items-center justify-center text-warm-dark">
+                <svg className="w-4 h-4 text-warm-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                </svg>
+              </div>
+              <span className="text-[11px] font-semibold text-warm-dark/80 tracking-wide">Free Shipping</span>
+            </div>
+            <div className="bg-warm-light/40 border border-warm-dark/5 p-4 rounded-xl flex items-center gap-3 shadow-sm">
+              <div className="w-8 h-8 rounded-full bg-warm-dark/5 flex items-center justify-center text-warm-dark">
+                <svg className="w-4 h-4 text-warm-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <span className="text-[11px] font-semibold text-warm-dark/80 tracking-wide">3% Off On Prepaid Orders</span>
+            </div>
+          </div>
+
+          {/* Mobile Sticky Bottom Bar */}
+          <div className="sm:hidden fixed bottom-16 left-0 right-0 z-40 bg-warm-bg/95 backdrop-blur-md border-t border-warm-dark/10 p-4 flex gap-3 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+             <div className="flex items-center bg-white border border-warm-dark/15 rounded-xl w-32 h-12 shadow-sm">
+                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="flex-1 h-full flex items-center justify-center text-warm-dark/50 cursor-pointer"><Minus className="w-3.5 h-3.5" /></button>
+                <span className="w-10 text-center font-bold text-warm-dark text-sm">{quantity}</span>
+                <button onClick={() => setQuantity(quantity + 1)} className="flex-1 h-full flex items-center justify-center text-warm-dark/50 cursor-pointer"><Plus className="w-3.5 h-3.5" /></button>
+             </div>
+             <button 
+              onClick={handleAddToCart}
+              className="flex-1 bg-warm-accent hover:bg-warm-dark text-white h-12 rounded-xl font-heading tracking-wider uppercase text-xs transition-colors cursor-pointer shadow-sm"
+            >
+              Add to Cart
+            </button>
+          </div>
+
+          {/* Description sections */}
+          <div className="pt-6 border-t border-warm-dark/10 mt-6">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-3 flex items-center gap-2">
+              <Info className="w-4 h-4" /> The Story
+            </h3>
+            <p className="text-warm-dark/70 font-serif leading-relaxed text-base italic">
+              {product.longDescription || product.description}
+            </p>
+          </div>
+
+          {product.ingredients && (
+            <div className="pt-6 mt-6 border-t border-dashed border-warm-dark/10">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-3">Pure Ingredients</h3>
+              <div className="flex flex-wrap gap-2">
+                {product.ingredients.map((ingredient, idx) => (
+                  <span 
+                    key={idx} 
+                    className="bg-warm-light/50 border border-warm-dark/5 rounded-full px-4 py-1.5 font-serif italic text-xs shadow-sm"
+                  >
+                    {ingredient}
+                  </span>
                 ))}
               </div>
             </div>
+          )}
 
-            <h1 className="text-4xl md:text-6xl font-serif text-warm-dark leading-[1.1] mb-6">
-              {product.name}
-            </h1>
-            
-            <p className="text-xl text-warm-dark/80 font-serif mb-8 italic border-b-2 border-dashed border-warm-dark/20 pb-8">
-              {product.description}
-            </p>
-
-            {/* Desktop Purchase Section */}
-            <div className="hidden sm:flex items-stretch sm:items-end gap-4 sm:gap-6 mb-10 w-full max-w-full">
-              <div className="flex-shrink-0 w-full sm:w-auto">
-                <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/60 mb-2">Quantity</label>
-                <div className="flex items-center bg-white border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] w-full sm:w-auto">
-                  <button 
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="flex-1 sm:w-12 h-12 flex items-center justify-center hover:bg-warm-dark hover:text-white transition-colors border-r-2 border-warm-dark"
-                  >
-                    <Minus className="w-4 h-4" />
-                  </button>
-                  <span className="w-16 sm:w-12 md:w-16 text-center font-bold tracking-widest font-sans">{quantity}</span>
-                  <button 
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="flex-1 sm:w-12 h-12 flex items-center justify-center hover:bg-warm-dark hover:text-white transition-colors border-l-2 border-warm-dark"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              <button 
-                onClick={handleAddToCart}
-                className="flex-1 w-full bg-warm-accent text-white h-12 border border-warm-dark font-heading tracking-wider uppercase text-sm shadow-md hover:bg-warm-dark hover:text-white transition-all whitespace-nowrap px-4"
-              >
-                Add to Cart
-              </button>
-            </div>
-
-            {/* Mobile Sticky Bottom Bar */}
-            <div className="sm:hidden fixed bottom-16 left-0 right-0 z-40 bg-warm-bg/90 backdrop-blur-md border-t border-warm-dark/10 p-4 flex gap-3 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
-               <div className="flex items-center bg-white border border-warm-dark/10 w-32 h-12">
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="flex-1 h-full flex items-center justify-center border-r border-warm-dark/10"><Minus className="w-4 h-4" /></button>
-                  <span className="w-10 text-center font-bold">{quantity}</span>
-                  <button onClick={() => setQuantity(quantity + 1)} className="flex-1 h-full flex items-center justify-center border-l border-warm-dark/10"><Plus className="w-4 h-4" /></button>
-               </div>
-               <button 
-                onClick={handleAddToCart}
-                className="flex-1 bg-warm-accent text-white h-12 border border-warm-dark font-heading tracking-wider uppercase text-[10px] shadow-md"
-              >
-                Add to Cart
-              </button>
-            </div>
-
-            <div className="pt-8 border-t-2 border-warm-dark">
-              <h3 className="text-sm font-bold tracking-widest uppercase text-warm-dark mb-4 flex items-center gap-2">
-                <Info className="w-4 h-4" /> The Story
+          {/* Culinary Pairings Integration */}
+          {matchingRecipes.length > 0 && (
+            <div className="pt-10 mt-10 border-t border-warm-dark/10">
+              <h3 className="text-xs font-bold tracking-widest uppercase text-warm-accent mb-6 flex items-center gap-2">
+                 <div className="w-1.5 h-1.5 bg-warm-accent rounded-full"></div>
+                 Culinary Pairings
               </h3>
-              <p className="text-warm-dark/70 font-serif leading-relaxed text-lg italic">
-                {product.longDescription || product.description}
-              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {matchingRecipes.map(recipe => (
+                  <Link 
+                    key={recipe.id}
+                    to={`/recipes/${recipe.id}`}
+                    className="group flex items-center gap-4 p-4 bg-white border border-warm-dark/5 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div className="w-16 h-16 flex-shrink-0 rounded-xl border border-warm-dark/5 overflow-hidden">
+                      <img src={recipe.image} alt={recipe.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-serif font-bold text-warm-dark text-base group-hover:text-warm-accent transition-colors">{recipe.title}</h4>
+                      <p className="text-xs text-warm-dark/50 font-serif italic line-clamp-1">{recipe.description}</p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-warm-dark/30 group-hover:text-warm-accent group-hover:translate-x-0.5 transition-all" />
+                  </Link>
+                ))}
+              </div>
             </div>
-
-            {product.ingredients && (
-              <div className="pt-8 mt-8 border-t-2 border-dashed border-warm-dark/20">
-                <h3 className="text-sm font-bold tracking-widest uppercase text-warm-dark mb-4">Pure Ingredients</h3>
-                <div className="flex flex-wrap gap-2">
-                  {product.ingredients.map((ingredient, idx) => (
-                    <span 
-                      key={idx} 
-                      className="bg-white border text-warm-dark px-3 py-1 font-serif italic text-sm shadow-sm"
-                    >
-                      {ingredient}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Culinary Pairings Integration */}
-            {matchingRecipes.length > 0 && (
-              <div className="pt-10 mt-10 border-t-4 border-warm-dark">
-                <h3 className="text-sm font-bold tracking-widest uppercase text-warm-accent mb-6 flex items-center gap-2">
-                   <div className="w-2 h-2 bg-warm-accent rounded-full animate-pulse"></div>
-                   Culinary Pairings
-                </h3>
-                <div className="space-y-4">
-                  {matchingRecipes.map(recipe => (
-                    <Link 
-                      key={recipe.id}
-                      to={`/recipes/${recipe.id}`}
-                      className="group flex items-center gap-4 p-4 bg-white border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] hover:translate-y-1 hover:shadow-none transition-all"
-                    >
-                      <div className="w-16 h-16 flex-shrink-0 border-2 border-warm-dark overflow-hidden">
-                        <img src={recipe.image} alt={recipe.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-serif font-bold text-warm-dark text-lg group-hover:text-warm-accent transition-colors">{recipe.title}</h4>
-                        <p className="text-xs text-warm-dark/60 font-serif italic line-clamp-1">{recipe.description}</p>
-                      </div>
-                      <ArrowRight className="w-5 h-5 text-warm-dark/20 group-hover:text-warm-accent group-hover:translate-x-1 transition-all" />
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </div>
