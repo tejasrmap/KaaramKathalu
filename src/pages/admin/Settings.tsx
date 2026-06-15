@@ -10,8 +10,8 @@ export default function Settings() {
   const [settings, setSettings] = useState({
     companyName: 'Kaaram Kathalu',
     supportEmail: 'kathalukaaram@gmail.com',
-    supportPhone: '+91 98765 43210',
-    address: 'Traditional Flavors Lane, Andhra Pradesh',
+    supportPhone: '+91 97708 89608',
+    address: '002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu, Bangalore, Karnataka - 560043',
     announcementText: '🔥 New Season Avakaya Pickles Are Here! Free Shipping on Orders Above ₹999.',
     isMaintenanceMode: false
   });

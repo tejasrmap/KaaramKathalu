@@ -266,15 +266,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <ul className="space-y-3 text-warm-bg/70 text-sm">
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-warm-accent flex-shrink-0 mt-1" />
-                <span className="font-serif">Plot no . 55, Guttala Begampet, Srilingampalli Municipality, Kavuri Hills Madhapur, 500033</span>
+                <span className="font-serif text-xs">002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu, Bangalore, Karnataka - 560043</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-warm-accent flex-shrink-0" />
-                <span className="font-serif">+91 73373 18106</span>
+                <span className="font-serif">+91 97708 89608</span>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-warm-accent flex-shrink-0" />
-                <span className="font-serif text-xs">unigourmet2020@gmail.com, nehaa@unigourmet.in</span>
+                <span className="font-serif">kathalukaaram@gmail.com</span>
               </li>
             </ul>
           </div>
