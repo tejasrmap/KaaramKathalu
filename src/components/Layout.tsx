@@ -70,12 +70,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex justify-between items-center w-full">
             <Link to="/" className="flex items-center">
               <img 
-                src="/logo.jpg" 
+                src="/logo_icon.jpg" 
                 alt="Kaaram Kathalu" 
                 className={`transition-all duration-300 object-contain ${
                   isScrolled || location.pathname !== '/' 
-                    ? 'h-14 md:h-20' 
-                    : 'h-20 md:h-28'
+                    ? 'h-12 md:h-16' 
+                    : 'h-16 md:h-22'
                 }`}
               />
             </Link>

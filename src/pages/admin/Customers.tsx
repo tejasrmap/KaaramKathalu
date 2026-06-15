@@ -29,32 +29,29 @@ export default function Customers() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] transform -rotate-1 relative z-10">
-         <div className="absolute top-2 right-2 w-3 h-3 rounded-full bg-warm-accent border border-warm-dark shadow-sm"></div>
-        <div>
-          <h1 className="text-3xl font-serif font-bold text-warm-dark italic">Patron Register</h1>
-          <p className="text-warm-dark/70 mt-2 font-serif">Manage and view your loyal customer base.</p>
-        </div>
+      <div className="bg-warm-light p-6 rounded-2xl border border-warm-dark/5 shadow-sm mb-6">
+        <h2 className="text-2xl font-serif font-bold text-warm-dark">Patron Register</h2>
+        <p className="text-sm text-warm-dark/60 mt-1 font-serif">Manage and view your loyal customer base.</p>
       </div>
 
-      <div className="bg-warm-light border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] p-4 flex justify-between items-center transform rotate-1 relative z-10">
+      <div className="bg-warm-light border border-warm-dark/5 rounded-2xl p-4 flex justify-between items-center relative z-10">
         <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-dark/40" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-dark/40" />
           <input 
             type="text" 
             placeholder="Search patrons by name or email..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border-2 border-warm-dark bg-white focus:outline-none focus:ring-0 focus:border-warm-accent text-sm font-bold font-serif shadow-[2px_2px_0px_#3A2A22]"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-warm-dark/10 bg-white focus:outline-none focus:ring-0 focus:border-warm-accent text-sm font-serif"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredCustomers.map(customer => (
-          <div key={customer.id} className="bg-white border-2 border-warm-dark p-6 shadow-[6px_6px_0px_#3A2A22] hover:-translate-y-1 transition-transform relative group">
+          <div key={customer.id} className="bg-white border border-warm-dark/5 rounded-[24px] p-6 shadow-sm hover:shadow-md transition-all duration-300 relative group">
             <div className="flex items-start justify-between mb-6">
-              <div className="w-16 h-16 bg-warm-bg border-2 border-warm-dark shadow-[3px_3px_0px_#3A2A22] overflow-hidden">
+              <div className="w-16 h-16 bg-warm-light rounded-2xl overflow-hidden border border-warm-dark/5 shadow-sm">
                 {customer.photoURL ? (
                   <img src={customer.photoURL} alt={customer.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                 ) : (
@@ -63,7 +60,7 @@ export default function Customers() {
                   </div>
                 )}
               </div>
-              <button className="p-2 text-warm-dark/40 hover:text-warm-dark transition-colors">
+              <button className="p-2 text-warm-dark/45 hover:text-warm-dark transition-colors cursor-pointer">
                 <MoreVertical className="w-5 h-5" />
               </button>
             </div>
@@ -71,22 +68,22 @@ export default function Customers() {
             <div className="space-y-4">
               <div>
                 <h3 className="font-serif font-bold text-xl text-warm-dark">{customer.name}</h3>
-                <div className="flex items-center gap-2 text-warm-dark/60 text-xs font-bold uppercase tracking-widest mt-1">
-                  <Mail className="w-3 h-3" /> {customer.email}
+                <div className="flex items-center gap-2 text-warm-dark/60 text-xs mt-1">
+                  <Mail className="w-3.5 h-3.5 text-warm-accent" /> {customer.email}
                 </div>
               </div>
 
-              <div className="pt-4 border-t-2 border-dashed border-warm-dark/10 flex justify-between items-center">
-                <div className="flex items-center gap-2 text-[10px] font-bold text-warm-dark/40 uppercase tracking-widest">
-                  <Calendar className="w-3 h-3" /> Last Active: {customer.lastActive}
+              <div className="pt-4 border-t border-dashed border-warm-dark/10 flex justify-between items-center">
+                <div className="flex items-center gap-1.5 text-[10px] font-semibold text-warm-dark/40 uppercase tracking-widest">
+                  <Calendar className="w-3.5 h-3.5" /> Active: {customer.lastActive}
                 </div>
-                <span className="bg-green-50 text-green-700 text-[10px] font-bold px-2 py-1 border border-green-200">Verified Patron</span>
+                <span className="bg-green-50 text-green-700 text-[10px] font-semibold px-2.5 py-1 rounded-full">Verified Patron</span>
               </div>
             </div>
           </div>
         ))}
         {filteredCustomers.length === 0 && !isLoading && (
-          <div className="col-span-full py-20 text-center bg-white border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22]">
+          <div className="col-span-full py-20 text-center bg-white border border-warm-dark/5 rounded-[24px] shadow-sm">
             <p className="font-serif font-bold text-2xl italic text-warm-dark/30">No patrons found in the registry.</p>
           </div>
         )}
