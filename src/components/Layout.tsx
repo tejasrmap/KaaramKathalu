@@ -15,7 +15,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [announcement, setAnnouncement] = useState('🔥 Traditional Andhra Delicacies. Preservative-Free & Handcrafted. Free Shipping on Orders Above ₹999.');
+  const [settings, setSettings] = useState({
+    companyName: 'Kaaram Kathalu',
+    supportEmail: 'kathalukaaram@gmail.com',
+    supportPhone: '+91 97708 89608',
+    address: '002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu, Bangalore, Karnataka - 560043',
+    announcementText: '🔥 Traditional Andhra Delicacies. Preservative-Free & Handcrafted. Free Shipping on Orders Above ₹999.',
+    isMaintenanceMode: false
+  });
   const location = useLocation();
 
   useEffect(() => {
@@ -26,11 +33,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       try {
         const docRef = doc(db, 'settings', 'general');
         const docSnap = await getDoc(docRef);
-        if (docSnap.exists() && docSnap.data().announcementText) {
-          setAnnouncement(docSnap.data().announcementText);
+        if (docSnap.exists()) {
+          setSettings(prev => ({ ...prev, ...docSnap.data() }));
         }
       } catch (error) {
-        console.error("Error fetching announcement:", error);
+        console.error("Error fetching general settings:", error);
       }
     };
     fetchSettings();
@@ -52,12 +59,28 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen relative overflow-x-hidden flex flex-col max-w-[100vw] bg-warm-bg font-sans">
-      {/* TOP NAVIGATION WRAPPER */}
-      <div className="fixed top-0 left-0 right-0 z-50">
-        {/* Announcement Bar */}
-        <div className="bg-warm-dark text-warm-bg py-2 px-4 text-center text-[10px] uppercase font-bold tracking-[0.2em]">
-          {announcement}
+      {settings.isMaintenanceMode && !location.pathname.startsWith('/admin') ? (
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-warm-bg">
+          <div className="max-w-md bg-white p-8 md:p-12 rounded-[32px] shadow-xl border border-warm-dark/5 flex flex-col items-center">
+            <img src="/logo_icon.jpg" alt={settings.companyName} className="h-24 md:h-32 object-contain mb-8 animate-pulse" />
+            <h1 className="font-serif text-3xl font-bold text-warm-dark mb-4">Pantry Under Maintenance</h1>
+            <p className="text-sm font-serif italic text-warm-dark/60 mb-6">
+              Our digital courtyard is temporarily closed for maintenance while we restock our jars and refresh our pages. We'll be back shortly!
+            </p>
+            <div className="w-16 h-0.5 bg-warm-accent mb-6"></div>
+            <p className="text-[10px] uppercase font-bold tracking-widest text-warm-dark/40">
+              For urgent inquiries: {settings.supportEmail}
+            </p>
+          </div>
         </div>
+      ) : (
+        <>
+          {/* TOP NAVIGATION WRAPPER */}
+          <div className="fixed top-0 left-0 right-0 z-50">
+            {/* Announcement Bar */}
+            <div className="bg-warm-dark text-warm-bg py-2 px-4 text-center text-[10px] uppercase font-bold tracking-[0.2em]">
+              {settings.announcementText}
+            </div>
 
         {/* NAVBAR */}
         <header 
@@ -230,12 +253,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="bg-white p-2.5 inline-block rounded border border-warm-accent/20 w-fit max-w-[280px]">
               <img 
                 src="/logo.jpg" 
-                alt="Kaaram Kathalu" 
+                alt={settings.companyName} 
                 className="h-16 md:h-20 object-contain"
               />
             </div>
             <p className="text-warm-bg/70 leading-relaxed font-serif text-sm">
-              Welcome to Kaaram Kathalu. We specialize in artisanal, handmade, small-batch traditional Andhra pickles, spices, and snacks. Pure recipes, local ingredients, zero preservatives.
+              Welcome to {settings.companyName}. We specialize in artisanal, handmade, small-batch traditional Andhra pickles, spices, and snacks. Pure recipes, local ingredients, zero preservatives.
             </p>
           </div>
           
@@ -266,22 +289,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <ul className="space-y-3 text-warm-bg/70 text-sm">
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-warm-accent flex-shrink-0 mt-1" />
-                <span className="font-serif text-xs">002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu, Bangalore, Karnataka - 560043</span>
+                <span className="font-serif text-xs">{settings.address}</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-warm-accent flex-shrink-0" />
-                <span className="font-serif">+91 97708 89608</span>
+                <span className="font-serif">{settings.supportPhone}</span>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-warm-accent flex-shrink-0" />
-                <span className="font-serif">kathalukaaram@gmail.com</span>
+                <span className="font-serif">
+                  <a href={`mailto:${settings.supportEmail}`} className="hover:text-white transition-colors">{settings.supportEmail}</a>
+                </span>
               </li>
             </ul>
           </div>
         </div>
         
         <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-warm-bg/10 text-center font-heading tracking-wider uppercase text-warm-bg/40 text-xs">
-          &copy; {new Date().getFullYear()} Kaaram Kathalu. All rights reserved.
+          &copy; {new Date().getFullYear()} {settings.companyName}. All rights reserved.
         </div>
       </footer>
 
@@ -384,6 +409,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </>
         )}
       </AnimatePresence>
+      </>
+      )}
     </div>
   );
 }
