@@ -214,7 +214,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               className="fixed top-0 left-0 bottom-0 w-[80vw] max-w-xs bg-white z-50 flex flex-col h-full lg:hidden border-r border-warm-dark/10"
             >
               <div className="p-5 border-b border-warm-dark/10 flex justify-between items-center bg-warm-light">
-                <img src="/logo.jpg" alt="Kaaram Kathalu" className="h-12 object-contain" />
+                <img src="/logo_icon.jpg" alt="Kaaram Kathalu" className="h-12 object-contain" />
                 <button 
                   onClick={() => setMobileMenuOpen(false)}
                   className="p-2 border border-warm-dark/10 hover:border-warm-dark bg-white transition-colors"
