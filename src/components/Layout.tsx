@@ -95,10 +95,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <img 
                 src="/logo_icon.jpg" 
                 alt="Kaaram Kathalu" 
-                className={`transition-all duration-300 object-contain ${
+                className={`transition-all duration-300 object-contain rounded-full ${
                   isScrolled || location.pathname !== '/' 
-                    ? 'h-10 md:h-12' 
-                    : 'h-12 md:h-16'
+                    ? 'h-8 md:h-12' 
+                    : 'h-10 md:h-16'
                 }`}
               />
             </Link>
