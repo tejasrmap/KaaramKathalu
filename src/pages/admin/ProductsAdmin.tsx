@@ -17,12 +17,34 @@ export default function ProductsAdmin() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
+  const [categoryType, setCategoryType] = useState<string>('pickle');
+  const [spiciness, setSpiciness] = useState<number>(1);
+  const [imageTab, setImageTab] = useState<'upload' | 'url'>('upload');
+
   useEffect(() => {
     if (!isModalOpen) {
       setImageFile(null);
       setImagePreview(null);
     }
   }, [isModalOpen]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      if (editingProduct) {
+        setCategoryType(editingProduct.type || 'pickle');
+        setSpiciness(editingProduct.spiciness || 1);
+        if (editingProduct.image && !editingProduct.image.includes('firebasestorage')) {
+          setImageTab('url');
+        } else {
+          setImageTab('upload');
+        }
+      } else {
+        setCategoryType('pickle');
+        setSpiciness(1);
+        setImageTab('upload');
+      }
+    }
+  }, [isModalOpen, editingProduct]);
 
   useEffect(() => {
     const q = query(collection(db, 'products'));
@@ -271,94 +293,210 @@ export default function ProductsAdmin() {
                 
                 <div className="p-8 space-y-8 flex-1 bg-gradient-to-b from-white to-warm-bg/10">
                   <div className="space-y-6">
+                    {/* Basic details: Name and Price */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="text-sm font-bold uppercase tracking-widest text-warm-dark/60">Product Name</label>
-                        <input name="name" required defaultValue={editingProduct?.name} className="w-full px-5 py-3 rounded-xl border border-warm-dark/10 bg-white focus:outline-none focus:border-warm-accent transition-all font-serif" placeholder="e.g. Garlic Pickle" />
+                        <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Product Name</label>
+                        <input 
+                          name="name" 
+                          required 
+                          defaultValue={editingProduct?.name} 
+                          className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none transition-all shadow-sm focus:shadow-md text-sm" 
+                          placeholder="e.g. Garlic Pickle" 
+                        />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-bold uppercase tracking-widest text-warm-dark/60">Price (₹)</label>
-                        <input name="price" required type="number" defaultValue={editingProduct?.price} className="w-full px-5 py-3 rounded-xl border border-warm-dark/10 bg-white focus:outline-none focus:border-warm-accent transition-all font-serif" placeholder="299" />
+                        <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Price (₹)</label>
+                        <input 
+                          name="price" 
+                          required 
+                          type="number" 
+                          defaultValue={editingProduct?.price} 
+                          className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none transition-all shadow-sm focus:shadow-md text-sm" 
+                          placeholder="299" 
+                        />
                       </div>
                     </div>
 
+                    {/* Stock and Spiciness */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="text-sm font-bold uppercase tracking-widest text-warm-dark/60">Category</label>
-                        <select name="type" defaultValue={editingProduct?.type || 'pickle'} className="w-full px-5 py-3 rounded-xl border border-warm-dark/10 bg-white focus:outline-none focus:border-warm-accent transition-all font-serif">
-                          <option value="pickle">Pickle</option>
-                          <option value="podi">Podi</option>
-                          <option value="bundle">Bundle</option>
-                        </select>
+                        <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Stock Level</label>
+                        <input 
+                          name="stock" 
+                          required 
+                          type="number" 
+                          defaultValue={editingProduct?.stock ?? 50} 
+                          className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none transition-all shadow-sm focus:shadow-md text-sm" 
+                        />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-bold uppercase tracking-widest text-warm-dark/60">Stock Level</label>
-                        <input name="stock" required type="number" defaultValue={editingProduct?.stock || 50} className="w-full px-5 py-3 rounded-xl border border-warm-dark/10 bg-white focus:outline-none focus:border-warm-accent transition-all font-serif" />
+                        <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Spiciness Level</label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {[
+                            { level: 1, label: '🌶️ Mild' },
+                            { level: 2, label: '🌶️🌶️ Med' },
+                            { level: 3, label: '🌶️🌶️🌶️ Hot' }
+                          ].map(item => (
+                            <button
+                              key={item.level}
+                              type="button"
+                              onClick={() => setSpiciness(item.level)}
+                              className={`py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border shadow-sm cursor-pointer text-center ${
+                                spiciness === item.level
+                                  ? 'bg-warm-dark text-white border-warm-dark'
+                                  : 'bg-white text-warm-dark/70 border-warm-dark/10 hover:bg-warm-light/50'
+                              }`}
+                            >
+                              {item.label}
+                            </button>
+                          ))}
+                        </div>
+                        <input type="hidden" name="spiciness" value={spiciness} />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-bold uppercase tracking-widest text-warm-dark/60">Spiciness (1-3)</label>
-                        <input name="spiciness" required type="number" min="1" max="3" defaultValue={editingProduct?.spiciness || 1} className="w-full px-5 py-3 rounded-xl border border-warm-dark/10 bg-white focus:outline-none focus:border-warm-accent transition-all font-serif" />
+                    {/* Category Selector (Pills style) */}
+                    <div className="space-y-2">
+                      <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Category</label>
+                      <div className="flex flex-wrap gap-2">
+                        {['pickle', 'podi', 'snacks', 'fryums', 'bundle'].map(cat => (
+                          <button
+                            key={cat}
+                            type="button"
+                            onClick={() => setCategoryType(cat)}
+                            className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-warm-dark/10 shadow-sm cursor-pointer ${
+                              categoryType === cat
+                                ? 'bg-warm-accent text-white border-warm-accent'
+                                : 'bg-white text-warm-dark/70 hover:bg-warm-light/50'
+                            }`}
+                          >
+                            {cat}
+                          </button>
+                        ))}
                       </div>
+                      <input type="hidden" name="type" value={categoryType} />
                     </div>
 
-                    <div className="space-y-4">
-                      <label className="text-sm font-bold uppercase tracking-widest text-warm-dark/60">Product Image</label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div 
-                          onClick={() => document.getElementById('image-upload')?.click()}
-                          className="border border-dashed border-warm-dark/20 bg-warm-bg/10 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer hover:border-warm-accent hover:bg-warm-accent/5 transition-all min-h-[160px]"
+                    {/* Product Image uploads (Tabbed selector) */}
+                    <div className="space-y-3">
+                      <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Product Image</label>
+                      
+                      {/* Image Tabs */}
+                      <div className="flex border-b border-warm-dark/10 mb-4 gap-4">
+                        <button
+                          type="button"
+                          onClick={() => setImageTab('upload')}
+                          className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                            imageTab === 'upload'
+                              ? 'border-warm-accent text-warm-dark font-black'
+                              : 'border-transparent text-warm-dark/40 hover:text-warm-dark'
+                          }`}
                         >
-                          {imagePreview || editingProduct?.image ? (
-                            <div className="relative w-full h-full">
-                              <img src={imagePreview || editingProduct?.image} alt="Preview" className="w-full h-[120px] object-cover rounded-lg border border-warm-dark/10" />
-                              <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
-                                <span className="text-white text-[10px] font-bold uppercase">Change Photo</span>
-                              </div>
+                          Upload File
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setImageTab('url')}
+                          className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                            imageTab === 'url'
+                              ? 'border-warm-accent text-warm-dark font-black'
+                              : 'border-transparent text-warm-dark/40 hover:text-warm-dark'
+                          }`}
+                        >
+                          Paste URL
+                        </button>
+                      </div>
+
+                      {/* Tab Content */}
+                      {imageTab === 'upload' ? (
+                        <div className="space-y-4">
+                          {imagePreview || (editingProduct?.image && !imageFile && editingProduct.image !== '') ? (
+                            <div className="relative w-full aspect-[2/1] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                              <img 
+                                src={imagePreview || editingProduct?.image} 
+                                alt="Preview" 
+                                className="w-full h-full object-cover" 
+                                referrerPolicy="no-referrer"
+                              />
+                              <button 
+                                type="button"
+                                onClick={() => {
+                                  setImageFile(null);
+                                  setImagePreview(null);
+                                  if (editingProduct) {
+                                    editingProduct.image = '';
+                                  }
+                                }}
+                                className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
                             </div>
                           ) : (
-                            <>
-                              <ImageIcon className="w-8 h-8 text-warm-dark/20 mb-2" />
-                              <span className="text-[10px] font-bold uppercase text-warm-dark/40">Upload Photo</span>
-                            </>
+                            <div 
+                              onClick={() => document.getElementById('image-upload')?.click()}
+                              className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-8 flex flex-col items-center justify-center cursor-pointer min-h-[160px]"
+                            >
+                              <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
+                              <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Image File</span>
+                              <span className="text-[10px] text-warm-dark/30 mt-1 font-serif italic">Drag & drop or click to browse</span>
+                              <input 
+                                id="image-upload"
+                                type="file" 
+                                accept="image/*" 
+                                className="hidden" 
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    setImageFile(file);
+                                    setImagePreview(URL.createObjectURL(file));
+                                  }
+                                }}
+                              />
+                            </div>
                           )}
-                          <input 
-                            id="image-upload"
-                            type="file" 
-                            accept="image/*" 
-                            className="hidden" 
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                setImageFile(file);
-                                setImagePreview(URL.createObjectURL(file));
-                              }
-                            }}
-                          />
+                          {/* Ensure default input name image is present but empty if uploading */}
+                          <input type="hidden" name="image" value={editingProduct?.image || ''} />
                         </div>
-
+                      ) : (
                         <div className="space-y-4">
                           <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-warm-dark/40">Or Paste Image URL</label>
                             <input 
                               name="image" 
                               defaultValue={editingProduct?.image} 
-                              className="w-full px-4 py-2 border border-warm-dark/10 rounded-xl bg-warm-bg/30 focus:outline-none focus:border-warm-accent text-xs font-serif" 
-                              placeholder="https://..." 
+                              className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none transition-all shadow-sm focus:shadow-md text-sm" 
+                              placeholder="https://example.com/image.jpg" 
                             />
                           </div>
+                          {editingProduct?.image && (
+                            <div className="relative w-full aspect-[2/1] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                              <img 
+                                src={editingProduct?.image} 
+                                alt="URL Preview" 
+                                className="w-full h-full object-cover" 
+                                referrerPolicy="no-referrer"
+                              />
+                            </div>
+                          )}
                           <p className="text-[10px] text-warm-dark/40 font-serif italic leading-relaxed">
-                            Uploading a file is recommended for reliability. Supported formats: JPG, PNG, WEBP.
+                            Provide a direct link to the hosted image. WEBP, JPG or PNG formats are recommended.
                           </p>
                         </div>
-                      </div>
+                      )}
                     </div>
 
+                    {/* Description */}
                     <div className="space-y-2">
-                      <label className="text-sm font-bold uppercase tracking-widest text-warm-dark/60">Description</label>
-                      <textarea name="description" required rows={3} defaultValue={editingProduct?.description} className="w-full px-5 py-3 rounded-xl border border-warm-dark/10 bg-white focus:outline-none focus:border-warm-accent transition-all font-serif" placeholder="Short description..."></textarea>
+                      <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Description</label>
+                      <textarea 
+                        name="description" 
+                        required 
+                        rows={3} 
+                        defaultValue={editingProduct?.description} 
+                        className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none transition-all shadow-sm focus:shadow-md text-sm" 
+                        placeholder="Short description..."
+                      />
                     </div>
                   </div>
                 </div>
