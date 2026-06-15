@@ -9,10 +9,9 @@ import SEO from '../components/SEO';
 import { useWishlist } from '../context/WishlistContext';
 import { Heart } from 'lucide-react';
 
-export default function Shop() {
+export default function Shop({ category }: { category?: 'pickle' | 'podi' }) {
   const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState<'all' | ProductType>('all');
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   useEffect(() => {
@@ -28,38 +27,25 @@ export default function Shop() {
     return unsubscribe;
   }, []);
 
-  const filteredProducts = activeFilter === 'all' 
-    ? products 
-    : products.filter(p => p.type === activeFilter);
+  const filteredProducts = category 
+    ? products.filter(p => p.type === category)
+    : products;
+
+  const pageTitle = category === 'pickle' 
+    ? 'Pickles' 
+    : category === 'podi' 
+      ? 'Podi & Sprinkles' 
+      : 'Shop All';
 
   return (
     <div className="pt-24 md:pt-32 pb-24 px-4 sm:px-6 md:px-12 max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto min-h-screen">
-      <SEO title="Shop Our Pantry" description="Browse our collection of hand-crafted pickles, podis, and tasting bundles." />
-      <div className="text-center mb-16 relative w-full max-w-[95vw] mx-auto">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-warm-dark mb-6 inline-block bg-white px-6 md:px-8 py-3 md:py-4 border-2 border-warm-dark shadow-[4px_4px_0px_#3A2A22] transform rotate-1">
-          Our <span className="text-warm-accent italic">Pantry</span>
+      <SEO title={pageTitle} description={`Explore our collection of authentic, hand-made ${pageTitle.toLowerCase()}.`} />
+      
+      <div className="text-center mb-12 relative w-full mx-auto">
+        <h1 className="text-3xl md:text-5xl font-heading font-bold text-warm-dark uppercase tracking-wider">
+          {pageTitle}
         </h1>
-        <p className="text-warm-dark/70 max-w-2xl mx-auto font-serif text-lg md:text-xl italic border-t-2 border-dashed border-warm-dark/20 pt-6 mt-4 px-4">
-          Explore our collection of authentic, hand-made pickles, podis, and curated tasting bundles.
-        </p>
-      </div>
-
-      <div className="sticky top-20 z-30 -mx-4 px-4 bg-warm-bg/80 backdrop-blur-md border-b-2 border-warm-dark/5 mb-8 md:mb-16 py-4 overflow-x-auto scrollbar-hide">
-        <div className="flex gap-3 w-max mx-auto md:mx-0">
-          {(['all', 'pickle', 'podi', 'bundle'] as const).map(filter => (
-            <button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className={`px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all border-2 ${
-                activeFilter === filter 
-                  ? 'bg-warm-dark text-white border-warm-dark shadow-[4px_4px_0px_rgba(58,42,34,0.3)]' 
-                  : 'bg-white text-warm-dark border-warm-dark/20 hover:border-warm-dark'
-              }`}
-            >
-              {filter}
-            </button>
-          ))}
-        </div>
+        <div className="w-12 h-0.5 bg-warm-accent mx-auto mt-4 mb-6"></div>
       </div>
 
       <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">

@@ -44,12 +44,12 @@ export default function Home() {
     {
       name: 'Pickles',
       image: 'https://themanduvaproject.in/cdn/shop/files/jar_3387912.png?v=1776152279&width=100',
-      link: '/shop?category=pickle'
+      link: "/pickles"
     },
     {
       name: 'Podi & Sprinkles',
       image: 'https://themanduvaproject.in/cdn/shop/files/party_6700769.png?v=1776152279&width=100',
-      link: '/shop?category=podi'
+      link: "/podi-sprinkles"
     }
   ];
 

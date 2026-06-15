@@ -80,8 +80,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <nav className="hidden lg:flex gap-8 items-center font-heading text-base tracking-wider uppercase text-warm-dark font-medium">
               <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Home</Link>
               <Link to="/shop" className={`${location.pathname === '/shop' && !location.search ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Shop All</Link>
-              <Link to="/shop?category=pickle" className={`${location.search.includes('pickle') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Pickles</Link>
-              <Link to="/shop?category=podi" className={`${location.search.includes('podi') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Podi & Sprinkles</Link>
+              <Link to="/pickles" className={`${location.pathname === '/pickles' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Pickles</Link>
+              <Link to="/podi-sprinkles" className={`${location.pathname === '/podi-sprinkles' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Podi & Sprinkles</Link>
               <Link to="/about" className={`${location.pathname === '/about' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Our Story</Link>
             </nav>
 
@@ -176,8 +176,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           >
             <Link to="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2 border-b border-warm-dark/5">Home</Link>
             <Link to="/shop" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2 border-b border-warm-dark/5">Shop All</Link>
-            <Link to="/shop?category=pickle" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2 border-b border-warm-dark/5">Pickles</Link>
-            <Link to="/shop?category=podi" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2 border-b border-warm-dark/5">Podi & Sprinkles</Link>
+            <Link to="/pickles" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2 border-b border-warm-dark/5">Pickles</Link>
+            <Link to="/podi-sprinkles" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2 border-b border-warm-dark/5">Podi & Sprinkles</Link>
             <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2">Our Story</Link>
           </motion.div>
         )}
@@ -210,8 +210,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <h4 className="font-heading text-lg tracking-wider text-white uppercase mb-6 font-bold pb-1 border-b border-warm-accent/30 inline-block">Quick Shop</h4>
             <ul className="space-y-3 text-warm-bg/70 text-sm font-serif">
               <li><Link to="/shop" className="hover:text-white transition-colors">Shop All</Link></li>
-              <li><Link to="/shop?category=pickle" className="hover:text-white transition-colors">Traditional Pickles</Link></li>
-              <li><Link to="/shop?category=podi" className="hover:text-white transition-colors">Spice Sprinkles</Link></li>
+              <li><Link to="/pickles" className="hover:text-white transition-colors">Traditional Pickles</Link></li>
+              <li><Link to="/podi-sprinkles" className="hover:text-white transition-colors">Spice Sprinkles</Link></li>
             </ul>
           </div>
 
