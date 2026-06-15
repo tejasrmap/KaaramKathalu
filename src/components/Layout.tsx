@@ -165,21 +165,51 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </header>
       </div>
 
-      {/* MOBILE MENU DROPDOWN */}
+      {/* MOBILE NAV DRAWER */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-x-0 top-20 z-40 bg-warm-bg/95 backdrop-blur-md border-b border-warm-dark/10 py-6 px-6 flex flex-col gap-4 lg:hidden shadow-lg font-heading text-lg tracking-wide uppercase text-warm-dark"
-          >
-            <Link to="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2 border-b border-warm-dark/5">Home</Link>
-            <Link to="/shop" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2 border-b border-warm-dark/5">Shop All</Link>
-            <Link to="/pickles" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2 border-b border-warm-dark/5">Pickles</Link>
-            <Link to="/podi-sprinkles" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2 border-b border-warm-dark/5">Podi & Sprinkles</Link>
-            <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-2">Our Story</Link>
-          </motion.div>
+          <>
+            {/* Backdrop */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/60 z-50 backdrop-blur-[2px] lg:hidden"
+            />
+            
+            {/* Left Drawer */}
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: "spring", damping: 30, stiffness: 300, mass: 0.8 }}
+              className="fixed top-0 left-0 bottom-0 w-[80vw] max-w-xs bg-white z-50 flex flex-col h-full lg:hidden border-r border-warm-dark/10"
+            >
+              <div className="p-5 border-b border-warm-dark/10 flex justify-between items-center bg-warm-light">
+                <img src="/logo.jpg" alt="Kaaram Kathalu" className="h-8 object-contain" />
+                <button 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 border border-warm-dark/10 hover:border-warm-dark bg-white transition-colors"
+                >
+                  <X className="w-4 h-4 text-warm-dark" />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 font-heading text-lg tracking-wider uppercase text-warm-dark">
+                <Link to="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Home</Link>
+                <Link to="/shop" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Shop All</Link>
+                <Link to="/pickles" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Pickles</Link>
+                <Link to="/podi-sprinkles" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Podi & Sprinkles</Link>
+                <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3">Our Story</Link>
+              </div>
+
+              <div className="p-6 border-t border-warm-dark/10 bg-warm-light text-center">
+                <p className="text-[10px] font-heading tracking-widest text-warm-dark/50 uppercase">Handcrafted Traditions</p>
+                <p className="text-[9px] font-serif text-warm-dark/40 mt-1">&copy; {new Date().getFullYear()} Kaaram Kathalu</p>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
 
