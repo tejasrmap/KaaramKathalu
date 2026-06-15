@@ -98,7 +98,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 className={`transition-all duration-300 object-contain ${
                   isScrolled || location.pathname !== '/' 
                     ? 'h-12 md:h-16' 
-                    : 'h-16 md:h-22'
+                    : 'h-16 md:h-20'
                 }`}
               />
             </Link>
