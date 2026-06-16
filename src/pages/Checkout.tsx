@@ -448,9 +448,17 @@ export default function Checkout() {
               </div>
               <div className="flex justify-between text-warm-dark/50 text-xs font-semibold uppercase tracking-wider items-center">
                 <span>Shipping</span>
-                {isCalculating ? (
+                {formData.pincode.trim().length !== 6 ? (
+                  <span className="text-warm-dark/40 font-serif text-xs normal-case italic">
+                    Enter Pincode
+                  </span>
+                ) : isCalculating ? (
                   <span className="flex items-center gap-1.5 text-warm-accent font-serif text-xs normal-case italic">
                     <Loader2 className="w-3 h-3 animate-spin" /> Calculating...
+                  </span>
+                ) : pincodeError ? (
+                  <span className="text-red-500 font-bold font-serif text-xs uppercase">
+                    Unserviceable
                   </span>
                 ) : (
                   <span className="text-warm-accent font-bold font-serif text-sm">
@@ -460,7 +468,9 @@ export default function Checkout() {
               </div>
               <div className="flex justify-between items-center pt-5 border-t border-warm-dark/10">
                 <span className="font-serif text-xl font-bold text-warm-dark">Grand Total</span>
-                <span className="font-serif text-2xl font-bold text-warm-accent">₹{cartTotal + shippingCost}</span>
+                <span className="font-serif text-2xl font-bold text-warm-accent">
+                  {pincodeError ? '—' : formData.pincode.trim().length !== 6 ? `₹${cartTotal}` : `₹${cartTotal + shippingCost}`}
+                </span>
               </div>
             </div>
           </div>
