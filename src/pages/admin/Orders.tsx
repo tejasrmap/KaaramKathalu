@@ -53,32 +53,45 @@ export default function Orders() {
         phone: "9770889608"
       };
 
+      const consigneePhone = (() => {
+        const p = order.customer?.phone;
+        if (!p) return "9770889608";
+        let cleaned = p.replace(/\D/g, '');
+        if (cleaned.length === 12 && cleaned.startsWith('91')) {
+          cleaned = cleaned.substring(2);
+        }
+        if (cleaned.length === 11 && cleaned.startsWith('0')) {
+          cleaned = cleaned.substring(1);
+        }
+        if (cleaned.length !== 10) {
+          return "9770889608";
+        }
+        return cleaned;
+      })();
+
       const shipments = [
         {
           waybill: "",
           order: order.id,
           product: order.items?.map((item: any) => `${item.name} (x${item.quantity})`).join(', ') || "Andhra Pickles & Podis",
+          
+          // Flat fields for standard/legacy CMU API
+          name: order.customer?.name || "Customer",
+          add: order.customer?.address || "",
+          city: order.customer?.city || "",
+          state: "Karnataka",
+          pin: Number(order.customer?.pincode) || 560043,
+          phone: consigneePhone,
+          country: "India",
+
+          // Nested fields for newer Unified/Direct APIs
           consignee: {
             name: order.customer?.name || "Customer",
             address: order.customer?.address || "",
             city: order.customer?.city || "",
             state: "Karnataka",
             pincode: Number(order.customer?.pincode) || 560043,
-            phone: (() => {
-              const p = order.customer?.phone;
-              if (!p) return "9770889608";
-              let cleaned = p.replace(/\D/g, '');
-              if (cleaned.length === 12 && cleaned.startsWith('91')) {
-                cleaned = cleaned.substring(2);
-              }
-              if (cleaned.length === 11 && cleaned.startsWith('0')) {
-                cleaned = cleaned.substring(1);
-              }
-              if (cleaned.length !== 10) {
-                return "9770889608";
-              }
-              return cleaned;
-            })()
+            phone: consigneePhone
           },
           payment_mode: "Pre-paid",
           package_type: "Prepaid",
