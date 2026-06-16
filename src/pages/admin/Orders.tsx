@@ -66,20 +66,19 @@ export default function Orders() {
         pickup_location: pickupLocation
       };
 
-      const formData = new URLSearchParams();
-      formData.append('format', 'json');
-      formData.append('data', JSON.stringify(payload));
+      const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'https://kaaramkathalu.in'
+        : '';
 
-      const corsProxy = 'https://api.allorigins.win/raw?url=';
-      const delhiveryApi = 'https://track.delhivery.com/api/cmu/create.json';
-
-      const response = await fetch(corsProxy + encodeURIComponent(delhiveryApi), {
+      const response = await fetch(`${host}/api/shipping`, {
         method: 'POST',
         headers: {
-          'Authorization': `Token ${token}`,
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/json'
         },
-        body: formData.toString()
+        body: JSON.stringify({
+          type: 'create_shipment',
+          data: payload
+        })
       });
 
       if (!response.ok) {

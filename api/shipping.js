@@ -18,7 +18,8 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Delhivery API token is not configured on the server.' });
   }
 
-  const { type } = req.query;
+  // Parse type from query or body
+  const type = req.query.type || req.body?.type;
 
   try {
     if (type === 'serviceability') {
@@ -47,6 +48,31 @@ export default async function handler(req, res) {
       });
       if (!response.ok) {
         throw new Error(`Delhivery returned status ${response.status}`);
+      }
+      const data = await response.json();
+      return res.status(200).json(data);
+    } else if (type === 'create_shipment') {
+      const payloadData = req.body?.data;
+      if (!payloadData) {
+        return res.status(400).json({ error: 'Missing shipment data payload' });
+      }
+
+      const formData = new URLSearchParams();
+      formData.append('format', 'json');
+      formData.append('data', typeof payloadData === 'string' ? payloadData : JSON.stringify(payloadData));
+
+      const targetUrl = `https://track.delhivery.com/api/cmu/create.json`;
+      const response = await fetch(targetUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Token ${token}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formData.toString()
+      });
+
+      if (!response.ok) {
+        throw new Error(`Delhivery CMU returned status ${response.status}`);
       }
       const data = await response.json();
       return res.status(200).json(data);
