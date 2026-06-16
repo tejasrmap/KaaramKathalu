@@ -67,10 +67,17 @@ export default function Orders() {
             phone: (() => {
               const p = order.customer?.phone;
               if (!p) return "9770889608";
-              const cleaned = p.replace(/\D/g, '');
-              if (cleaned.length === 10) return cleaned;
-              if (cleaned.length === 12 && cleaned.startsWith('91')) return cleaned.substring(2);
-              return cleaned || "9770889608";
+              let cleaned = p.replace(/\D/g, '');
+              if (cleaned.length === 12 && cleaned.startsWith('91')) {
+                cleaned = cleaned.substring(2);
+              }
+              if (cleaned.length === 11 && cleaned.startsWith('0')) {
+                cleaned = cleaned.substring(1);
+              }
+              if (cleaned.length !== 10) {
+                return "9770889608";
+              }
+              return cleaned;
             })()
           },
           payment_mode: "Pre-paid",
