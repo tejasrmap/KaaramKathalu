@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Edit2, Trash2, Image as ImageIcon, Loader2, Database, X } from 'lucide-react';
-import { PRODUCTS, Product, ProductType } from '../../data/products';
+import { Plus, Search, Edit2, Trash2, Image as ImageIcon, Loader2, X } from 'lucide-react';
+import { Product, ProductType } from '../../data/products';
 import { motion, AnimatePresence } from 'motion/react';
 import { db } from '../../firebase';
-import { collection, onSnapshot, query, doc, addDoc, updateDoc, deleteDoc, writeBatch } from 'firebase/firestore';
+import { collection, onSnapshot, query, doc, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { supabase } from '../../supabase';
 
 export default function ProductsAdmin() {
@@ -62,24 +62,6 @@ export default function ProductsAdmin() {
     return unsubscribe;
   }, []);
 
-  const seedData = async () => {
-    if (!window.confirm("This will seed the initial product list to Firestore. Continue?")) return;
-    setIsSubmitting(true);
-    try {
-      const batch = writeBatch(db);
-      PRODUCTS.forEach((product) => {
-        const newDocRef = doc(collection(db, 'products'));
-        batch.set(newDocRef, { ...product, stock: 50 });
-      });
-      await batch.commit();
-      alert("Database seeded successfully!");
-    } catch (error) {
-      console.error("Error seeding data:", error);
-      alert("Failed to seed database.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const handleDelete = async (docId: string) => {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
@@ -175,15 +157,6 @@ export default function ProductsAdmin() {
         </div>
         
         <div className="flex gap-2">
-          {products.length === 0 && !isLoading && (
-            <button 
-              onClick={seedData}
-              disabled={isSubmitting}
-              className="bg-white text-warm-dark px-4 py-2.5 rounded-xl font-bold tracking-widest uppercase text-[10px] flex items-center gap-2 border border-warm-dark/10 hover:bg-warm-light/5 transition-all disabled:opacity-50 cursor-pointer"
-            >
-              <Database className="w-4 h-4" /> Seed Pantry
-            </button>
-          )}
           <button 
             onClick={() => {
               setEditingProduct(null);
