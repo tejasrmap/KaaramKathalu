@@ -164,6 +164,20 @@ export default function MyOrders() {
                       {statusInfo.label}
                     </div>
                   </div>
+
+                  {order.waybill && (
+                    <div className="mt-4 md:mt-6 text-left w-full">
+                      <p className="text-[10px] font-heading font-black tracking-widest text-warm-dark/40 uppercase mb-1">Tracking</p>
+                      <a 
+                        href={`https://www.delhivery.com/track/package/${order.waybill}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 bg-green-50 text-green-700 hover:bg-green-100 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase border border-green-200"
+                      >
+                        {order.waybill} <ArrowRight className="w-3 h-3" />
+                      </a>
+                    </div>
+                  )}
                 </div>
 
                 {/* Details Column */}

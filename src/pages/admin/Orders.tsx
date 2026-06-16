@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Eye, MoreVertical } from 'lucide-react';
+import { Search, Filter, Eye, MoreVertical, X, Truck, AlertTriangle, Check, Loader2, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { db } from '../../firebase';
 import { collection, onSnapshot, query, orderBy, doc, updateDoc } from 'firebase/firestore';
-import { X } from 'lucide-react';
 
 const STATUSES = ['All', 'Pending', 'Processing', 'Shipped', 'Delivered'];
 
@@ -14,6 +13,125 @@ export default function Orders() {
   const [search, setSearch] = useState('');
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
+
+  const [isShipping, setIsShipping] = useState(false);
+  const [shippingError, setShippingError] = useState<string | null>(null);
+  const [shippingSuccess, setShippingSuccess] = useState<string | null>(null);
+
+  const createDelhiveryShipment = async (order: any) => {
+    setIsShipping(true);
+    setShippingError(null);
+    setShippingSuccess(null);
+
+    const token = import.meta.env.VITE_DELHIVERY_API_TOKEN;
+    if (!token || token === 'YOUR_DELHIVERY_API_TOKEN') {
+      setShippingError("Delhivery API token is not configured in .env file.");
+      setIsShipping(false);
+      return;
+    }
+
+    try {
+      const pickupLocation = {
+        name: "Kaaram Kathalu",
+        add: "002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu",
+        city: "Bangalore",
+        pin: 560043,
+        phone: "+91 97708 89608"
+      };
+
+      const shipments = [
+        {
+          waybill: "",
+          order: order.id,
+          product: order.items?.map((item: any) => `${item.name} (x${item.quantity})`).join(', ') || "Andhra Pickles & Podis",
+          consignee: {
+            name: order.customer?.name || "Customer",
+            address: order.customer?.address || "",
+            city: order.customer?.city || "",
+            state: "Karnataka",
+            pincode: Number(order.customer?.pincode) || 560043,
+            phone: order.customer?.phone || ""
+          },
+          package_type: "Prepaid",
+          weight: 0.5,
+          cod_amount: 0,
+          order_date: order.createdAt?.toDate ? order.createdAt.toDate().toISOString() : new Date().toISOString(),
+          total_amount: Number(order.total) || 0,
+          quantity: order.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 1
+        }
+      ];
+
+      const payload = {
+        shipments,
+        pickup_location: pickupLocation
+      };
+
+      const formData = new URLSearchParams();
+      formData.append('format', 'json');
+      formData.append('data', JSON.stringify(payload));
+
+      const corsProxy = 'https://api.allorigins.win/raw?url=';
+      const delhiveryApi = 'https://track.delhivery.com/api/cmu/create.json';
+
+      const response = await fetch(corsProxy + encodeURIComponent(delhiveryApi), {
+        method: 'POST',
+        headers: {
+          'Authorization': `Token ${token}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formData.toString()
+      });
+
+      if (!response.ok) {
+        throw new Error(`Delhivery API returned status ${response.status}`);
+      }
+
+      const resData = await response.json();
+      console.log("Delhivery API Response:", resData);
+
+      if (resData.success && resData.packages && resData.packages.length > 0) {
+        const waybill = resData.packages[0].waybill;
+        
+        // Update order in Firestore
+        await updateDoc(doc(db, 'orders', order.id), {
+          status: 'Shipped',
+          waybill: waybill,
+          carrier: 'Delhivery',
+          shippedAt: new Date()
+        });
+
+        // Update modal state
+        setSelectedOrder((prev: any) => prev ? { ...prev, status: 'Shipped', waybill: waybill, carrier: 'Delhivery' } : null);
+        setShippingSuccess(`Shipment created successfully! Waybill: ${waybill}`);
+      } else if (resData.pickups && resData.pickups.length > 0 && resData.pickups[0].waybills && resData.pickups[0].waybills.length > 0) {
+        const waybillObj = resData.pickups[0].waybills[0];
+        if (waybillObj.status === 'Success' || waybillObj.waybill) {
+          const waybill = waybillObj.waybill;
+
+          // Update order in Firestore
+          await updateDoc(doc(db, 'orders', order.id), {
+            status: 'Shipped',
+            waybill: waybill,
+            carrier: 'Delhivery',
+            shippedAt: new Date()
+          });
+
+          // Update modal state
+          setSelectedOrder((prev: any) => prev ? { ...prev, status: 'Shipped', waybill: waybill, carrier: 'Delhivery' } : null);
+          setShippingSuccess(`Shipment created successfully! Waybill: ${waybill}`);
+        } else {
+          throw new Error(waybillObj.remarks?.join(', ') || "Failed to generate waybill.");
+        }
+      } else {
+        throw new Error(resData.rm_remarks || resData.error || "No waybill was returned by Delhivery.");
+      }
+    } catch (err: any) {
+      console.error("Delhivery CMU Error:", err);
+      setShippingError(err.message || "An unexpected error occurred while booking the shipment.");
+    } finally {
+      setIsShipping(false);
+    }
+  };
 
   useEffect(() => {
     const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
@@ -309,6 +427,75 @@ export default function Orders() {
                       </tfoot>
                     </table>
                   </div>
+                </div>
+
+                {/* Delhivery Integration Section */}
+                <div className="mt-8 pt-6 border-t border-warm-dark/10 space-y-4">
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-warm-accent border-b border-dashed border-warm-accent/20 pb-2">Logistics & Shipping</h3>
+                  
+                  {selectedOrder.waybill ? (
+                    <div className="bg-green-50 border border-green-200 rounded-2xl p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                      <div>
+                        <p className="text-xs font-bold text-green-800 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                          <Check className="w-4 h-4 text-green-600" /> Booked with Delhivery
+                        </p>
+                        <p className="text-sm font-serif text-green-900/80">
+                          Tracking ID (Waybill): <span className="font-sans font-bold">{selectedOrder.waybill}</span>
+                        </p>
+                      </div>
+                      <a 
+                        href={`https://www.delhivery.com/track/package/${selectedOrder.waybill}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold uppercase tracking-widest text-[10px] rounded-xl transition-colors cursor-pointer shadow-sm text-center"
+                      >
+                        Track Package
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="bg-warm-light border border-warm-dark/5 rounded-2xl p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                      <div className="max-w-md">
+                        <p className="text-sm font-bold text-warm-dark flex items-center gap-2">
+                          <Truck className="w-4 h-4 text-warm-accent" /> Delhivery Shipping Integration
+                        </p>
+                        <p className="text-xs font-serif text-warm-dark/60 mt-1 leading-relaxed">
+                          Book this parcel automatically with Delhivery. This will generate a waybill number and mark the order as Shipped.
+                        </p>
+                      </div>
+                      
+                      <div className="w-full sm:w-auto flex flex-col items-stretch sm:items-end gap-2">
+                        <button
+                          onClick={() => createDelhiveryShipment(selectedOrder)}
+                          disabled={isShipping}
+                          className="px-6 py-3 bg-warm-accent hover:bg-warm-dark disabled:bg-warm-dark/40 text-white font-bold uppercase tracking-widest text-[10px] rounded-xl transition-colors cursor-pointer shadow-sm flex items-center justify-center gap-2"
+                        >
+                          {isShipping ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Booking...
+                            </>
+                          ) : (
+                            <>
+                              <Send className="w-3.5 h-3.5" /> Book Shipment
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {shippingError && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 text-xs px-4 py-3 rounded-xl flex items-center gap-2 font-serif">
+                      <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                      <span>{shippingError}</span>
+                    </div>
+                  )}
+
+                  {shippingSuccess && (
+                    <div className="bg-green-50 border border-green-200 text-green-700 text-xs px-4 py-3 rounded-xl flex items-center gap-2 font-serif">
+                      <Check className="w-4 h-4 flex-shrink-0" />
+                      <span>{shippingSuccess}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
