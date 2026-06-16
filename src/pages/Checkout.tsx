@@ -57,13 +57,10 @@ export default function Checkout() {
       try {
         const corsProxy = 'https://api.allorigins.win/raw?url=';
 
-        // 1. Verify Pincode Serviceability
-        const serviceabilityUrl = corsProxy + encodeURIComponent(`https://track.delhivery.com/c/api/pin-codes/json/?filter_codes=${pin}`);
+        // 1. Verify Pincode Serviceability (No custom headers to avoid preflight CORS error)
+        const serviceabilityUrl = corsProxy + encodeURIComponent(`https://track.delhivery.com/c/api/pin-codes/json/?token=${token}&filter_codes=${pin}`);
         const serviceabilityRes = await fetch(serviceabilityUrl, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Token ${token}`
-          }
+          method: 'GET'
         });
 
         if (!serviceabilityRes.ok) {
@@ -92,17 +89,14 @@ export default function Checkout() {
           }
         }
 
-        // 2. Fetch shipping cost
+        // 2. Fetch shipping cost (Use corsproxy.io with reqHeaders in query to bypass CORS preflight)
         const o_pin = 560043;
         const cgm = totalWeightGrams || 500;
         const apiQuery = `https://track.delhivery.com/api/kinko/v1/invoice/charges/.json?md=E&ss=Delivered&o_pin=${o_pin}&d_pin=${pin}&cgm=${cgm}`;
-        const url = corsProxy + encodeURIComponent(apiQuery);
+        const chargesUrl = `https://corsproxy.io/?url=${encodeURIComponent(apiQuery)}&reqHeaders=authorization:Token%20${token}`;
 
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Token ${token}`
-          }
+        const response = await fetch(chargesUrl, {
+          method: 'GET'
         });
 
         if (!response.ok) {
