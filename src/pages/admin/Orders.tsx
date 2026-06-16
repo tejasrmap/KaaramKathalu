@@ -66,6 +66,7 @@ export default function Orders() {
             pincode: Number(order.customer?.pincode) || 560043,
             phone: order.customer?.phone || ""
           },
+          payment_mode: "Pre-paid",
           package_type: "Prepaid",
           weight: 0.5,
           cod_amount: 0,
