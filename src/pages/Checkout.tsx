@@ -466,6 +466,10 @@ export default function Checkout() {
                   </span>
                 )}
               </div>
+              <div className="flex justify-between text-warm-dark/50 text-xs font-semibold uppercase tracking-wider">
+                <span>Total Weight</span>
+                <span className="text-warm-dark/70 font-bold">{totalWeightGrams}g</span>
+              </div>
               <div className="flex justify-between items-center pt-5 border-t border-warm-dark/10">
                 <span className="font-serif text-xl font-bold text-warm-dark">Grand Total</span>
                 <span className="font-serif text-2xl font-bold text-warm-accent">

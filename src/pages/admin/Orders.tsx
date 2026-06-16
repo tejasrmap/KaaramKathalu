@@ -476,6 +476,12 @@ export default function Orders() {
                         ))}
                       </tbody>
                       <tfoot className="bg-warm-light/50 border-t border-warm-dark/10">
+                        <tr className="border-b border-warm-dark/5">
+                          <td colSpan={2} className="px-4 py-3 text-xs font-bold uppercase tracking-widest text-warm-dark/50">Est. Parcel Weight</td>
+                          <td className="px-4 py-3 text-right font-bold text-sm text-warm-dark/70">
+                            {((selectedOrder.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 1) * 500)}g
+                          </td>
+                        </tr>
                         <tr>
                           <td colSpan={2} className="px-4 py-4 text-xs font-bold uppercase tracking-widest text-warm-dark">Grand Total</td>
                           <td className="px-4 py-4 text-right font-bold text-xl text-warm-accent">₹{selectedOrder.total}</td>
