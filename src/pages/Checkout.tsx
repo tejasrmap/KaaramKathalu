@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp, runTransaction, doc, getDoc, query, where, limit, getDocs } from 'firebase/firestore';
-import { ArrowLeft, Package, Send, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Package, Send, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
 import SEO from '../components/SEO';
 
 export default function Checkout() {
@@ -22,6 +22,89 @@ export default function Checkout() {
     city: '',
     pincode: ''
   });
+
+  const [shippingCost, setShippingCost] = useState<number>(80);
+  const [isCalculating, setIsCalculating] = useState<boolean>(false);
+
+  const totalWeightGrams = cart.reduce((acc, item) => acc + (item.quantity * 500), 0);
+
+  React.useEffect(() => {
+    let active = true;
+    const fetchShippingCost = async () => {
+      const pin = formData.pincode.trim();
+      if (!/^\d{6}$/.test(pin)) {
+        if (active) {
+          setShippingCost(80);
+        }
+        return;
+      }
+
+      setIsCalculating(true);
+      const token = import.meta.env.VITE_DELHIVERY_API_TOKEN;
+      
+      if (!token || token === 'YOUR_DELHIVERY_API_TOKEN') {
+        console.warn("Delhivery API token is not configured. Using fallback shipping cost.");
+        if (active) {
+          setShippingCost(80);
+          setIsCalculating(false);
+        }
+        return;
+      }
+
+      try {
+        const o_pin = 560043;
+        const cgm = totalWeightGrams || 500;
+        const apiQuery = `https://track.delhivery.com/api/kinko/v1/invoice/charges/.json?md=E&ss=Delivered&o_pin=${o_pin}&d_pin=${pin}&cgm=${cgm}`;
+        const corsProxy = 'https://api.allorigins.win/raw?url=';
+        const url = corsProxy + encodeURIComponent(apiQuery);
+
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (active) {
+          if (Array.isArray(data) && data.length > 0 && data[0].total_amount !== undefined) {
+            const cost = Number(data[0].total_amount);
+            if (!isNaN(cost) && cost > 0) {
+              setShippingCost(Math.round(cost));
+            } else {
+              setShippingCost(80);
+            }
+          } else if (data && typeof data === 'object' && 'error' in data) {
+            console.warn("Delhivery API error response:", data.error);
+            setShippingCost(80);
+          } else {
+            console.warn("Unexpected Delhivery API response format:", data);
+            setShippingCost(80);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching shipping charges from Delhivery:", error);
+        if (active) {
+          setShippingCost(80);
+        }
+      } finally {
+        if (active) {
+          setIsCalculating(false);
+        }
+      }
+    };
+
+    fetchShippingCost();
+
+    return () => {
+      active = false;
+    };
+  }, [formData.pincode, totalWeightGrams]);
 
   React.useEffect(() => {
     const fetchProfile = async () => {
@@ -130,7 +213,8 @@ export default function Checkout() {
             price: item.product.price,
             quantity: item.quantity
           })),
-          total: cartTotal,
+          total: cartTotal + shippingCost,
+          shippingCost: shippingCost,
           status: 'pending',
           createdAt: serverTimestamp()
         };
@@ -317,13 +401,21 @@ export default function Checkout() {
                 <span>Subtotal</span>
                 <span>₹{cartTotal}</span>
               </div>
-              <div className="flex justify-between text-warm-dark/50 text-xs font-semibold uppercase tracking-wider">
+              <div className="flex justify-between text-warm-dark/50 text-xs font-semibold uppercase tracking-wider items-center">
                 <span>Shipping</span>
-                <span className="text-warm-accent">Free</span>
+                {isCalculating ? (
+                  <span className="flex items-center gap-1.5 text-warm-accent font-serif text-xs normal-case italic">
+                    <Loader2 className="w-3 h-3 animate-spin" /> Calculating...
+                  </span>
+                ) : (
+                  <span className="text-warm-accent font-bold font-serif text-sm">
+                    {shippingCost === 0 ? 'Free' : `₹${shippingCost}`}
+                  </span>
+                )}
               </div>
               <div className="flex justify-between items-center pt-5 border-t border-warm-dark/10">
                 <span className="font-serif text-xl font-bold text-warm-dark">Grand Total</span>
-                <span className="font-serif text-2xl font-bold text-warm-accent">₹{cartTotal}</span>
+                <span className="font-serif text-2xl font-bold text-warm-accent">₹{cartTotal + shippingCost}</span>
               </div>
             </div>
           </div>
