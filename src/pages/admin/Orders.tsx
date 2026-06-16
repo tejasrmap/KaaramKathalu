@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Filter, Eye, MoreVertical, X, Truck, AlertTriangle, Check, Loader2, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { db } from '../../firebase';
-import { collection, onSnapshot, query, orderBy, doc, updateDoc } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, doc, updateDoc, getDoc } from 'firebase/firestore';
 
 const STATUSES = ['All', 'Pending', 'Processing', 'Shipped', 'Delivered'];
 
@@ -31,8 +31,22 @@ export default function Orders() {
     }
 
     try {
+      // Fetch dynamic warehouse name from Firestore settings
+      let warehouseName = "Kaaram Kathalu";
+      try {
+        const settingsSnap = await getDoc(doc(db, 'settings', 'general'));
+        if (settingsSnap.exists()) {
+          const settingsData = settingsSnap.data();
+          if (settingsData.delhiveryWarehouseName) {
+            warehouseName = settingsData.delhiveryWarehouseName;
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to fetch settings from Firestore, using default warehouse name:", err);
+      }
+
       const pickupLocation = {
-        name: "Kaaram Kathalu",
+        name: warehouseName,
         add: "002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu",
         city: "Bangalore",
         pin: 560043,

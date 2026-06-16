@@ -20,7 +20,8 @@ export default function Settings() {
     heroBgImage1: '',
     heroBgImage2: '',
     heroBgImage3: '',
-    heroOverlayOpacity: '30'
+    heroOverlayOpacity: '30',
+    delhiveryWarehouseName: 'Kaaram Kathalu'
   });
 
   const [hero1File, setHero1File] = useState<File | null>(null);
@@ -300,6 +301,16 @@ export default function Settings() {
                     type="text" 
                     value={settings.address}
                     onChange={e => setSettings(prev => ({ ...prev, address: e.target.value }))}
+                    className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Delhivery Pickup Warehouse Name</label>
+                  <input 
+                    type="text" 
+                    value={settings.delhiveryWarehouseName || ''}
+                    placeholder="e.g. Horamavu"
+                    onChange={e => setSettings(prev => ({ ...prev, delhiveryWarehouseName: e.target.value }))}
                     className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
                   />
                 </div>
