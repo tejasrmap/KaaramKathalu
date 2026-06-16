@@ -117,6 +117,7 @@ export default function ProductsAdmin() {
       name: formData.get('name') as string,
       price: Number(formData.get('price')),
       stock: Number(formData.get('stock')),
+      weightGrams: Number(formData.get('weightGrams')) || 500,
       type: formData.get('type') as ProductType,
       description: formData.get('description') as string,
       image: imageUrl,
@@ -318,7 +319,7 @@ export default function ProductsAdmin() {
                       </div>
                     </div>
 
-                    {/* Stock and Spiciness */}
+                    {/* Stock, Weight and Spiciness */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Stock Level</label>
@@ -329,6 +330,23 @@ export default function ProductsAdmin() {
                           defaultValue={editingProduct?.stock ?? 50} 
                           className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none transition-all shadow-sm focus:shadow-md text-sm" 
                         />
+                      </div>
+                    </div>
+
+                    {/* Weight and Spiciness */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Product Weight (grams)</label>
+                        <input 
+                          name="weightGrams" 
+                          required 
+                          type="number" 
+                          min="1"
+                          defaultValue={editingProduct?.weightGrams ?? 500} 
+                          className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none transition-all shadow-sm focus:shadow-md text-sm" 
+                          placeholder="e.g. 250"
+                        />
+                        <p className="text-[10px] text-warm-dark/40 font-serif italic">Net weight per jar/packet in grams. Used for shipping cost calculation.</p>
                       </div>
                       <div className="space-y-2">
                         <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Spiciness Level</label>

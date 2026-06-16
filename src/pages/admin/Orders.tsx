@@ -95,7 +95,7 @@ export default function Orders() {
           },
           payment_mode: "Pre-paid",
           package_type: "Prepaid",
-          weight: 0.5,
+          weight: parseFloat((order.items?.reduce((sum: number, item: any) => sum + item.quantity * ((item.weightGrams || 500) / 1000), 0) || 0.5).toFixed(2)),
           cod_amount: 0,
           order_date: order.createdAt?.toDate ? order.createdAt.toDate().toISOString() : new Date().toISOString(),
           total_amount: Number(order.total) || 0,
@@ -479,7 +479,7 @@ export default function Orders() {
                         <tr className="border-b border-warm-dark/5">
                           <td colSpan={2} className="px-4 py-3 text-xs font-bold uppercase tracking-widest text-warm-dark/50">Est. Parcel Weight</td>
                           <td className="px-4 py-3 text-right font-bold text-sm text-warm-dark/70">
-                            {((selectedOrder.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 1) * 500)}g
+                            {selectedOrder.items?.reduce((sum: number, item: any) => sum + item.quantity * (item.weightGrams || 500), 0) || 0}g
                           </td>
                         </tr>
                         <tr>
