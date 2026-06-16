@@ -122,7 +122,22 @@ export default function Orders() {
           throw new Error(waybillObj.remarks?.join(', ') || "Failed to generate waybill.");
         }
       } else {
-        throw new Error(resData.rm_remarks || resData.error || "No waybill was returned by Delhivery.");
+        let errorMsg = "";
+        if (resData.rm_remarks) {
+          errorMsg = resData.rm_remarks;
+        } else if (resData.packages && resData.packages.length > 0 && resData.packages[0].remarks) {
+          errorMsg = Array.isArray(resData.packages[0].remarks) 
+            ? resData.packages[0].remarks.join(', ') 
+            : String(resData.packages[0].remarks);
+        } else if (resData.pickups && resData.pickups.length > 0 && resData.pickups[0].waybills && resData.pickups[0].waybills.length > 0 && resData.pickups[0].waybills[0].remarks) {
+          const waybillObj = resData.pickups[0].waybills[0];
+          errorMsg = Array.isArray(waybillObj.remarks) ? waybillObj.remarks.join(', ') : String(waybillObj.remarks);
+        } else if (resData.error && typeof resData.error !== 'boolean') {
+          errorMsg = String(resData.error);
+        } else {
+          errorMsg = JSON.stringify(resData);
+        }
+        throw new Error(errorMsg || "No waybill was returned by Delhivery.");
       }
     } catch (err: any) {
       console.error("Delhivery CMU Error:", err);
