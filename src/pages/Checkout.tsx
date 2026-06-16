@@ -25,6 +25,7 @@ export default function Checkout() {
 
   const [shippingCost, setShippingCost] = useState<number>(80);
   const [isCalculating, setIsCalculating] = useState<boolean>(false);
+  const [pincodeError, setPincodeError] = useState<string | null>(null);
 
   const totalWeightGrams = cart.reduce((acc, item) => acc + (item.quantity * 500), 0);
 
@@ -35,11 +36,13 @@ export default function Checkout() {
       if (!/^\d{6}$/.test(pin)) {
         if (active) {
           setShippingCost(80);
+          setPincodeError(null);
         }
         return;
       }
 
       setIsCalculating(true);
+      setPincodeError(null);
       const token = import.meta.env.VITE_DELHIVERY_API_TOKEN;
       
       if (!token || token === 'YOUR_DELHIVERY_API_TOKEN') {
@@ -52,10 +55,47 @@ export default function Checkout() {
       }
 
       try {
+        const corsProxy = 'https://api.allorigins.win/raw?url=';
+
+        // 1. Verify Pincode Serviceability
+        const serviceabilityUrl = corsProxy + encodeURIComponent(`https://track.delhivery.com/c/api/pin-codes/json/?filter_codes=${pin}`);
+        const serviceabilityRes = await fetch(serviceabilityUrl, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${token}`
+          }
+        });
+
+        if (!serviceabilityRes.ok) {
+          throw new Error(`Serviceability API returned status ${serviceabilityRes.status}`);
+        }
+
+        const serviceabilityData = await serviceabilityRes.json();
+        
+        if (active) {
+          if (serviceabilityData && Array.isArray(serviceabilityData.delivery_codes)) {
+            if (serviceabilityData.delivery_codes.length === 0) {
+              setPincodeError("We do not ship to this pincode. Please try a different location.");
+              setShippingCost(80);
+              setIsCalculating(false);
+              return;
+            } else {
+              // Auto-fill city if the user hasn't explicitly customized it yet
+              const info = serviceabilityData.delivery_codes[0];
+              if (info.district) {
+                setFormData(prev => ({
+                  ...prev,
+                  city: prev.city || info.district
+                }));
+              }
+            }
+          }
+        }
+
+        // 2. Fetch shipping cost
         const o_pin = 560043;
         const cgm = totalWeightGrams || 500;
         const apiQuery = `https://track.delhivery.com/api/kinko/v1/invoice/charges/.json?md=E&ss=Delivered&o_pin=${o_pin}&d_pin=${pin}&cgm=${cgm}`;
-        const corsProxy = 'https://api.allorigins.win/raw?url=';
         const url = corsProxy + encodeURIComponent(apiQuery);
 
         const response = await fetch(url, {
@@ -89,7 +129,9 @@ export default function Checkout() {
         }
       } catch (error) {
         console.error("Error fetching shipping charges from Delhivery:", error);
+        // Fail-open: do not block if there is a network error or token issue
         if (active) {
+          setPincodeError(null);
           setShippingCost(80);
         }
       } finally {
@@ -164,6 +206,10 @@ export default function Checkout() {
     e.preventDefault();
     if (!user) {
       alert("Please log in to place an order.");
+      return;
+    }
+    if (pincodeError) {
+      alert("Please enter a serviceable pincode before placing your order.");
       return;
     }
 
@@ -357,15 +403,18 @@ export default function Checkout() {
                   name="pincode"
                   value={formData.pincode}
                   onChange={handleInputChange}
-                  className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-0 focus:border-warm-accent outline-none focus:bg-white transition-all shadow-sm focus:shadow-md"
+                  className={`w-full bg-white border ${pincodeError ? 'border-red-500 focus:border-red-500' : 'border-warm-dark/10 focus:border-warm-accent'} rounded-xl p-3.5 font-serif focus:ring-0 outline-none focus:bg-white transition-all shadow-sm focus:shadow-md`}
                   placeholder="500001"
                 />
+                {pincodeError && (
+                  <p className="text-red-500 text-xs font-serif italic mt-1.5">{pincodeError}</p>
+                )}
               </div>
             </div>
 
             <button 
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isCalculating || !!pincodeError}
               className="w-full bg-warm-accent hover:bg-warm-accent/95 text-white py-4.5 rounded-xl font-bold tracking-widest uppercase text-xs transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3 cursor-pointer shadow-sm hover:shadow-md"
             >
               {isSubmitting ? 'Processing...' : (
