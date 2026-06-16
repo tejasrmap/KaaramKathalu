@@ -55,10 +55,8 @@ export default function Checkout() {
       }
 
       try {
-        const corsProxy = 'https://api.allorigins.win/raw?url=';
-
-        // 1. Verify Pincode Serviceability (No custom headers to avoid preflight CORS error)
-        const serviceabilityUrl = corsProxy + encodeURIComponent(`https://track.delhivery.com/c/api/pin-codes/json/?token=${token}&filter_codes=${pin}`);
+        // 1. Verify Pincode Serviceability (Use corsproxy.io to avoid allorigins rate limits/CORS errors)
+        const serviceabilityUrl = `https://corsproxy.io/?url=${encodeURIComponent(`https://track.delhivery.com/c/api/pin-codes/json/?token=${token}&filter_codes=${pin}`)}`;
         const serviceabilityRes = await fetch(serviceabilityUrl, {
           method: 'GET'
         });
