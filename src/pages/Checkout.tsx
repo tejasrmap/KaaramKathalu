@@ -55,8 +55,13 @@ export default function Checkout() {
       }
 
       try {
-        // 1. Verify Pincode Serviceability (Use corsproxy.io to avoid allorigins rate limits/CORS errors)
-        const serviceabilityUrl = `https://corsproxy.io/?url=${encodeURIComponent(`https://track.delhivery.com/c/api/pin-codes/json/?token=${token}&filter_codes=${pin}`)}`;
+        // Determine backend API host for local dev compatibility (use live endpoint when running on localhost)
+        const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+          ? 'https://kaaramkathalu.in' 
+          : '';
+
+        // 1. Verify Pincode Serviceability
+        const serviceabilityUrl = `${host}/api/shipping?type=serviceability&pin=${pin}`;
         const serviceabilityRes = await fetch(serviceabilityUrl, {
           method: 'GET'
         });
@@ -87,11 +92,10 @@ export default function Checkout() {
           }
         }
 
-        // 2. Fetch shipping cost (Use corsproxy.io with reqHeaders in query to bypass CORS preflight)
+        // 2. Fetch shipping cost
         const o_pin = 560043;
         const cgm = totalWeightGrams || 500;
-        const apiQuery = `https://track.delhivery.com/api/kinko/v1/invoice/charges/.json?md=E&ss=Delivered&o_pin=${o_pin}&d_pin=${pin}&cgm=${cgm}`;
-        const chargesUrl = `https://corsproxy.io/?url=${encodeURIComponent(apiQuery)}&reqHeaders=authorization:Token%20${token}`;
+        const chargesUrl = `${host}/api/shipping?type=charges&o_pin=${o_pin}&d_pin=${pin}&cgm=${cgm}`;
 
         const response = await fetch(chargesUrl, {
           method: 'GET'
