@@ -11,7 +11,6 @@ import SEO from '../components/SEO';
 export default function ProductDetail() {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
-  const [selectedWeight, setSelectedWeight] = useState('150g');
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { addToCart, setIsCartOpen } = useCart();
@@ -115,26 +114,6 @@ export default function ProductDetail() {
           <p className="text-base text-warm-dark/70 font-serif mb-8 italic">
             {product.description}
           </p>
-
-          {/* Weight Variants Selector */}
-          <div className="mb-6">
-            <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-2.5">Weight</label>
-            <div className="flex gap-2.5">
-              {['150g', '250g'].map((weight) => (
-                <button
-                  key={weight}
-                  onClick={() => setSelectedWeight(weight)}
-                  className={`px-5 py-2.5 rounded-full text-xs font-semibold tracking-wider transition-all duration-200 border cursor-pointer ${
-                    selectedWeight === weight
-                      ? 'bg-warm-dark text-white border-warm-dark shadow-sm'
-                      : 'bg-white text-warm-dark/70 border-warm-dark/15 hover:border-warm-dark/30'
-                  }`}
-                >
-                  {weight}
-                </button>
-              ))}
-            </div>
-          </div>
 
           {/* Quantity Selector */}
           <div className="mb-6">
