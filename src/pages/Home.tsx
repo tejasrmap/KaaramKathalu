@@ -127,7 +127,11 @@ export default function Home() {
 
   return (
     <>
-      <SEO />
+      <SEO
+        title="Kaaram Kathalu | Authentic Andhra Pickles, Podis & Heritage Snacks"
+        description="Handcrafted Andhra pickles (avakaya, gongura), spice podis and heritage snacks made by local artisans. Zero preservatives. Free shipping on orders above ₹999."
+        url="https://www.kaaramkathalu.in/"
+      />
 
       {/* HERO BANNER SECTION */}
       <section className="relative w-full overflow-hidden py-20 md:py-32 border-b border-warm-dark/5 min-h-[45vh] sm:min-h-[55vh] flex items-center">

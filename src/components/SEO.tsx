@@ -6,35 +6,46 @@ interface SEOProps {
   description?: string;
   image?: string;
   url?: string;
+  keywords?: string;
+  type?: 'website' | 'product' | 'article';
 }
 
-export default function SEO({ 
-  title = 'Shop Authentic Andhra Delicacies: Pickles, Sprinkle & Podis – Kaaram Kathalu', 
-  description = 'Explore our exquisite range of handcrafted pickles, sprinkle, and podis, made with authentic Andhra recipes, crafted by locals. Our organic products, richness with zero preservatives, bring you the true essence of Andhra Pradesh. Shop now!',
-  image = 'https://themanduvaproject.in/cdn/shop/files/Manduva.png?v=1706617092',
-  url = 'https://themanduvaproject.in'
+export default function SEO({
+  title = 'Authentic Andhra Pickles, Podis & Heritage Snacks',
+  description = 'Kaaram Kathalu brings you handcrafted Andhra pickles (avakaya, gongura), spice podis and heritage snacks made by local artisans using traditional recipes. Free shipping on orders above ₹999.',
+  image = 'https://www.kaaramkathalu.in/logo.jpg',
+  url = 'https://www.kaaramkathalu.in',
+  keywords = 'andhra pickles online, avakaya pickle, gongura pickle, spice podi, kaaram kathalu, artisan pickles india, heritage pickle brands, buy pickles online india',
+  type = 'website',
 }: SEOProps) {
   const siteTitle = title.includes('Kaaram Kathalu') ? title : `${title} | Kaaram Kathalu`;
 
   return (
     <Helmet>
-      {/* Basic Meta Tags */}
+      {/* ── Primary ── */}
       <title>{siteTitle}</title>
       <meta name="description" content={description} />
+      <meta name="keywords" content={keywords} />
+      <meta name="robots" content="index, follow" />
+      <link rel="canonical" href={url} />
 
-      {/* Open Graph / Facebook */}
-      <meta property="og:type" content="website" />
+      {/* ── Open Graph ── */}
+      <meta property="og:type" content={type} />
+      <meta property="og:site_name" content="Kaaram Kathalu" />
       <meta property="og:url" content={url} />
       <meta property="og:title" content={siteTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={image} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:locale" content="en_IN" />
 
-      {/* Twitter */}
-      <meta property="twitter:card" content="summary_large_image" />
-      <meta property="twitter:url" content={url} />
-      <meta property="twitter:title" content={siteTitle} />
-      <meta property="twitter:description" content={description} />
-      <meta property="twitter:image" content={image} />
+      {/* ── Twitter Card ── */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:url" content={url} />
+      <meta name="twitter:title" content={siteTitle} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={image} />
     </Helmet>
   );
 }
