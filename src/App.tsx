@@ -22,6 +22,7 @@ import Profile from './pages/Profile';
 import Wishlist from './pages/Wishlist';
 import Recipes from './pages/Recipes';
 import RecipeDetail from './pages/RecipeDetail';
+import NotFound from './pages/NotFound';
 
 // Admin components
 import AdminLayout from './pages/admin/AdminLayout';
@@ -68,6 +69,7 @@ export default function App() {
                   <Route path="/my-orders" element={<MyOrders />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/wishlist" element={<Wishlist />} />
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </Layout>
             } />
