@@ -11,7 +11,7 @@ export default function MyOrders() {
   const { user, isLoading: authLoading } = useAuth();
   const [orders, setOrders] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
+
 
   const [activeTracking, setActiveTracking] = useState<{[key: string]: any}>({});
   const [trackingError, setTrackingError] = useState<{[key: string]: string}>({});
@@ -307,12 +307,12 @@ export default function MyOrders() {
                     </div>
 
                     <div className="mt-4 w-full">
-                      <button
-                        onClick={() => setSelectedOrder(order)}
-                        className="inline-flex items-center justify-center bg-white hover:bg-warm-accent hover:text-white text-warm-dark px-3 py-2 rounded-xl text-[10px] font-black uppercase border border-warm-dark/10 cursor-pointer w-full transition-colors font-heading tracking-wider shadow-sm"
+                      <Link
+                        to={`/my-orders/${order.id}`}
+                        className="inline-flex items-center justify-center bg-white hover:bg-warm-accent hover:text-white text-warm-dark px-3 py-2 rounded-xl text-[10px] font-black uppercase border border-warm-dark/10 cursor-pointer w-full transition-colors font-heading tracking-wider shadow-sm text-center"
                       >
                         View Details
-                      </button>
+                      </Link>
                     </div>
 
                     {order.waybill && (
@@ -449,100 +449,6 @@ export default function MyOrders() {
           })}
         </div>
       )}
-      {/* Order Details Modal */}
-      <AnimatePresence>
-        {selectedOrder && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-warm-dark/60 backdrop-blur-sm"
-          >
-            <motion.div
-              initial={{ scale: 0.95, y: 15 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 15 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-              className="bg-white border border-warm-accent/15 rounded-[32px] shadow-2xl max-w-lg w-full overflow-hidden text-left flex flex-col max-h-[85vh]"
-            >
-              {/* Header */}
-              <div className="bg-warm-light/40 px-6 py-5 border-b border-warm-accent/10 flex justify-between items-center">
-                <div>
-                  <h3 className="font-heading font-black text-warm-dark uppercase tracking-wider text-sm">Order Receipt</h3>
-                  <p className="font-mono text-[10px] text-warm-dark/50 mt-0.5">#{selectedOrder.id.toUpperCase()}</p>
-                </div>
-                <button
-                  onClick={() => setSelectedOrder(null)}
-                  className="w-8 h-8 rounded-full bg-white hover:bg-warm-accent hover:text-white text-warm-dark/60 border border-warm-dark/10 flex items-center justify-center transition-all cursor-pointer font-bold text-xs"
-                >
-                  ✕
-                </button>
-              </div>
-
-              {/* Scrollable Content */}
-              <div className="p-6 overflow-y-auto space-y-6 flex-1 text-sm font-serif">
-                {/* Status and Info Grid */}
-                <div className="grid grid-cols-2 gap-4 bg-warm-light/20 p-4 rounded-2xl border border-warm-accent/5">
-                  <div>
-                    <p className="text-[10px] font-heading font-black tracking-widest text-warm-dark/40 uppercase">Placed On</p>
-                    <p className="font-bold text-warm-dark mt-0.5">{selectedOrder.date}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-heading font-black tracking-widest text-warm-dark/40 uppercase">Payment Mode</p>
-                    <p className="font-bold text-warm-dark mt-0.5">Pre-paid</p>
-                  </div>
-                </div>
-
-                {/* Recipient Details */}
-                <div>
-                  <h4 className="text-[10px] font-heading font-black tracking-widest text-warm-accent uppercase mb-3 border-b border-warm-accent/15 pb-1 w-fit">Delivery Address</h4>
-                  <div className="space-y-1 text-warm-dark/80">
-                    <p className="font-bold text-warm-dark">{selectedOrder.customer?.name}</p>
-                    <p>{selectedOrder.customer?.address}</p>
-                    <p>{selectedOrder.customer?.city}, {selectedOrder.customer?.pincode}</p>
-                    <p className="pt-2 font-sans text-xs flex items-center gap-1.5 text-warm-dark/60">
-                      <span className="font-heading font-bold text-[9px] uppercase tracking-wider text-warm-accent bg-warm-accent/5 px-1.5 py-0.5 rounded">Phone</span> 
-                      {selectedOrder.customer?.phone}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Items Summary */}
-                <div>
-                  <h4 className="text-[10px] font-heading font-black tracking-widest text-warm-accent uppercase mb-3 border-b border-warm-accent/15 pb-1 w-fit">Items ordered</h4>
-                  <div className="space-y-2.5">
-                    {selectedOrder.items?.map((item: any, idx: number) => (
-                      <div key={idx} className="flex justify-between items-center bg-warm-light/10 px-4 py-2.5 rounded-xl border border-warm-dark/5">
-                        <div>
-                          <p className="font-bold text-warm-dark">{item.name}</p>
-                          <p className="text-[10px] text-warm-dark/50 font-sans mt-0.5">Quantity: {item.quantity}</p>
-                        </div>
-                        <p className="font-bold text-warm-dark">₹{item.price * item.quantity}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Cost breakdown */}
-                <div className="border-t border-dashed border-warm-accent/20 pt-4 space-y-2">
-                  <div className="flex justify-between text-warm-dark/70">
-                    <span>Subtotal</span>
-                    <span>₹{selectedOrder.total - (selectedOrder.shippingCost || 0)}</span>
-                  </div>
-                  <div className="flex justify-between text-warm-dark/70">
-                    <span>Shipping Cost</span>
-                    <span>₹{selectedOrder.shippingCost || 0}</span>
-                  </div>
-                  <div className="flex justify-between font-bold text-warm-dark text-base border-t border-warm-dark/5 pt-2">
-                    <span>Grand Total</span>
-                    <span className="text-warm-accent">₹{selectedOrder.total}</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

@@ -26,6 +26,7 @@ import NotFound from './pages/NotFound';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
 import TrackOrder from './pages/TrackOrder';
+import OrderDetail from './pages/OrderDetail';
 
 // Admin components
 import AdminLayout from './pages/admin/AdminLayout';
@@ -70,6 +71,7 @@ export default function App() {
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/my-orders" element={<MyOrders />} />
+                  <Route path="/my-orders/:id" element={<OrderDetail />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/wishlist" element={<Wishlist />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
