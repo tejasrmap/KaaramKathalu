@@ -87,23 +87,6 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [heroImages.length]);
 
-  const circularCategories = [
-    {
-      name: 'Murukku',
-      image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=100&q=80',
-      link: "/murukku"
-    },
-    {
-      name: 'Namkeen & Sev',
-      image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=100&q=80',
-      link: "/namkeen"
-    },
-    {
-      name: 'Snacks',
-      image: 'https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=100&q=80',
-      link: "/snacks"
-    }
-  ];
 
   const faqs = [
     {
@@ -215,29 +198,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CIRCULAR CATEGORIES */}
-      <section className="py-12 md:py-16 px-4 bg-white border-b border-warm-dark/5">
-        <div className="max-w-5xl mx-auto flex flex-wrap justify-around items-center gap-6 md:gap-10">
-          {circularCategories.map((cat, idx) => (
-            <Link 
-              key={idx} 
-              to={cat.link}
-              className="flex flex-col items-center gap-3 group transition-transform hover:scale-105"
-            >
-              <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full border border-warm-dark/10 p-2 bg-warm-light flex items-center justify-center shadow-sm overflow-hidden group-hover:border-warm-accent transition-colors">
-                <img 
-                  src={cat.image} 
-                  alt={cat.name} 
-                  className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
-                />
-              </div>
-              <span className="font-heading text-sm sm:text-base tracking-wider uppercase font-bold text-warm-dark group-hover:text-warm-accent transition-colors">
-                {cat.name}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
 
       {/* BESTSELLERS SECTION */}
       <section className="py-20 md:py-28 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">

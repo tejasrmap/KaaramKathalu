@@ -107,9 +107,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <nav className="hidden lg:flex gap-8 items-center font-heading text-base tracking-wider uppercase text-warm-dark font-medium">
               <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Home</Link>
               <Link to="/shop" className={`${location.pathname === '/shop' && !location.search ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Shop All</Link>
-              <Link to="/murukku" className={`${location.pathname === '/murukku' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Murukku</Link>
-              <Link to="/namkeen" className={`${location.pathname === '/namkeen' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Namkeen &amp; Sev</Link>
-              <Link to="/about" className={`${location.pathname === '/about' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Our Story</Link>
             </nav>
 
             {/* Desktop & Mobile Actions */}
@@ -225,10 +222,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
               <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 font-heading text-lg tracking-wider uppercase text-warm-dark">
                 <Link to="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Home</Link>
-                <Link to="/shop" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Shop All</Link>
-                <Link to="/murukku" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Murukku</Link>
-                <Link to="/namkeen" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Namkeen &amp; Sev</Link>
-                <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3">Our Story</Link>
+                <Link to="/shop" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3">Shop All</Link>
               </div>
 
               <div className="p-6 border-t border-warm-dark/10 bg-warm-light text-center">
