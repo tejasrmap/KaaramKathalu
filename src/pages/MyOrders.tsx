@@ -117,20 +117,27 @@ export default function MyOrders() {
 
     const q = query(
       collection(db, 'orders'),
-      where('customer.email', '==', user.email),
-      orderBy('createdAt', 'desc')
+      where('customer.email', '==', user.email)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const ordersData = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
-        date: doc.data().createdAt?.toDate().toLocaleDateString('en-IN', {
+        date: doc.data().createdAt?.toDate ? doc.data().createdAt.toDate().toLocaleDateString('en-IN', {
           day: '2-digit',
           month: 'short',
           year: 'numeric'
-        }) || 'Recent'
+        }) : 'Recent'
       }));
+
+      // Sort client-side by createdAt descending to avoid composite index requirement
+      ordersData.sort((a, b) => {
+        const timeA = a.createdAt?.seconds || 0;
+        const timeB = b.createdAt?.seconds || 0;
+        return timeB - timeA;
+      });
+
       setOrders(ordersData);
       setIsLoading(false);
     }, (error) => {
