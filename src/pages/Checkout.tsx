@@ -20,16 +20,28 @@ export default function Checkout() {
     return sessionStorage.getItem('kk_checkout_waybill') || "";
   });
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
-  const [selectedAddressId, setSelectedAddressId] = useState<string>("");
-  const [showNewAddressForm, setShowNewAddressForm] = useState(false);
+  const [selectedAddressId, setSelectedAddressId] = useState(() => {
+    return sessionStorage.getItem('kk_checkout_selected_address_id') || "";
+  });
+  const [showNewAddressForm, setShowNewAddressForm] = useState(() => {
+    return sessionStorage.getItem('kk_checkout_show_new_address_form') === 'true';
+  });
   
-  const [formData, setFormData] = useState({
-    name: user?.displayName || '',
-    email: user?.email || '',
-    phone: '',
-    address: '',
-    city: '',
-    pincode: ''
+  const [formData, setFormData] = useState(() => {
+    const cached = sessionStorage.getItem('kk_checkout_form');
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch {}
+    }
+    return {
+      name: user?.displayName || '',
+      email: user?.email || '',
+      phone: '',
+      address: '',
+      city: '',
+      pincode: ''
+    };
   });
 
   const [shippingCost, setShippingCost] = useState<number>(80);
@@ -154,6 +166,18 @@ export default function Checkout() {
   }, [formData.pincode, totalWeightGrams]);
 
   React.useEffect(() => {
+    sessionStorage.setItem('kk_checkout_form', JSON.stringify(formData));
+  }, [formData]);
+
+  React.useEffect(() => {
+    sessionStorage.setItem('kk_checkout_selected_address_id', selectedAddressId);
+  }, [selectedAddressId]);
+
+  React.useEffect(() => {
+    sessionStorage.setItem('kk_checkout_show_new_address_form', showNewAddressForm ? 'true' : 'false');
+  }, [showNewAddressForm]);
+
+  React.useEffect(() => {
     // If there are items in the cart, it's a new checkout session, so clear any old success state
     if (cart.length > 0) {
       sessionStorage.removeItem('kk_checkout_success');
@@ -163,7 +187,7 @@ export default function Checkout() {
     }
   }, [cart]);
 
-  const hasLoadedInitialData = React.useRef(false);
+  const hasLoadedInitialData = React.useRef(sessionStorage.getItem('kk_checkout_form') !== null);
 
   React.useEffect(() => {
     if (!user) return;
@@ -447,6 +471,9 @@ export default function Checkout() {
       }
       
       sessionStorage.setItem('kk_checkout_success', 'true');
+      sessionStorage.removeItem('kk_checkout_form');
+      sessionStorage.removeItem('kk_checkout_selected_address_id');
+      sessionStorage.removeItem('kk_checkout_show_new_address_form');
       setIsSuccess(true);
       clearCart();
     } catch (error: any) {
