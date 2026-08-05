@@ -194,17 +194,17 @@ export default function TermsAndConditions() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a
-              href="mailto:kathalukaaram@gmail.com"
+              href="mailto:kaaram.kathalu2025@gmail.com"
               className="text-warm-accent font-heading text-sm tracking-wider hover:text-white transition-colors"
             >
-              kathalukaaram@gmail.com
+              kaaram.kathalu2025@gmail.com
             </a>
             <span className="hidden sm:block text-warm-bg/30">|</span>
             <a
-              href="tel:+919770889608"
+              href="tel:+917676644366"
               className="text-warm-accent font-heading text-sm tracking-wider hover:text-white transition-colors"
             >
-              +91 97708 89608
+              +91 76766 44366
             </a>
           </div>
         </div>

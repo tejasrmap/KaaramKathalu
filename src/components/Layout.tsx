@@ -17,8 +17,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [settings, setSettings] = useState({
     companyName: 'Kaaram Kathalu',
-    supportEmail: 'kathalukaaram@gmail.com',
-    supportPhone: '+91 97708 89608',
+    supportEmail: 'kaaram.kathalu2025@gmail.com',
+    supportPhone: '+91 76766 44366',
     address: '002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu, Bangalore, Karnataka - 560043',
     announcementText: '🔥 Traditional Andhra Delicacies. Preservative-Free & Handcrafted. Free Shipping on Orders Above ₹999.',
     isMaintenanceMode: false
