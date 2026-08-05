@@ -9,7 +9,7 @@ import SEO from '../components/SEO';
 import { useWishlist } from '../context/WishlistContext';
 import { Heart } from 'lucide-react';
 
-export default function Shop({ category }: { category?: 'pickle' | 'podi' }) {
+export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 'snacks' }) {
   const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
@@ -31,11 +31,13 @@ export default function Shop({ category }: { category?: 'pickle' | 'podi' }) {
     ? products.filter(p => p.type === category)
     : products;
 
-  const pageTitle = category === 'pickle' 
-    ? 'Pickles' 
-    : category === 'podi' 
-      ? 'Podi & Sprinkles' 
-      : 'Shop All';
+  const pageTitle = category === 'murukku'
+    ? 'Murukku'
+    : category === 'namkeen'
+      ? 'Namkeen & Sev'
+      : category === 'snacks'
+        ? 'Snacks'
+        : 'Shop All';
 
   return (
     <div className="pt-24 md:pt-32 pb-24 px-4 sm:px-6 md:px-12 max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto min-h-screen">
@@ -57,7 +59,7 @@ export default function Shop({ category }: { category?: 'pickle' | 'podi' }) {
             </div>
           ) : filteredProducts.length === 0 ? (
              <div className="col-span-full py-20 text-center bg-white border border-warm-dark/5 rounded-[24px] shadow-sm max-w-xl mx-auto w-full">
-              <p className="font-serif font-bold text-xl italic text-warm-dark/30">No jars found in this section.</p>
+              <p className="font-serif font-bold text-xl italic text-warm-dark/30">No snacks found in this section.</p>
             </div>
           ) : filteredProducts.map(product => (
             <motion.div

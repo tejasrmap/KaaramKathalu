@@ -89,37 +89,42 @@ export default function Home() {
 
   const circularCategories = [
     {
-      name: 'Pickles',
-      image: 'https://themanduvaproject.in/cdn/shop/files/jar_3387912.png?v=1776152279&width=100',
-      link: "/pickles"
+      name: 'Murukku',
+      image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=100&q=80',
+      link: "/murukku"
     },
     {
-      name: 'Podi & Sprinkles',
-      image: 'https://themanduvaproject.in/cdn/shop/files/party_6700769.png?v=1776152279&width=100',
-      link: "/podi-sprinkles"
+      name: 'Namkeen & Sev',
+      image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=100&q=80',
+      link: "/namkeen"
+    },
+    {
+      name: 'Snacks',
+      image: 'https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=100&q=80',
+      link: "/snacks"
     }
   ];
 
   const faqs = [
     {
-      q: "Are your pickles handmade?",
-      a: "Yes! All our pickles are handcrafted in small batches in rural Andhra villages by local women. We use traditional family heirloom recipes, sun-dry our ingredients, and hand-mix with pure cold-pressed oils."
+      q: "Are your snacks handmade?",
+      a: "Yes! Every batch of murukku, sev, and namkeen is handcrafted in small quantities. We use traditional presses and methods passed down through generations of Andhra households."
     },
     {
-      q: "Do your products contain preservatives or chemicals?",
-      a: "Absolutely not. All products at The Manduva Project are completely free of artificial preservatives, vinegar, acidity regulators, chemical colors, or MSG. We preserve using traditional natural agents like sea salt, turmeric, lemon juice, and pure oils."
+      q: "Do your products contain preservatives or artificial additives?",
+      a: "Absolutely not. All our snacks are completely free of artificial preservatives, colours, flavour enhancers, or MSG. We use pure cold-pressed oils, fresh spices, and natural ingredients only."
     },
     {
-      q: "What is the difference between a podi and a sprinkle?",
-      a: "Podis are traditional spice powders cooked down with roasted lentils and typically hand-mixed with hot rice and ghee. Sprinkles are finer seasoning blends specifically crafted to be dusted as a garnish on breakfast tiffins (idli, dosa), snacks, or curries."
+      q: "What is murukku made from?",
+      a: "Murukku is a traditional South Indian savoury snack made primarily from rice flour and urad dal flour. Our recipes also include pure butter or ghee, sesame seeds, cumin, and fresh spices. Each variety has its own unique ingredient blend."
     },
     {
-      q: "How should I store the pickles?",
-      a: "Store the pickle jar in a cool, dry place away from direct sunlight. Always use a clean, completely dry spoon to scoop the pickle. Ensure there is a thin layer of oil on top of the pickle to maintain freshness."
+      q: "How long do the snacks stay fresh?",
+      a: "Our snacks are preservative-free and packed in airtight packaging to lock in crunch. They stay fresh for up to 45–60 days when stored in a cool, dry place with the pack sealed after opening."
     },
     {
-      q: "How long do the pickles stay fresh?",
-      a: "Since our products are preservative-free and natural, our pickles stay completely fresh for up to 9-12 months when stored properly. Our podis and sprinkles maintain their aromatic flavors for up to 6 months."
+      q: "Can I order in bulk for events or gifting?",
+      a: "Absolutely! We accept bulk orders for weddings, festivals, corporate gifting, and events. Contact us at kaaram.kathalu2025@gmail.com or call +91 76766 44366 for bulk pricing and custom packaging options."
     }
   ];
 
@@ -128,8 +133,8 @@ export default function Home() {
   return (
     <>
       <SEO
-        title="Kaaram Kathalu | Authentic Andhra Pickles, Podis & Heritage Snacks"
-        description="Handcrafted Andhra pickles (avakaya, gongura), spice podis and heritage snacks made by local artisans. Zero preservatives. Free shipping on orders above ₹999."
+        title="Kaaram Kathalu | Handmade Murukku, Namkeen & Traditional Andhra Snacks"
+        description="Kaaram Kathalu brings you handcrafted Andhra murukku, namkeen, sev and crunchy snacks made by local artisans. Zero preservatives. Free shipping on orders above ₹999."
         url="https://www.kaaramkathalu.in/"
       />
 
@@ -187,14 +192,14 @@ export default function Home() {
           <div className="max-w-2xl flex flex-col gap-5">
             <span className={`font-heading tracking-[0.2em] text-xs md:text-sm uppercase font-bold ${
               heroImages.length > 0 ? 'text-warm-accent' : 'text-warm-accent'
-            }`}>Handmade Heritage</span>
+            }`}>Handmade Traditions</span>
             <h1 className={`text-4xl sm:text-5xl md:text-6xl font-serif leading-tight ${
               heroImages.length > 0 ? 'text-white drop-shadow-lg' : 'text-warm-dark'
-            }`}>Fresh Traditions, <br/>Bold Flavors.</h1>
+            }`}>Crunch into <br/>Heritage.</h1>
             <p className={`font-serif italic text-sm md:text-base leading-relaxed max-w-md ${
               heroImages.length > 0 ? 'text-white/90 drop-shadow' : 'text-warm-dark/80'
             }`}>
-              We preserve the culinary marvels of ancestral homes, handcrafting zero-preservative Andhra pachadis, spice mixes, and crunchy savouries.
+              Handcrafted Andhra murukku, namkeen, and crunchy savouries made with pure ingredients and zero preservatives. Every bite tells a story.
             </p>
             <Link 
               to="/shop" 
@@ -204,7 +209,7 @@ export default function Home() {
                   : 'bg-warm-accent text-white hover:bg-warm-dark shadow-[4px_4px_0px_var(--color-warm-dark)]'
               }`}
             >
-              Shop Authentic Jars
+              Shop Snacks
             </Link>
           </div>
         </div>

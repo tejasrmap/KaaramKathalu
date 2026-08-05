@@ -107,8 +107,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <nav className="hidden lg:flex gap-8 items-center font-heading text-base tracking-wider uppercase text-warm-dark font-medium">
               <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Home</Link>
               <Link to="/shop" className={`${location.pathname === '/shop' && !location.search ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Shop All</Link>
-              <Link to="/pickles" className={`${location.pathname === '/pickles' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Pickles</Link>
-              <Link to="/podi-sprinkles" className={`${location.pathname === '/podi-sprinkles' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Podi & Sprinkles</Link>
+              <Link to="/murukku" className={`${location.pathname === '/murukku' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Murukku</Link>
+              <Link to="/namkeen" className={`${location.pathname === '/namkeen' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Namkeen &amp; Sev</Link>
               <Link to="/about" className={`${location.pathname === '/about' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Our Story</Link>
             </nav>
 
@@ -226,8 +226,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 font-heading text-lg tracking-wider uppercase text-warm-dark">
                 <Link to="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Home</Link>
                 <Link to="/shop" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Shop All</Link>
-                <Link to="/pickles" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Pickles</Link>
-                <Link to="/podi-sprinkles" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Podi & Sprinkles</Link>
+                <Link to="/murukku" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Murukku</Link>
+                <Link to="/namkeen" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Namkeen &amp; Sev</Link>
                 <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3">Our Story</Link>
               </div>
 
@@ -258,7 +258,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               />
             </div>
             <p className="text-warm-bg/70 leading-relaxed font-serif text-sm">
-              Welcome to {settings.companyName}. We specialize in artisanal, handmade, small-batch traditional Andhra pickles, spices, and snacks. Pure recipes, local ingredients, zero preservatives.
+              Welcome to {settings.companyName}. We craft traditional Andhra packaged snacks — handmade murukku, namkeen, and crunchy savouries made with pure ingredients and zero preservatives.
             </p>
           </div>
           
@@ -267,8 +267,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <h4 className="font-heading text-lg tracking-wider text-white uppercase mb-6 font-bold pb-1 border-b border-warm-accent/30 inline-block">Quick Shop</h4>
             <ul className="space-y-3 text-warm-bg/70 text-sm font-serif">
               <li><Link to="/shop" className="hover:text-white transition-colors">Shop All</Link></li>
-              <li><Link to="/pickles" className="hover:text-white transition-colors">Traditional Pickles</Link></li>
-              <li><Link to="/podi-sprinkles" className="hover:text-white transition-colors">Spice Sprinkles</Link></li>
+              <li><Link to="/murukku" className="hover:text-white transition-colors">Murukku Varieties</Link></li>
+              <li><Link to="/namkeen" className="hover:text-white transition-colors">Namkeen &amp; Sev</Link></li>
+              <li><Link to="/snacks" className="hover:text-white transition-colors">Crunchy Snacks</Link></li>
             </ul>
           </div>
 
