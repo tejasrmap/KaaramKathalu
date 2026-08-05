@@ -17,6 +17,7 @@ export default function Checkout() {
   const [successWaybill, setSuccessWaybill] = useState<string>("");
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
+  const [showNewAddressForm, setShowNewAddressForm] = useState(false);
   
   const [formData, setFormData] = useState({
     name: user?.displayName || '',
@@ -528,130 +529,208 @@ export default function Checkout() {
           <h1 className="text-3xl font-serif text-warm-dark mb-8">Delivery Details</h1>
           
           <form onSubmit={handleSubmit} className="space-y-6">
-            {savedAddresses.length > 0 && (
-              <div className="mb-6">
-                <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-3 text-left">
-                  Select a Saved Address
-                </label>
-                <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-warm-accent/20">
-                  {savedAddresses.map((addr) => {
-                    const isSelected = selectedAddressId === addr.id;
-                    return (
-                      <button
-                        type="button"
-                        key={addr.id}
-                        onClick={() => {
-                          setSelectedAddressId(addr.id);
+            {savedAddresses.length > 0 && !showNewAddressForm ? (
+              <div className="space-y-6">
+                {/* Carousel */}
+                <div>
+                  <div className="flex justify-between items-center mb-3">
+                    <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 text-left">
+                      Select a Saved Address
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedAddressId("");
+                        setShowNewAddressForm(true);
+                        setFormData(prev => ({
+                          ...prev,
+                          name: '',
+                          phone: '',
+                          address: '',
+                          city: '',
+                          pincode: ''
+                        }));
+                      }}
+                      className="text-[10px] font-heading font-black text-warm-accent hover:text-warm-dark uppercase tracking-wider transition-colors cursor-pointer"
+                    >
+                      + Add New Address
+                    </button>
+                  </div>
+                  
+                  <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-warm-accent/20">
+                    {savedAddresses.map((addr) => {
+                      const isSelected = selectedAddressId === addr.id;
+                      return (
+                        <button
+                          type="button"
+                          key={addr.id}
+                          onClick={() => {
+                            setSelectedAddressId(addr.id);
+                            setShowNewAddressForm(false);
+                            setFormData(prev => ({
+                              ...prev,
+                              name: addr.name || '',
+                              phone: addr.phone || '',
+                              address: addr.address || '',
+                              city: addr.city || '',
+                              pincode: addr.pincode || ''
+                            }));
+                          }}
+                          className={`p-4 rounded-xl border text-left flex-shrink-0 w-64 transition-all duration-300 cursor-pointer ${
+                            isSelected 
+                              ? 'border-warm-accent bg-warm-accent/[0.02] shadow-sm scale-[1.01]' 
+                              : 'border-warm-dark/10 hover:border-warm-accent/40 bg-white'
+                          }`}
+                        >
+                          <h4 className="font-bold text-warm-dark font-serif text-sm flex items-center justify-between">
+                            <span className="truncate pr-2">{addr.name}</span>
+                            {isSelected && <span className="w-2 h-2 rounded-full bg-warm-accent flex-shrink-0"></span>}
+                          </h4>
+                          <p className="text-xs font-serif text-warm-dark/70 truncate mt-1">{addr.address}</p>
+                          <p className="text-xs font-serif text-warm-dark/70">{addr.city}, {addr.pincode}</p>
+                          <p className="text-[10px] text-warm-dark/50 mt-1">Phone: {addr.phone}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Selected Address Summary Card */}
+                {selectedAddressId && (
+                  <div className="bg-warm-light/20 p-6 rounded-2xl border border-warm-accent/10 text-left font-serif space-y-3 shadow-inner">
+                    <div className="flex justify-between items-center pb-2 border-b border-warm-dark/5">
+                      <span className="text-[9px] font-heading font-black tracking-widest text-warm-accent uppercase">Selected Delivery Address</span>
+                      <span className="text-[10px] font-mono text-warm-dark/40 font-bold">PIN: {formData.pincode}</span>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-warm-dark text-base">{formData.name}</h4>
+                      <p className="text-sm text-warm-dark/80 mt-1 leading-relaxed">{formData.address}</p>
+                      <p className="text-sm text-warm-dark/80">{formData.city}, {formData.pincode}</p>
+                    </div>
+                    <div className="pt-2 border-t border-warm-dark/5 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between text-xs text-warm-dark/60 font-sans">
+                      <div>
+                        <span className="font-semibold text-warm-dark/80">Phone:</span> {formData.phone}
+                        <span className="mx-2 hidden sm:inline">|</span>
+                        <span className="block sm:inline"><span className="font-semibold text-warm-dark/80">Email:</span> {formData.email}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              // Standard Address Input Fields
+              <div className="space-y-6">
+                {savedAddresses.length > 0 && (
+                  <div className="flex justify-between items-center pb-2 border-b border-warm-dark/5">
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-warm-dark/50">Enter New Delivery Address</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowNewAddressForm(false);
+                        const defaultAddr = savedAddresses.find(addr => addr.isDefault) || savedAddresses[0];
+                        if (defaultAddr) {
+                          setSelectedAddressId(defaultAddr.id);
                           setFormData(prev => ({
                             ...prev,
-                            name: addr.name || '',
-                            phone: addr.phone || '',
-                            address: addr.address || '',
-                            city: addr.city || '',
-                            pincode: addr.pincode || ''
+                            name: defaultAddr.name || '',
+                            phone: defaultAddr.phone || '',
+                            address: defaultAddr.address || '',
+                            city: defaultAddr.city || '',
+                            pincode: defaultAddr.pincode || ''
                           }));
-                        }}
-                        className={`p-4 rounded-xl border text-left flex-shrink-0 w-64 transition-all duration-300 cursor-pointer ${
-                          isSelected 
-                            ? 'border-warm-accent bg-warm-accent/[0.02] shadow-sm scale-[1.01]' 
-                            : 'border-warm-dark/10 hover:border-warm-accent/40 bg-white'
-                        }`}
-                      >
-                        <h4 className="font-bold text-warm-dark font-serif text-sm flex items-center justify-between">
-                          <span className="truncate pr-2">{addr.name}</span>
-                          {isSelected && <span className="w-2 h-2 rounded-full bg-warm-accent flex-shrink-0"></span>}
-                        </h4>
-                        <p className="text-xs font-serif text-warm-dark/70 truncate mt-1">{addr.address}</p>
-                        <p className="text-xs font-serif text-warm-dark/70">{addr.city}, {addr.pincode}</p>
-                        <p className="text-[10px] text-warm-dark/50 mt-1">Phone: {addr.phone}</p>
-                      </button>
-                    );
-                  })}
+                        }
+                      }}
+                      className="text-[10px] font-heading font-black text-warm-accent hover:text-warm-dark uppercase tracking-wider transition-colors cursor-pointer"
+                    >
+                      ← Use Saved Address
+                    </button>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Full Name</label>
+                    <input 
+                      required
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-0 focus:border-warm-accent outline-none focus:bg-white transition-all shadow-sm focus:shadow-md"
+                      placeholder="John Doe"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Phone Number</label>
+                    <input 
+                      required
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-0 focus:border-warm-accent outline-none focus:bg-white transition-all shadow-sm focus:shadow-md"
+                      placeholder="+91 00000 00000"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Email Address</label>
+                  <input 
+                    required
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-0 focus:border-warm-accent outline-none focus:bg-white transition-all shadow-sm focus:shadow-md"
+                    placeholder="john@example.com"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Shipping Address</label>
+                  <textarea 
+                    required
+                    name="address"
+                    rows={3}
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-0 focus:border-warm-accent outline-none focus:bg-white transition-all shadow-sm focus:shadow-md resize-none"
+                    placeholder="House No, Street Name, Landmark"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">City</label>
+                    <input 
+                      required
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleInputChange}
+                      className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-0 focus:border-warm-accent outline-none focus:bg-white transition-all shadow-sm focus:shadow-md"
+                      placeholder="Hyderabad"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Pincode</label>
+                    <input 
+                      required
+                      type="text"
+                      name="pincode"
+                      value={formData.pincode}
+                      onChange={handleInputChange}
+                      className={`w-full bg-white border ${pincodeError ? 'border-red-500 focus:border-red-500' : 'border-warm-dark/10 focus:border-warm-accent'} rounded-xl p-3.5 font-serif focus:ring-0 outline-none focus:bg-white transition-all shadow-sm focus:shadow-md`}
+                      placeholder="500001"
+                    />
+                    {pincodeError && (
+                      <p className="text-red-500 text-xs font-serif italic mt-1.5">{pincodeError}</p>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Full Name</label>
-                <input 
-                  required
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-0 focus:border-warm-accent outline-none focus:bg-white transition-all shadow-sm focus:shadow-md"
-                  placeholder="John Doe"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Phone Number</label>
-                <input 
-                  required
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-0 focus:border-warm-accent outline-none focus:bg-white transition-all shadow-sm focus:shadow-md"
-                  placeholder="+91 00000 00000"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Email Address</label>
-              <input 
-                required
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-0 focus:border-warm-accent outline-none focus:bg-white transition-all shadow-sm focus:shadow-md"
-                placeholder="john@example.com"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Shipping Address</label>
-              <textarea 
-                required
-                name="address"
-                rows={3}
-                value={formData.address}
-                onChange={handleInputChange}
-                className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-0 focus:border-warm-accent outline-none focus:bg-white transition-all shadow-sm focus:shadow-md resize-none"
-                placeholder="House No, Street Name, Landmark"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">City</label>
-                <input 
-                  required
-                  type="text"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-0 focus:border-warm-accent outline-none focus:bg-white transition-all shadow-sm focus:shadow-md"
-                  placeholder="Hyderabad"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Pincode</label>
-                <input 
-                  required
-                  type="text"
-                  name="pincode"
-                  value={formData.pincode}
-                  onChange={handleInputChange}
-                  className={`w-full bg-white border ${pincodeError ? 'border-red-500 focus:border-red-500' : 'border-warm-dark/10 focus:border-warm-accent'} rounded-xl p-3.5 font-serif focus:ring-0 outline-none focus:bg-white transition-all shadow-sm focus:shadow-md`}
-                  placeholder="500001"
-                />
-                {pincodeError && (
-                  <p className="text-red-500 text-xs font-serif italic mt-1.5">{pincodeError}</p>
-                )}
-              </div>
-            </div>
 
             <button 
               type="submit"
