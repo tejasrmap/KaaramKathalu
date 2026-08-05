@@ -13,8 +13,12 @@ export default function Checkout() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [successWaybill, setSuccessWaybill] = useState<string>("");
+  const [isSuccess, setIsSuccess] = useState(() => {
+    return sessionStorage.getItem('kk_checkout_success') === 'true';
+  });
+  const [successWaybill, setSuccessWaybill] = useState<string>(() => {
+    return sessionStorage.getItem('kk_checkout_waybill') || "";
+  });
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
   const [showNewAddressForm, setShowNewAddressForm] = useState(false);
@@ -148,6 +152,16 @@ export default function Checkout() {
       active = false;
     };
   }, [formData.pincode, totalWeightGrams]);
+
+  React.useEffect(() => {
+    // If there are items in the cart, it's a new checkout session, so clear any old success state
+    if (cart.length > 0) {
+      sessionStorage.removeItem('kk_checkout_success');
+      sessionStorage.removeItem('kk_checkout_waybill');
+      setIsSuccess(false);
+      setSuccessWaybill("");
+    }
+  }, [cart]);
 
   const hasLoadedInitialData = React.useRef(false);
 
@@ -411,6 +425,7 @@ export default function Checkout() {
 
           if (waybill) {
             setSuccessWaybill(waybill);
+            sessionStorage.setItem('kk_checkout_waybill', waybill);
             // Update order in Firestore
             await updateDoc(doc(db, 'orders', orderId), {
               status: 'Shipped',
@@ -431,6 +446,7 @@ export default function Checkout() {
         console.error("Failed to auto-create Delhivery shipment during checkout:", err);
       }
       
+      sessionStorage.setItem('kk_checkout_success', 'true');
       setIsSuccess(true);
       clearCart();
     } catch (error: any) {
