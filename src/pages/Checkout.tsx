@@ -6,6 +6,7 @@ import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp, runTransaction, doc, getDoc, query, where, limit, getDocs, updateDoc } from 'firebase/firestore';
 import { ArrowLeft, Package, Send, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
 import SEO from '../components/SEO';
+import { motion } from 'motion/react';
 
 export default function Checkout() {
   const { cart, cartTotal, clearCart } = useCart();
@@ -13,6 +14,7 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [successWaybill, setSuccessWaybill] = useState<string>("");
   
   const [formData, setFormData] = useState({
     name: user?.displayName || '',
@@ -380,6 +382,7 @@ export default function Checkout() {
           }
 
           if (waybill) {
+            setSuccessWaybill(waybill);
             // Update order in Firestore
             await updateDoc(doc(db, 'orders', orderId), {
               status: 'Shipped',
@@ -420,21 +423,64 @@ export default function Checkout() {
   if (isSuccess) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center max-w-2xl mx-auto">
-        <div className="w-24 h-24 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-8 border border-green-100 shadow-sm">
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="w-24 h-24 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-8 border border-green-100 shadow-sm"
+        >
           <CheckCircle2 className="w-12 h-12" />
-        </div>
-        <h2 className="text-4xl md:text-5xl font-serif text-warm-dark mb-6">Order Placed Successfully!</h2>
-        <p className="text-warm-dark/60 mb-10 font-serif italic text-lg leading-relaxed">
+        </motion.div>
+
+        <motion.h2
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-4xl md:text-5xl font-serif text-warm-dark mb-6"
+        >
+          Order Placed Successfully!
+        </motion.h2>
+
+        <motion.p
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="text-warm-dark/60 mb-8 font-serif italic text-lg leading-relaxed"
+        >
           Thank you for choosing Kaaram Kathalu. We've received your order and our artisans are preparing your jars of heritage. You'll receive an update soon.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4">
+        </motion.p>
+
+        {successWaybill && (
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="mb-10 p-5 bg-green-50/40 border border-green-200/50 rounded-2xl max-w-md w-full flex flex-col items-center gap-1.5 shadow-sm"
+          >
+            <span className="text-[10px] font-heading font-black tracking-widest text-green-800 uppercase">Delhivery Tracking AWB</span>
+            <span className="font-mono text-xl font-bold text-green-950 tracking-wider select-all">{successWaybill}</span>
+            <Link 
+              to={`/my-orders`}
+              className="text-xs text-green-700 hover:text-green-900 transition-colors font-serif underline mt-1"
+            >
+              Track Live Status in My Orders
+            </Link>
+          </motion.div>
+        )}
+
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="flex flex-col sm:flex-row gap-4"
+        >
           <Link to="/shop" className="px-8 py-4 bg-warm-accent hover:bg-warm-accent/90 text-white rounded-full font-bold tracking-widest uppercase text-xs transition-colors shadow-sm cursor-pointer">
             Continue Shopping
           </Link>
           <Link to="/" className="px-8 py-4 bg-white hover:bg-warm-light/40 border border-warm-dark/15 text-warm-dark rounded-full font-bold tracking-widest uppercase text-xs transition-colors shadow-sm cursor-pointer">
             Back to Home
           </Link>
-        </div>
+        </motion.div>
       </div>
     );
   }
