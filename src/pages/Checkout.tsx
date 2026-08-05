@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
-import { collection, addDoc, serverTimestamp, runTransaction, doc, getDoc, query, where, limit, getDocs } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, runTransaction, doc, getDoc, query, where, limit, getDocs, updateDoc } from 'firebase/firestore';
 import { ArrowLeft, Package, Send, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
 import SEO from '../components/SEO';
 
@@ -227,6 +227,9 @@ export default function Checkout() {
         return { ...item, resolvedDocId: docId };
       }));
 
+      const orderRef = doc(collection(db, 'orders'));
+      const orderId = orderRef.id;
+
       await runTransaction(db, async (transaction) => {
         // 1. Verify all items are in stock
         const stockChecks = await Promise.all(resolvedCartItems.map(async (item) => {
@@ -263,13 +266,139 @@ export default function Checkout() {
         };
 
         // 3. Execute updates
-        const orderRef = doc(collection(db, 'orders'));
         transaction.set(orderRef, orderData);
         
         stockChecks.forEach(check => {
           transaction.update(check.ref, { stock: check.newStock });
         });
       });
+
+      // 4. Try to book the shipment on Delhivery automatically
+      try {
+        let warehouseName = "Kaaram Kathalu";
+        try {
+          const settingsSnap = await getDoc(doc(db, 'settings', 'general'));
+          if (settingsSnap.exists()) {
+            const settingsData = settingsSnap.data();
+            if (settingsData.delhiveryWarehouseName) {
+              warehouseName = settingsData.delhiveryWarehouseName;
+            }
+          }
+        } catch (err) {
+          console.warn("Failed to fetch settings from Firestore, using default warehouse name:", err);
+        }
+
+        const pickupLocation = {
+          name: warehouseName,
+          add: "002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu",
+          city: "Bangalore",
+          pin: 560043,
+          phone: "7676644366"
+        };
+
+        const consigneePhone = (() => {
+          const p = formData.phone;
+          if (!p) return "7676644366";
+          let cleaned = p.replace(/\D/g, '');
+          if (cleaned.length === 12 && cleaned.startsWith('91')) {
+            cleaned = cleaned.substring(2);
+          }
+          if (cleaned.length === 11 && cleaned.startsWith('0')) {
+            cleaned = cleaned.substring(1);
+          }
+          if (cleaned.length !== 10) {
+            return "7676644366";
+          }
+          return cleaned;
+        })();
+
+        const shipments = [
+          {
+            waybill: "",
+            order: orderId,
+            product: cart.map(item => `${item.product.name} (x${item.quantity})`).join(', ') || "Andhra Delicacies",
+            products_desc: cart.map(item => `${item.product.name} (x${item.quantity})`).join(', ') || "Andhra Delicacies",
+            package_desc: cart.map(item => `${item.product.name} (x${item.quantity})`).join(', ') || "Andhra Delicacies",
+            
+            name: formData.name || "Customer",
+            add: formData.address || "",
+            city: formData.city || "",
+            state: "Karnataka",
+            pin: Number(formData.pincode) || 560043,
+            phone: consigneePhone,
+            country: "India",
+
+            consignee: {
+              name: formData.name || "Customer",
+              address: formData.address || "",
+              city: formData.city || "",
+              state: "Karnataka",
+              pincode: Number(formData.pincode) || 560043,
+              phone: consigneePhone
+            },
+            payment_mode: "Pre-paid",
+            package_type: "Prepaid",
+            weight: parseFloat((totalWeightGrams / 1000).toFixed(2)) || 0.5,
+            cod_amount: 0,
+            order_date: new Date().toISOString(),
+            total_amount: cartTotal + shippingCost,
+            quantity: cart.reduce((sum, item) => sum + item.quantity, 0) || 1
+          }
+        ];
+
+        const payload = {
+          shipments,
+          pickup_location: pickupLocation
+        };
+
+        const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? 'https://kaaramkathalu.in'
+          : '';
+
+        const response = await fetch(`${host}/api/shipping`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            type: 'create_shipment',
+            data: payload
+          })
+        });
+
+        if (response.ok) {
+          const resData = await response.json();
+          let waybill = "";
+          
+          if (resData.success && resData.packages && resData.packages.length > 0) {
+            waybill = resData.packages[0].waybill;
+          } else if (resData.pickups && resData.pickups.length > 0 && resData.pickups[0].waybills && resData.pickups[0].waybills.length > 0) {
+            const waybillObj = resData.pickups[0].waybills[0];
+            if (waybillObj.status === 'Success' || waybillObj.waybill) {
+              waybill = waybillObj.waybill;
+            }
+          }
+
+          if (waybill) {
+            // Update order in Firestore
+            await updateDoc(doc(db, 'orders', orderId), {
+              status: 'Shipped',
+              waybill: waybill,
+              carrier: 'Delhivery',
+              shippedAt: new Date()
+            });
+            console.log(`Delhivery shipment auto-created successfully! Waybill: ${waybill}`);
+          } else {
+            console.warn("Delhivery shipment response did not return a valid waybill:", resData);
+          }
+        } else {
+          console.warn(`Delhivery shipment API returned status ${response.status}`);
+        }
+      } catch (err) {
+        // Fail-open: do not crash checkout if Delhivery fails (e.g. balance or API down).
+        // The admin can always generate the AWB manually later.
+        console.error("Failed to auto-create Delhivery shipment during checkout:", err);
+      }
       
       setIsSuccess(true);
       clearCart();
