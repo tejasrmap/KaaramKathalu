@@ -76,6 +76,24 @@ export default async function handler(req, res) {
       }
       const data = await response.json();
       return res.status(200).json(data);
+    } else if (type === 'track') {
+      const waybill = req.query.waybill;
+      if (!waybill) {
+        return res.status(400).json({ error: 'Missing waybill parameter' });
+      }
+      const targetUrl = `https://track.delhivery.com/api/v1/packages/json/?waybill=${waybill}`;
+      const response = await fetch(targetUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Token ${token}`,
+          'Accept': 'application/json'
+        }
+      });
+      if (!response.ok) {
+        throw new Error(`Delhivery tracking returned status ${response.status}`);
+      }
+      const data = await response.json();
+      return res.status(200).json(data);
     } else {
       return res.status(400).json({ error: 'Invalid query type' });
     }

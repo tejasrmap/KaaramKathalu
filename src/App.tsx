@@ -25,6 +25,7 @@ import RecipeDetail from './pages/RecipeDetail';
 import NotFound from './pages/NotFound';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
+import TrackOrder from './pages/TrackOrder';
 
 // Admin components
 import AdminLayout from './pages/admin/AdminLayout';
@@ -73,6 +74,7 @@ export default function App() {
                   <Route path="/wishlist" element={<Wishlist />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                  <Route path="/track-order" element={<TrackOrder />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Layout>
