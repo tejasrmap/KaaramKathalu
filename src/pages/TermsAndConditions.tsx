@@ -104,6 +104,10 @@ const sections = [
         text: 'These Terms & Conditions are governed by and construed in accordance with the laws of India. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the courts in Bengaluru, Karnataka.',
       },
       {
+        subtitle: 'Ownership & Representation',
+        text: 'Kaaram Kathalu is owned and operated by Deepthi Vaishnavy. All rights, title, and interest in and to the website, brand, content, and products are the exclusive property of Deepthi Vaishnavy.',
+      },
+      {
         subtitle: 'Changes to Terms',
         text: 'Kaaram Kathalu reserves the right to update these Terms & Conditions at any time. Continued use of our website following any changes constitutes your acceptance of the updated terms. We encourage you to review this page periodically.',
       },
