@@ -74,6 +74,8 @@ export default function Orders() {
           waybill: "",
           order: order.id,
           product: order.items?.map((item: any) => `${item.name} (x${item.quantity})`).join(', ') || "Andhra Pickles & Podis",
+          products_desc: order.items?.map((item: any) => `${item.name} (x${item.quantity})`).join(', ') || "Andhra Pickles & Podis",
+          package_desc: order.items?.map((item: any) => `${item.name} (x${item.quantity})`).join(', ') || "Andhra Pickles & Podis",
           
           // Flat fields for standard/legacy CMU API
           name: order.customer?.name || "Customer",
