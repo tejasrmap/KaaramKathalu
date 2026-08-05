@@ -252,7 +252,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               />
             </div>
             <p className="text-warm-bg/70 leading-relaxed font-serif text-sm">
-              Welcome to {settings.companyName}. We craft traditional Andhra packaged snacks — handmade murukku, namkeen, and crunchy savouries made with pure ingredients and zero preservatives.
+              Welcome to {settings.companyName}. We specialize in authentic, handmade, small-batch traditional Andhra packaged foods and heritage recipes made with pure ingredients and zero preservatives.
             </p>
           </div>
           
@@ -261,9 +261,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <h4 className="font-heading text-lg tracking-wider text-white uppercase mb-6 font-bold pb-1 border-b border-warm-accent/30 inline-block">Quick Shop</h4>
             <ul className="space-y-3 text-warm-bg/70 text-sm font-serif">
               <li><Link to="/shop" className="hover:text-white transition-colors">Shop All</Link></li>
-              <li><Link to="/murukku" className="hover:text-white transition-colors">Murukku Varieties</Link></li>
-              <li><Link to="/namkeen" className="hover:text-white transition-colors">Namkeen &amp; Sev</Link></li>
-              <li><Link to="/snacks" className="hover:text-white transition-colors">Crunchy Snacks</Link></li>
             </ul>
           </div>
 
