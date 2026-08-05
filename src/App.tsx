@@ -34,6 +34,7 @@ import Orders from './pages/admin/Orders';
 import ProductsAdmin from './pages/admin/ProductsAdmin';
 import Customers from './pages/admin/Customers';
 import Settings from './pages/admin/Settings';
+import AdminUsers from './pages/admin/AdminUsers';
 
 export default function App() {
   return (
@@ -52,6 +53,7 @@ export default function App() {
               <Route path="products" element={<ProductsAdmin />} />
               <Route path="customers" element={<Customers />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="users" element={<AdminUsers />} />
             </Route>
 
             {/* Storefront Routes (Wrapped in Layout) */}

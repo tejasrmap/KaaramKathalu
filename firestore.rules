@@ -23,5 +23,13 @@ service cloud.firestore {
     match /users/{userId} {
       allow read, write: if request.auth != null;
     }
+
+    // admins: anyone authenticated can read (needed for login check),
+    // but only existing admins can add/remove other admins
+    match /admins/{email} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.token.email));
+    }
   }
 }

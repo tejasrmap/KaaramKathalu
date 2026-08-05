@@ -11,6 +11,7 @@ import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   isLoading: boolean;
   login: () => Promise<void>;
   logout: () => Promise<void>;
@@ -20,11 +21,29 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const checkIsAdmin = async (email: string): Promise<boolean> => {
+    try {
+      const adminRef = doc(db, 'admins', email.toLowerCase());
+      const adminSnap = await getDoc(adminRef);
+      return adminSnap.exists() && adminSnap.data()?.active !== false;
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      return false;
+    }
+  };
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setUser(firebaseUser);
+      if (firebaseUser?.email) {
+        const adminStatus = await checkIsAdmin(firebaseUser.email);
+        setIsAdmin(adminStatus);
+      } else {
+        setIsAdmin(false);
+      }
       setIsLoading(false);
     });
     return unsubscribe;
@@ -33,21 +52,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+      const loggedInUser = result.user;
 
       // Sync user profile to Firestore
-      const userRef = doc(db, 'users', user.uid);
+      const userRef = doc(db, 'users', loggedInUser.uid);
       await setDoc(userRef, {
-        uid: user.uid,
-        name: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
+        uid: loggedInUser.uid,
+        name: loggedInUser.displayName,
+        email: loggedInUser.email,
+        photoURL: loggedInUser.photoURL,
         lastLogin: serverTimestamp(),
         updatedAt: serverTimestamp()
       }, { merge: true });
 
+      // Check admin status
+      if (loggedInUser.email) {
+        const adminStatus = await checkIsAdmin(loggedInUser.email);
+        setIsAdmin(adminStatus);
+        if (!adminStatus) {
+          await signOut(auth);
+          throw new Error('Access denied. Your account is not authorised as an admin.');
+        }
+      }
+
     } catch (error) {
-      console.error("Error signing in with Google:", error);
+      console.error('Error signing in with Google:', error);
       throw error;
     }
   };
@@ -55,8 +84,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       await signOut(auth);
+      setIsAdmin(false);
     } catch (error) {
-      console.error("Error signing out:", error);
+      console.error('Error signing out:', error);
       throw error;
     }
   };
@@ -64,7 +94,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={{ 
       user, 
-      isAuthenticated: !!user, 
+      isAuthenticated: !!user && isAdmin,
+      isAdmin,
       isLoading,
       login, 
       logout 
@@ -81,4 +112,3 @@ export function useAuth() {
   }
   return context;
 }
-

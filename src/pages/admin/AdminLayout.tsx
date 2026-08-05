@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet, Navigate, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, ShoppingBag, Package, Users, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Package, Users, Settings, LogOut, UserCog } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Layout from '../../components/Layout';
 
@@ -23,6 +23,7 @@ export default function AdminLayout() {
     { to: '/admin/products', icon: <Package className="w-4 h-4" />, label: 'Products' },
     { to: '/admin/customers', icon: <Users className="w-4 h-4" />, label: 'Customers' },
     { to: '/admin/settings', icon: <Settings className="w-4 h-4" />, label: 'Settings' },
+    { to: '/admin/users', icon: <UserCog className="w-4 h-4" />, label: 'Admins' },
   ];
 
   return (
