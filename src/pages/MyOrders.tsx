@@ -308,6 +308,7 @@ export default function MyOrders() {
                     {order.waybill && (
                       <div className="mt-4 md:mt-6 text-left w-full">
                         <p className="text-[10px] font-heading font-black tracking-widest text-warm-dark/40 uppercase mb-1">Tracking AWB</p>
+                        <p className="font-mono text-xs font-bold text-warm-dark/80 mb-2 bg-warm-light/70 px-2.5 py-1 rounded w-fit tracking-wide">{order.waybill}</p>
                         <div className="flex flex-col gap-1.5">
                           <button 
                             onClick={() => fetchTracking(order.id, order.waybill)}
