@@ -40,7 +40,7 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
         : 'Shop All';
 
   return (
-    <div className="pt-24 md:pt-32 pb-24 px-4 sm:px-6 md:px-12 max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto min-h-screen">
+    <div className="pt-8 md:pt-12 pb-24 px-4 sm:px-6 md:px-12 max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto min-h-screen">
       <SEO title={pageTitle} description={`Explore our collection of authentic, hand-made ${pageTitle.toLowerCase()}.`} />
       
       <div className="text-center mb-12 relative w-full mx-auto">

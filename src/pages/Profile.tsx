@@ -105,7 +105,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="pt-24 md:pt-32 pb-24 px-4 sm:px-6 md:px-12 w-full max-w-5xl mx-auto min-h-screen bg-warm-bg/30">
+    <div className="pt-8 md:pt-12 pb-24 px-4 sm:px-6 md:px-12 w-full max-w-5xl mx-auto min-h-screen bg-warm-bg/30">
       <SEO title="Patron Profile - Kaaram Kathalu" />
 
       <motion.div

@@ -440,7 +440,7 @@ export default function Checkout() {
   }
 
   return (
-    <div className="pt-24 md:pt-32 pb-24 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
+    <div className="pt-8 md:pt-12 pb-24 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
       <SEO title="Checkout" description="Proceed to complete your purchase and secure your traditional jars." />
       
       <div className="mb-8">

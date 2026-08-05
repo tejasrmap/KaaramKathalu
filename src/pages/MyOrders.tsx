@@ -203,7 +203,7 @@ export default function MyOrders() {
   }
 
   return (
-    <div className="pt-24 md:pt-32 pb-24 px-4 sm:px-6 md:px-12 max-w-5xl mx-auto min-h-screen bg-warm-bg/30">
+    <div className="pt-8 md:pt-12 pb-24 px-4 sm:px-6 md:px-12 max-w-5xl mx-auto min-h-screen bg-warm-bg/30">
       <SEO title="My Orders - Kaaram Kathalu" description="Track your heritage pickle and podi orders." />
       
       {/* Title Block */}

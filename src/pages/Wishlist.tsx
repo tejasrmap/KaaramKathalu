@@ -16,7 +16,7 @@ export default function Wishlist() {
   };
 
   return (
-    <div className="pt-24 md:pt-32 pb-24 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto min-h-[70vh]">
+    <div className="pt-8 md:pt-12 pb-24 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto min-h-[70vh]">
       <SEO title="My Wishlist" description="Your favorite pickles and podis from Kaaram Kathalu." />
       
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
