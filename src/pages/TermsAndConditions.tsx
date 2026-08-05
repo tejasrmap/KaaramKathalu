@@ -54,6 +54,10 @@ const sections = [
         text: 'Approved refunds will be processed within 5–7 business days to your original payment method. We may offer a replacement or store credit as an alternative.',
       },
       {
+        subtitle: 'Replacement Delivery',
+        text: 'If a replacement product is approved, it will be delivered to your location within 5–7 working days from the date of approval. Replacement shipments are subject to product availability.',
+      },
+      {
         subtitle: 'Cancellations',
         text: 'Orders can be cancelled within 12 hours of placement by contacting our support team. Once dispatched, orders cannot be cancelled.',
       },
