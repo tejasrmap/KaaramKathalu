@@ -15,6 +15,8 @@ export default function Checkout() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [successWaybill, setSuccessWaybill] = useState<string>("");
+  const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string>("");
   
   const [formData, setFormData] = useState({
     name: user?.displayName || '',
@@ -162,6 +164,12 @@ export default function Checkout() {
             city: data.city || prev.city,
             pincode: data.pincode || prev.pincode
           }));
+          const list = data.addresses || [];
+          setSavedAddresses(list);
+          const defaultAddr = list.find((addr: any) => addr.isDefault);
+          if (defaultAddr) {
+            setSelectedAddressId(defaultAddr.id);
+          }
         } else {
           setFormData(prev => ({
             ...prev,
@@ -501,6 +509,48 @@ export default function Checkout() {
           <h1 className="text-3xl font-serif text-warm-dark mb-8">Delivery Details</h1>
           
           <form onSubmit={handleSubmit} className="space-y-6">
+            {savedAddresses.length > 0 && (
+              <div className="mb-6">
+                <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-3 text-left">
+                  Select a Saved Address
+                </label>
+                <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-warm-accent/20">
+                  {savedAddresses.map((addr) => {
+                    const isSelected = selectedAddressId === addr.id;
+                    return (
+                      <button
+                        type="button"
+                        key={addr.id}
+                        onClick={() => {
+                          setSelectedAddressId(addr.id);
+                          setFormData(prev => ({
+                            ...prev,
+                            name: addr.name || '',
+                            phone: addr.phone || '',
+                            address: addr.address || '',
+                            city: addr.city || '',
+                            pincode: addr.pincode || ''
+                          }));
+                        }}
+                        className={`p-4 rounded-xl border text-left flex-shrink-0 w-64 transition-all duration-300 cursor-pointer ${
+                          isSelected 
+                            ? 'border-warm-accent bg-warm-accent/[0.02] shadow-sm scale-[1.01]' 
+                            : 'border-warm-dark/10 hover:border-warm-accent/40 bg-white'
+                        }`}
+                      >
+                        <h4 className="font-bold text-warm-dark font-serif text-sm flex items-center justify-between">
+                          <span className="truncate pr-2">{addr.name}</span>
+                          {isSelected && <span className="w-2 h-2 rounded-full bg-warm-accent flex-shrink-0"></span>}
+                        </h4>
+                        <p className="text-xs font-serif text-warm-dark/70 truncate mt-1">{addr.address}</p>
+                        <p className="text-xs font-serif text-warm-dark/70">{addr.city}, {addr.pincode}</p>
+                        <p className="text-[10px] text-warm-dark/50 mt-1">Phone: {addr.phone}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Full Name</label>
