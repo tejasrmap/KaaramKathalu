@@ -134,7 +134,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       </Link>
                       <Link
                         to="/my-orders"
-                        className="p-2 text-warm-dark hover:text-warm-accent transition-colors hidden sm:inline-block"
+                        className="p-2 text-warm-dark hover:text-warm-accent transition-colors"
                         title="My Orders"
                       >
                         <ShoppingBag className="w-5 h-5" />
@@ -220,7 +220,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
                   <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 font-heading text-lg tracking-wider uppercase text-warm-dark">
                     <Link to="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Home</Link>
-                    <Link to="/shop" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3">Shop All</Link>
+                    <Link to="/shop" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Shop All</Link>
+                    {user ? (
+                      <>
+                        <Link to="/my-orders" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">My Orders</Link>
+                        <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Profile</Link>
+                        <button
+                          onClick={() => {
+                            logout();
+                            setMobileMenuOpen(false);
+                          }}
+                          className="text-left hover:text-red-600 transition-colors uppercase font-heading text-lg tracking-wider pb-3 cursor-pointer"
+                        >
+                          Logout
+                        </button>
+                      </>
+                    ) : (
+                      <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3">Login</Link>
+                    )}
                   </div>
 
                   <div className="p-6 border-t border-warm-dark/10 bg-warm-light text-center">
