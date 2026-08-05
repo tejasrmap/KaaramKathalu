@@ -68,14 +68,7 @@ export default function TrackOrder() {
     setError(null);
     setTrackingInfo(null);
 
-    // If it's a mock AWB or demo range, provide premium demo tracking info instantly
-    if (searchVal === '57316010000011' || searchVal.toLowerCase().includes('demo') || searchVal.toLowerCase().includes('test')) {
-      setTimeout(() => {
-        setTrackingInfo(mockTrackingData(searchVal));
-        setIsLoading(false);
-      }, 800);
-      return;
-    }
+
 
     try {
       const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'

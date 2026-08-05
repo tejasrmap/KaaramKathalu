@@ -25,39 +25,7 @@ export default function MyOrders() {
     setLoadingTracking(prev => ({ ...prev, [orderId]: true }));
     setTrackingError(prev => ({ ...prev, [orderId]: "" }));
 
-    if (waybill === '57316010000011' || waybill.toLowerCase().includes('demo') || waybill.toLowerCase().includes('test')) {
-      setTimeout(() => {
-        setActiveTracking(prev => ({
-          ...prev,
-          [orderId]: {
-            waybill: waybill,
-            status: "In Transit",
-            scans: [
-              {
-                time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-                location: "Bangalore Gateway (Delhivery Hub)",
-                status: "In Transit",
-                instructions: "Parcel has left the Bangalore consolidation center and is heading to the transit hub."
-              },
-              {
-                time: new Date(Date.now() - 4 * 60 * 60 * 1000).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-                location: "Bangalore Main Warehouse",
-                status: "Handed over to Delhivery",
-                instructions: "Shipment picked up by courier associate."
-              },
-              {
-                time: new Date(Date.now() - 6 * 60 * 60 * 1000).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-                location: "Kaaram Kathalu Dispatch Desk",
-                status: "Manifest Created",
-                instructions: "Order details registered with courier. Awaiting pickup."
-              }
-            ]
-          }
-        }));
-        setLoadingTracking(prev => ({ ...prev, [orderId]: false }));
-      }, 600);
-      return;
-    }
+
 
     try {
       const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
