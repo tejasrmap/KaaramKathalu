@@ -121,20 +121,61 @@ export default function MyOrders() {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const ordersData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        date: doc.data().createdAt?.toDate ? doc.data().createdAt.toDate().toLocaleDateString('en-IN', {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric'
-        }) : 'Recent'
-      }));
+      const ordersData = snapshot.docs.map(doc => {
+        const data = doc.data();
+        let dateStr = 'Recent';
+        
+        if (data.createdAt) {
+          if (typeof data.createdAt.toDate === 'function') {
+            dateStr = data.createdAt.toDate().toLocaleDateString('en-IN', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric'
+            });
+          } else if (data.createdAt instanceof Date) {
+            dateStr = data.createdAt.toLocaleDateString('en-IN', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric'
+            });
+          } else if (typeof data.createdAt === 'string') {
+            dateStr = new Date(data.createdAt).toLocaleDateString('en-IN', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric'
+            });
+          } else if (data.createdAt.seconds) {
+            dateStr = new Date(data.createdAt.seconds * 1000).toLocaleDateString('en-IN', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric'
+            });
+          }
+        }
+
+        return {
+          id: doc.id,
+          ...data,
+          date: dateStr
+        };
+      });
 
       // Sort client-side by createdAt descending to avoid composite index requirement
       ordersData.sort((a, b) => {
-        const timeA = a.createdAt?.seconds || 0;
-        const timeB = b.createdAt?.seconds || 0;
+        const timeA = a.createdAt?.seconds 
+          ? a.createdAt.seconds 
+          : a.createdAt instanceof Date 
+            ? a.createdAt.getTime() / 1000 
+            : typeof a.createdAt === 'string' 
+              ? new Date(a.createdAt).getTime() / 1000 
+              : 0;
+        const timeB = b.createdAt?.seconds 
+          ? b.createdAt.seconds 
+          : b.createdAt instanceof Date 
+            ? b.createdAt.getTime() / 1000 
+            : typeof b.createdAt === 'string' 
+              ? new Date(b.createdAt).getTime() / 1000 
+              : 0;
         return timeB - timeA;
       });
 
@@ -148,8 +189,8 @@ export default function MyOrders() {
     return unsubscribe;
   }, [user, authLoading]);
 
-  const getStatusDetails = (status: string) => {
-    const s = status.toLowerCase();
+  const getStatusDetails = (status?: string) => {
+    const s = (status || 'pending').toLowerCase();
     switch(s) {
       case 'delivered': 
         return {
@@ -173,7 +214,7 @@ export default function MyOrders() {
         return {
           bg: 'bg-amber-50 text-amber-700 border-amber-200/50',
           icon: <Clock className="w-3.5 h-3.5" />,
-          label: status
+          label: status || 'Pending'
         };
     }
   };
