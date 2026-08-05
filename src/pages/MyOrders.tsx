@@ -42,17 +42,20 @@ export default function MyOrders() {
       if (resData && resData.ShipmentData && resData.ShipmentData.length > 0) {
         const shipment = resData.ShipmentData[0].Shipment;
         
-        const scans = (shipment.Scans || []).map((scan: any) => ({
-          time: scan.ScanDateTime ? new Date(scan.ScanDateTime).toLocaleString('en-IN', {
-            day: '2-digit',
-            month: 'short',
-            hour: '2-digit',
-            minute: '2-digit'
-          }) : 'Date/Time unavailable',
-          location: scan.ScanLocation || 'Transit Point',
-          status: scan.Scan || 'In Transit',
-          instructions: scan.Instructions || 'No additional instructions.'
-        }));
+        const scans = (shipment.Scans || []).map((item: any) => {
+          const scan = item.ScanDetail || {};
+          return {
+            time: scan.ScanDateTime ? new Date(scan.ScanDateTime).toLocaleString('en-IN', {
+              day: '2-digit',
+              month: 'short',
+              hour: '2-digit',
+              minute: '2-digit'
+            }) : 'Date/Time unavailable',
+            location: scan.ScannedLocation || 'Transit Point',
+            status: scan.Scan || 'In Transit',
+            instructions: scan.Instructions || 'No additional instructions.'
+          };
+        });
 
         setActiveTracking(prev => ({
           ...prev,
