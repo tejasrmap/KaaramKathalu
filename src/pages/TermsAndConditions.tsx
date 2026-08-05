@@ -51,7 +51,7 @@ const sections = [
       },
       {
         subtitle: 'Refund Process',
-        text: 'Approved refunds will be processed within 5–7 business days to your original payment method. We may offer a replacement or store credit as an alternative.',
+        text: 'Approved refunds will be processed within 5–7 business days to your original payment method. We may offer a replacement.',
       },
       {
         subtitle: 'Replacement Delivery',

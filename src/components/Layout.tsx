@@ -272,7 +272,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <h4 className="font-heading text-lg tracking-wider text-white uppercase mb-6 font-bold pb-1 border-b border-warm-accent/30 inline-block">Helpful Links</h4>
             <ul className="space-y-3 text-warm-bg/70 text-sm font-serif">
               <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
-              <li><Link to="/about" className="hover:text-white transition-colors">Our Story</Link></li>
               <li><Link to="/shop" className="hover:text-white transition-colors">Online Store</Link></li>
               <li><Link to="/recipes" className="hover:text-white transition-colors">Traditional Recipes</Link></li>
               <li><Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link></li>

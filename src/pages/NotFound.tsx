@@ -108,11 +108,11 @@ export default function NotFound() {
             <span>Browse Shop</span>
           </Link>
           <Link
-            to="/about"
+            to="/privacy-policy"
             className="flex items-center justify-center gap-3 px-6 py-3.5 bg-warm-light text-warm-dark rounded-xl font-heading uppercase text-xs sm:text-sm tracking-wider hover:bg-warm-dark/5 hover:text-warm-dark transition-all duration-300 group"
           >
             <Scroll className="w-4 h-4 transition-transform group-hover:rotate-6" />
-            <span>Our Story</span>
+            <span>Privacy Policy</span>
           </Link>
           <Link
             to="/recipes"
