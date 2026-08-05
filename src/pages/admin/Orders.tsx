@@ -50,12 +50,12 @@ export default function Orders() {
         add: "002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu",
         city: "Bangalore",
         pin: 560043,
-        phone: "9770889608"
+        phone: "7676644366"
       };
 
       const consigneePhone = (() => {
         const p = order.customer?.phone;
-        if (!p) return "9770889608";
+        if (!p) return "7676644366";
         let cleaned = p.replace(/\D/g, '');
         if (cleaned.length === 12 && cleaned.startsWith('91')) {
           cleaned = cleaned.substring(2);
@@ -64,7 +64,7 @@ export default function Orders() {
           cleaned = cleaned.substring(1);
         }
         if (cleaned.length !== 10) {
-          return "9770889608";
+          return "7676644366";
         }
         return cleaned;
       })();
