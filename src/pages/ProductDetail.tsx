@@ -107,8 +107,13 @@ export default function ProductDetail() {
             {product.name}
           </h1>
 
-          <div className="text-2xl font-serif font-bold text-warm-accent mb-6">
-            ₹{product.price}
+          <div className="flex items-center gap-4 mb-6">
+            <div className="text-2xl font-serif font-bold text-warm-accent">
+              ₹{product.price}
+            </div>
+            <span className="bg-warm-light/60 border border-warm-dark/5 px-2.5 py-1 rounded-lg text-xs font-semibold text-warm-dark/70 font-sans">
+              Net Weight: {product.weightGrams || 500}g
+            </span>
           </div>
           
           <p className="text-base text-warm-dark/70 font-serif mb-8 italic">
