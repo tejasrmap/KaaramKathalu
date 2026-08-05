@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
-import { Package, Truck, CheckCircle, Clock, ArrowRight, Loader2, ShoppingBag, ShieldCheck, MapPin, CornerDownRight } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, ArrowRight, Loader2, ShoppingBag, ShieldCheck, MapPin, CornerDownRight, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { motion, AnimatePresence } from 'motion/react';
@@ -158,7 +158,7 @@ export default function MyOrders() {
           ...data,
           date: dateStr
         };
-      });
+      }) as any[];
 
       // Sort client-side by createdAt descending to avoid composite index requirement
       ordersData.sort((a, b) => {
