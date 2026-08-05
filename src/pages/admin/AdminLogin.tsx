@@ -29,12 +29,15 @@ export default function AdminLogin() {
       </Link>
 
       <div className="w-full max-w-md">
-        <div className="text-center mb-10">
-          <span className="font-serif font-bold text-4xl tracking-tight text-warm-dark flex items-baseline justify-center gap-2">
-            <span>Kaaram</span>
-            <span className="text-warm-accent text-5xl leading-none ml-1">కథలు</span>
-          </span>
-          <p className="text-warm-dark/60 mt-3 font-medium uppercase tracking-widest text-sm text-center">
+        <div className="flex flex-col items-center mb-8">
+          <div className="bg-white p-2.5 rounded-full shadow-md border border-warm-accent/15 w-24 h-24 flex items-center justify-center overflow-hidden mb-4">
+            <img 
+              src="/logo_icon.jpg" 
+              alt="Kaaram Kathalu Logo" 
+              className="w-full h-full object-cover rounded-full"
+            />
+          </div>
+          <p className="text-warm-dark/60 font-medium uppercase tracking-widest text-sm text-center">
             Admin Portal
           </p>
         </div>

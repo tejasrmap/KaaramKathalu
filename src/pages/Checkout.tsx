@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
-import { collection, addDoc, serverTimestamp, runTransaction, doc, getDoc, query, where, limit, getDocs, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, runTransaction, doc, getDoc, query, where, limit, getDocs, updateDoc, onSnapshot } from 'firebase/firestore';
 import { ArrowLeft, Package, Send, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { motion } from 'motion/react';
@@ -148,38 +148,57 @@ export default function Checkout() {
     };
   }, [formData.pincode, totalWeightGrams]);
 
+  const hasLoadedInitialData = React.useRef(false);
+
   React.useEffect(() => {
-    const fetchProfile = async () => {
-      if (user) {
-        const docRef = doc(db, 'users', user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setFormData(prev => ({
-            ...prev,
-            name: data.name || user.displayName || prev.name,
-            email: data.email || user.email || prev.email,
-            phone: data.phone || prev.phone,
-            address: data.address || prev.address,
-            city: data.city || prev.city,
-            pincode: data.pincode || prev.pincode
-          }));
-          const list = data.addresses || [];
-          setSavedAddresses(list);
+    if (!user) return;
+
+    const docRef = doc(db, 'users', user.uid);
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        const list = data.addresses || [];
+        setSavedAddresses(list);
+
+        if (!hasLoadedInitialData.current) {
           const defaultAddr = list.find((addr: any) => addr.isDefault);
           if (defaultAddr) {
             setSelectedAddressId(defaultAddr.id);
+            setFormData(prev => ({
+              ...prev,
+              name: defaultAddr.name || data.name || user.displayName || prev.name,
+              email: data.email || user.email || prev.email,
+              phone: defaultAddr.phone || data.phone || prev.phone,
+              address: defaultAddr.address || data.address || prev.address,
+              city: defaultAddr.city || data.city || prev.city,
+              pincode: defaultAddr.pincode || data.pincode || prev.pincode
+            }));
+          } else {
+            setFormData(prev => ({
+              ...prev,
+              name: data.name || user.displayName || prev.name,
+              email: data.email || user.email || prev.email,
+              phone: data.phone || prev.phone,
+              address: data.address || prev.address,
+              city: data.city || prev.city,
+              pincode: data.pincode || prev.pincode
+            }));
           }
-        } else {
+          hasLoadedInitialData.current = true;
+        }
+      } else {
+        if (!hasLoadedInitialData.current) {
           setFormData(prev => ({
             ...prev,
             name: user.displayName || prev.name,
             email: user.email || prev.email
           }));
+          hasLoadedInitialData.current = true;
         }
       }
-    };
-    fetchProfile();
+    });
+
+    return unsubscribe;
   }, [user]);
 
   if (!user && !isSuccess) {
