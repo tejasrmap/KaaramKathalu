@@ -18,6 +18,13 @@ export default function Orders() {
   const [shippingError, setShippingError] = useState<string | null>(null);
   const [shippingSuccess, setShippingSuccess] = useState<string | null>(null);
 
+  const openOrderDetails = (order: any) => {
+    setShippingError(null);
+    setShippingSuccess(null);
+    setIsShipping(false);
+    setSelectedOrder(order);
+  };
+
   const createDelhiveryShipment = async (order: any) => {
     setIsShipping(true);
     setShippingError(null);
@@ -306,7 +313,7 @@ export default function Orders() {
                     <td className="px-6 py-4 relative">
                       <div className="flex items-center justify-center gap-2">
                         <button 
-                          onClick={() => setSelectedOrder(order)}
+                          onClick={() => openOrderDetails(order)}
                           className="px-3 py-1.5 rounded-xl border border-warm-dark/10 bg-white hover:bg-warm-dark hover:text-white transition-colors text-warm-dark font-bold uppercase tracking-widest text-[10px] flex items-center gap-1 cursor-pointer"
                         >
                           <Eye className="w-3.5 h-3.5" /> View
@@ -368,7 +375,7 @@ export default function Orders() {
 
               <div className="flex gap-2">
                 <button 
-                  onClick={() => setSelectedOrder(order)}
+                  onClick={() => openOrderDetails(order)}
                   className="flex-1 px-4 py-3 rounded-xl border border-warm-dark/10 bg-white text-warm-dark font-bold uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 transition-colors hover:bg-warm-light cursor-pointer"
                 >
                   <Eye className="w-4 h-4" /> View Details
@@ -418,7 +425,7 @@ export default function Orders() {
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }} 
-              onClick={() => setSelectedOrder(null)}
+              onClick={() => openOrderDetails(null)}
               className="absolute inset-0 bg-warm-dark/65 backdrop-blur-sm"
             />
             <motion.div 
@@ -432,7 +439,7 @@ export default function Orders() {
                   <h2 className="text-2xl font-serif font-bold text-warm-dark">Order #{selectedOrder.id.slice(0, 8)}</h2>
                   <p className="text-xs font-bold uppercase tracking-widest text-warm-dark/40">{selectedOrder.date}</p>
                 </div>
-                <button onClick={() => setSelectedOrder(null)} className="p-2 hover:bg-warm-dark/10 rounded-full transition-colors cursor-pointer">
+                <button onClick={() => openOrderDetails(null)} className="p-2 hover:bg-warm-dark/10 rounded-full transition-colors cursor-pointer">
                   <X className="w-6 h-6 text-warm-dark" />
                 </button>
               </div>
@@ -565,7 +572,7 @@ export default function Orders() {
 
               <div className="p-6 border-t border-warm-dark/10 bg-warm-light flex justify-end">
                 <button 
-                  onClick={() => setSelectedOrder(null)}
+                  onClick={() => openOrderDetails(null)}
                   className="px-8 py-3 bg-warm-dark hover:bg-warm-accent text-white font-bold uppercase tracking-widest text-xs rounded-full transition-colors cursor-pointer shadow-sm"
                 >
                   Close Register
