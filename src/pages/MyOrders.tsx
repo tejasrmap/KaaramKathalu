@@ -5,7 +5,7 @@ import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestor
 import { Package, Truck, CheckCircle, Clock, ArrowRight, Loader2, ShoppingBag, ShieldCheck, MapPin, CornerDownRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function MyOrders() {
   const { user, isLoading: authLoading } = useAuth();
