@@ -340,7 +340,7 @@ export default function Checkout() {
             },
             payment_mode: "Pre-paid",
             package_type: "Prepaid",
-            weight: parseFloat((totalWeightGrams / 1000).toFixed(2)) || 0.5,
+            weight: totalWeightGrams || 500,
             cod_amount: 0,
             order_date: new Date().toISOString(),
             total_amount: cartTotal + shippingCost,

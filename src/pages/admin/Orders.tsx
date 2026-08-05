@@ -104,7 +104,7 @@ export default function Orders() {
           },
           payment_mode: "Pre-paid",
           package_type: "Prepaid",
-          weight: parseFloat((order.items?.reduce((sum: number, item: any) => sum + item.quantity * ((item.weightGrams || 500) / 1000), 0) || 0.5).toFixed(2)),
+          weight: order.items?.reduce((sum: number, item: any) => sum + item.quantity * (item.weightGrams || 500), 0) || 500,
           cod_amount: 0,
           order_date: order.createdAt?.toDate ? order.createdAt.toDate().toISOString() : new Date().toISOString(),
           total_amount: Number(order.total) || 0,
