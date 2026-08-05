@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, Package, MapPin, Calendar, Clock, Truck, CheckCircle2, AlertCircle, ArrowRight, CornerDownRight } from 'lucide-react';
 import SEO from '../components/SEO';
+import { db } from '../firebase';
+import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 
 interface TrackingScan {
   time: string;
@@ -119,6 +121,24 @@ export default function TrackOrder() {
             }
           ]
         });
+
+        const liveStatus = shipment.Status?.Status || 'Registered';
+        if (liveStatus.toLowerCase() === 'cancelled' || liveStatus.toLowerCase() === 'canceled') {
+          try {
+            const ordersQ = query(collection(db, 'orders'), where('waybill', '==', shipment.AWB || searchVal));
+            const ordersSnap = await getDocs(ordersQ);
+            if (!ordersSnap.empty) {
+              const orderDoc = ordersSnap.docs[0];
+              if ((orderDoc.data() as any).status !== 'Cancelled') {
+                await updateDoc(doc(db, 'orders', orderDoc.id), {
+                  status: 'Cancelled'
+                });
+              }
+            }
+          } catch (err) {
+            console.warn("Failed to auto-cancel order status:", err);
+          }
+        }
       } else {
         setError("No tracking information found for this Waybill number. Please check the number or try again later.");
       }

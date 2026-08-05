@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
-import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import { Package, Truck, CheckCircle, Clock, ArrowRight, Loader2, ShoppingBag, ShieldCheck, MapPin, CornerDownRight, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
@@ -57,21 +57,33 @@ export default function MyOrders() {
           };
         });
 
+        const liveStatus = shipment.Status?.Status || 'Registered';
+
         setActiveTracking(prev => ({
           ...prev,
           [orderId]: {
             waybill: shipment.AWB || waybill,
-            status: shipment.Status?.Status || 'Registered',
+            status: liveStatus,
             scans: scans.length > 0 ? scans : [
               {
                 time: 'Registered',
                 location: shipment.PickUpLocation || 'Origin Warehouse',
-                status: shipment.Status?.Status || 'Manifest Created',
+                status: liveStatus || 'Manifest Created',
                 instructions: 'Shipment created successfully. Waiting to be picked up by Delhivery.'
               }
             ]
           }
         }));
+
+        if (liveStatus.toLowerCase() === 'cancelled' || liveStatus.toLowerCase() === 'canceled') {
+          try {
+            await updateDoc(doc(db, 'orders', orderId), {
+              status: 'Cancelled'
+            });
+          } catch (err) {
+            console.warn("Failed to auto-update order status to Cancelled:", err);
+          }
+        }
       } else {
         setTrackingError(prev => ({ ...prev, [orderId]: "No updates found for this tracking number." }));
       }
@@ -163,6 +175,13 @@ export default function MyOrders() {
   const getStatusDetails = (status?: string) => {
     const s = (status || 'pending').toLowerCase();
     switch(s) {
+      case 'cancelled':
+      case 'canceled':
+        return {
+          bg: 'bg-red-50 text-red-700 border-red-200/50',
+          icon: <AlertCircle className="w-3.5 h-3.5" />,
+          label: 'Cancelled'
+        };
       case 'delivered': 
         return {
           bg: 'bg-green-50 text-green-700 border-green-200/50',
