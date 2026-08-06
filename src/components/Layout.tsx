@@ -20,7 +20,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     supportEmail: 'kaaram.kathalu2025@gmail.com',
     supportPhone: '+91 76766 44366',
     address: '002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu, Bangalore, Karnataka - 560043',
-    announcementText: 'Free Shipping on Orders Above ₹999.',
+    announcementText: '',
     isMaintenanceMode: false
   });
   const location = useLocation();
