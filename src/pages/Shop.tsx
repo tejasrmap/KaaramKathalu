@@ -131,22 +131,7 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
         <div className="w-12 h-0.5 bg-warm-accent mx-auto mt-4 mb-6"></div>
       </div>
 
-      {/* Category Tabs */}
-      <div className="flex flex-wrap justify-center gap-2 mb-10 pb-6 border-b border-warm-dark/5">
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => setSelectedCategory(cat.id)}
-            className={`px-5 py-2.5 rounded-full text-xs font-heading tracking-widest uppercase transition-all duration-300 border cursor-pointer ${
-              selectedCategory === cat.id
-                ? 'bg-warm-accent text-white border-warm-accent font-semibold shadow-sm scale-[1.02]'
-                : 'bg-warm-light/40 text-warm-dark/70 border-warm-dark/10 hover:border-warm-dark hover:text-warm-dark'
-            }`}
-          >
-            {cat.label}
-          </button>
-        ))}
-      </div>
+
 
       <motion.div layout className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
         <AnimatePresence>
