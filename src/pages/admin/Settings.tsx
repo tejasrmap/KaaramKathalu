@@ -21,7 +21,14 @@ export default function Settings() {
     heroBgImage2: '',
     heroBgImage3: '',
     heroOverlayOpacity: '30',
-    delhiveryWarehouseName: 'Kaaram Kathalu'
+    delhiveryWarehouseName: 'Kaaram Kathalu',
+    activeCategories: {
+      pickle: true,
+      podi: true,
+      snacks: true,
+      fryums: true,
+      bundle: true
+    }
   });
 
   const [hero1File, setHero1File] = useState<File | null>(null);
@@ -79,7 +86,15 @@ export default function Settings() {
         const generalRef = doc(db, 'settings', 'general');
         const generalSnap = await getDoc(generalRef);
         if (generalSnap.exists()) {
-          setSettings(generalSnap.data() as any);
+          const data = generalSnap.data();
+          setSettings(prev => ({
+            ...prev,
+            ...data,
+            activeCategories: {
+              ...prev.activeCategories,
+              ...(data?.activeCategories || {})
+            }
+          }));
         }
         
         const storyRef = doc(db, 'settings', 'story');
@@ -350,6 +365,49 @@ export default function Settings() {
                     <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${settings.isMaintenanceMode ? 'right-1' : 'left-1'}`} />
                   </button>
                 </div>
+              </div>
+            </div>
+
+            {/* Storefront Categories */}
+            <div className="bg-white border border-warm-dark/5 rounded-[24px] overflow-hidden shadow-sm">
+              <div className="bg-warm-light/60 p-4 border-b border-warm-dark/5 flex items-center gap-2">
+                <Globe className="w-5 h-5 text-warm-dark" />
+                <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">Active Storefront Categories</h2>
+              </div>
+              <div className="p-6 space-y-4">
+                <p className="text-xs font-serif italic text-warm-dark/50 leading-relaxed mb-2">
+                  Toggle categories on or off. Disabled categories will be hidden from the storefront pantry list.
+                </p>
+                
+                {[
+                  { id: 'pickle', label: 'Pickles' },
+                  { id: 'podi', label: 'Podis' },
+                  { id: 'snacks', label: 'Snacks' },
+                  { id: 'fryums', label: 'Fryums' },
+                  { id: 'bundle', label: 'Bundles' }
+                ].map(cat => {
+                  const isActive = settings.activeCategories?.[cat.id as keyof typeof settings.activeCategories] !== false;
+                  return (
+                    <div key={cat.id} className="flex items-center justify-between p-4 bg-warm-light/50 rounded-xl border border-warm-dark/5">
+                      <div className="flex items-center gap-3">
+                        <span className="font-serif font-bold text-warm-dark text-sm">{cat.label}</span>
+                      </div>
+                      <button 
+                        type="button"
+                        onClick={() => setSettings(prev => ({ 
+                          ...prev, 
+                          activeCategories: {
+                            ...prev.activeCategories,
+                            [cat.id]: !isActive
+                          }
+                        }))}
+                        className={`w-12 h-6 rounded-full relative transition-colors cursor-pointer ${isActive ? 'bg-warm-accent' : 'bg-warm-dark/20'}`}
+                      >
+                        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${isActive ? 'right-1' : 'left-1'}`} />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Leaf, Flame, Loader2 } from 'lucide-react';
 import { ProductType } from '../data/products';
 import { db } from '../firebase';
-import { collection, onSnapshot, query } from 'firebase/firestore';
+import { collection, onSnapshot, query, doc, getDoc } from 'firebase/firestore';
 import SEO from '../components/SEO';
 import { useWishlist } from '../context/WishlistContext';
 import { Heart } from 'lucide-react';
@@ -42,6 +42,45 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
     return unsubscribe;
   }, []);
 
+  const [activeCategories, setActiveCategories] = useState<any>(() => {
+    try {
+      const cached = localStorage.getItem('kk_active_categories_cache');
+      return cached ? JSON.parse(cached) : {
+        pickle: true,
+        podi: true,
+        snacks: true,
+        fryums: true,
+        bundle: true
+      };
+    } catch {
+      return {
+        pickle: true,
+        podi: true,
+        snacks: true,
+        fryums: true,
+        bundle: true
+      };
+    }
+  });
+
+  useEffect(() => {
+    const fetchActiveCategories = async () => {
+      try {
+        const docSnap = await getDoc(doc(db, 'settings', 'general'));
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.activeCategories) {
+            setActiveCategories(data.activeCategories);
+            localStorage.setItem('kk_active_categories_cache', JSON.stringify(data.activeCategories));
+          }
+        }
+      } catch (err) {
+        console.error("Error loading category settings:", err);
+      }
+    };
+    fetchActiveCategories();
+  }, []);
+
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const categories = [
@@ -51,7 +90,7 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
     { id: 'snacks', label: 'Snacks' },
     { id: 'fryums', label: 'Fryums' },
     { id: 'bundle', label: 'Bundles' }
-  ];
+  ].filter(cat => cat.id === 'all' || activeCategories[cat.id] !== false);
 
   const getCategoryLabel = (type: string) => {
     switch (type) {
@@ -65,7 +104,7 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
   };
 
   const filteredProducts = selectedCategory === 'all'
-    ? products
+    ? products.filter(p => activeCategories[p.type] !== false)
     : products.filter(p => p.type === selectedCategory);
 
   const pageTitle = selectedCategory === 'all'
