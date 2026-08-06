@@ -7,19 +7,44 @@ import { db } from '../firebase';
 import SEO from '../components/SEO';
 
 export default function Home() {
-  const [bestsellers, setBestsellers] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [bestsellers, setBestsellers] = useState<any[]>(() => {
+    try {
+      const cached = localStorage.getItem('kk_bestsellers_cache');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [isLoading, setIsLoading] = useState(() => {
+    try {
+      const cached = localStorage.getItem('kk_bestsellers_cache');
+      return !cached || JSON.parse(cached).length === 0;
+    } catch {
+      return true;
+    }
+  });
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
-  const [heroSettings, setHeroSettings] = useState({
-    heroBgImage1: '',
-    heroBgImage2: '',
-    heroBgImage3: '',
-    heroOverlayOpacity: '30'
+  const [heroSettings, setHeroSettings] = useState(() => {
+    try {
+      const cached = localStorage.getItem('kk_hero_settings_cache');
+      return cached ? JSON.parse(cached) : {
+        heroBgImage1: '',
+        heroBgImage2: '',
+        heroBgImage3: '',
+        heroOverlayOpacity: '30'
+      };
+    } catch {
+      return {
+        heroBgImage1: '',
+        heroBgImage2: '',
+        heroBgImage3: '',
+        heroOverlayOpacity: '30'
+      };
+    }
   });
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
 
   useEffect(() => {
-    // Try to fetch products marked as bestsellers first
     const q = query(collection(db, 'products'), where('isBestseller', '==', true), limit(4));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       let products = snapshot.docs.map(doc => ({
@@ -27,7 +52,6 @@ export default function Home() {
         ...doc.data()
       }));
 
-      // Fallback: if no products are explicitly marked as bestsellers, show the first 4 products
       if (products.length === 0) {
         const fallbackQuery = query(collection(db, 'products'), limit(4));
         onSnapshot(fallbackQuery, (fallbackSnapshot) => {
@@ -36,10 +60,12 @@ export default function Home() {
             ...doc.data()
           }));
           setBestsellers(fallbackProducts);
+          localStorage.setItem('kk_bestsellers_cache', JSON.stringify(fallbackProducts));
           setIsLoading(false);
         });
       } else {
         setBestsellers(products);
+        localStorage.setItem('kk_bestsellers_cache', JSON.stringify(products));
         setIsLoading(false);
       }
     }, (error) => {
@@ -57,12 +83,14 @@ export default function Home() {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
-          setHeroSettings({
+          const newSettings = {
             heroBgImage1: data.heroBgImage1 || '',
             heroBgImage2: data.heroBgImage2 || '',
             heroBgImage3: data.heroBgImage3 || '',
             heroOverlayOpacity: data.heroOverlayOpacity || '30'
-          });
+          };
+          setHeroSettings(newSettings);
+          localStorage.setItem('kk_hero_settings_cache', JSON.stringify(newSettings));
         }
       } catch (error) {
         console.error('Error fetching hero settings:', error);

@@ -10,8 +10,22 @@ import { useWishlist } from '../context/WishlistContext';
 import { Heart } from 'lucide-react';
 
 export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 'snacks' }) {
-  const [products, setProducts] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState<any[]>(() => {
+    try {
+      const cached = localStorage.getItem('kk_products_cache');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [isLoading, setIsLoading] = useState(() => {
+    try {
+      const cached = localStorage.getItem('kk_products_cache');
+      return !cached || JSON.parse(cached).length === 0;
+    } catch {
+      return true;
+    }
+  });
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   useEffect(() => {
@@ -22,6 +36,7 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
         ...doc.data()
       }));
       setProducts(productsData);
+      localStorage.setItem('kk_products_cache', JSON.stringify(productsData));
       setIsLoading(false);
     });
     return unsubscribe;
