@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
-import { collection, addDoc, serverTimestamp, runTransaction, doc, getDoc, query, where, limit, getDocs, updateDoc, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, runTransaction, doc, getDoc, query, where, limit, getDocs, updateDoc, onSnapshot, setDoc } from 'firebase/firestore';
 import { ArrowLeft, Package, Send, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { motion } from 'motion/react';
@@ -26,6 +26,7 @@ export default function Checkout() {
   const [showNewAddressForm, setShowNewAddressForm] = useState(() => {
     return sessionStorage.getItem('kk_checkout_show_new_address_form') === 'true';
   });
+  const [saveToProfile, setSaveToProfile] = useState(false);
   
   const [formData, setFormData] = useState(() => {
     const cached = sessionStorage.getItem('kk_checkout_form');
@@ -340,6 +341,45 @@ export default function Checkout() {
           transaction.update(check.ref, { stock: check.newStock });
         });
       });
+
+      // Auto-save address to user's profile if selected
+      if (saveToProfile && user) {
+        try {
+          const userRef = doc(db, 'users', user.uid);
+          const userSnap = await getDoc(userRef);
+          let currentAddresses = [];
+          if (userSnap.exists()) {
+            currentAddresses = userSnap.data().addresses || [];
+          }
+          const isAlreadySaved = currentAddresses.some((addr: any) => 
+            addr.address === formData.address && addr.pincode === formData.pincode
+          );
+          if (!isAlreadySaved) {
+            const addressToSave = {
+              id: Math.random().toString(36).substring(2, 11),
+              name: formData.name,
+              phone: formData.phone,
+              address: formData.address,
+              city: formData.city,
+              pincode: formData.pincode,
+              isDefault: currentAddresses.length === 0
+            };
+            const updatedAddresses = [...currentAddresses, addressToSave];
+            await setDoc(userRef, {
+              addresses: updatedAddresses,
+              ...(currentAddresses.length === 0 ? {
+                name: formData.name,
+                phone: formData.phone,
+                address: formData.address,
+                city: formData.city,
+                pincode: formData.pincode
+              } : {})
+            }, { merge: true });
+          }
+        } catch (err) {
+          console.error("Error auto-saving address to profile during checkout:", err);
+        }
+      }
 
       // 4. Try to book the shipment on Delhivery automatically
       try {
@@ -775,6 +815,21 @@ export default function Checkout() {
               </div>
             )}
 
+            {(savedAddresses.length === 0 || showNewAddressForm) && user && (
+              <div className="flex items-center gap-2 mb-4 text-left">
+                <input
+                  type="checkbox"
+                  id="saveToProfile"
+                  checked={saveToProfile}
+                  onChange={e => setSaveToProfile(e.target.checked)}
+                  className="w-4 h-4 text-warm-accent focus:ring-warm-accent border-warm-dark/10 rounded accent-warm-accent cursor-pointer"
+                />
+                <label htmlFor="saveToProfile" className="text-xs font-serif text-warm-dark/70 select-none cursor-pointer">
+                  Save this address to my profile for future orders
+                </label>
+              </div>
+            )}
+
             <button 
               type="submit"
               disabled={isSubmitting || isCalculating || !!pincodeError}
@@ -782,7 +837,7 @@ export default function Checkout() {
             >
               {isSubmitting ? 'Processing...' : (
                 <>
-                  <Send className="w-4 h-4" /> Confirm Order
+                  <Send className="w-4 h-4" /> {saveToProfile ? 'Save Address and Confirm Order' : 'Confirm Order'}
                 </>
               )}
             </button>
