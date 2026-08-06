@@ -54,7 +54,7 @@ export default function Checkout() {
     };
   });
 
-  const [shippingCost, setShippingCost] = useState<number>(80);
+  const [shippingCost, setShippingCost] = useState<number>(90);
   const [isCalculating, setIsCalculating] = useState<boolean>(false);
   const [pincodeError, setPincodeError] = useState<string | null>(null);
 
@@ -66,7 +66,7 @@ export default function Checkout() {
       const pin = formData.pincode.trim();
       if (!/^\d{6}$/.test(pin)) {
         if (active) {
-          setShippingCost(80);
+          setShippingCost(90);
           setPincodeError(null);
         }
         return;
@@ -79,7 +79,7 @@ export default function Checkout() {
       if (!token || token === 'YOUR_DELHIVERY_API_TOKEN') {
         console.warn("Delhivery API token is not configured. Using fallback shipping cost.");
         if (active) {
-          setShippingCost(80);
+          setShippingCost(90);
           setIsCalculating(false);
         }
         return;
@@ -107,7 +107,7 @@ export default function Checkout() {
           if (serviceabilityData && Array.isArray(serviceabilityData.delivery_codes)) {
             if (serviceabilityData.delivery_codes.length === 0) {
               setPincodeError("We do not ship to this pincode. Please try a different location.");
-              setShippingCost(80);
+              setShippingCost(90);
               setIsCalculating(false);
               return;
             } else {
@@ -142,16 +142,16 @@ export default function Checkout() {
           if (Array.isArray(data) && data.length > 0 && data[0].total_amount !== undefined) {
             const cost = Number(data[0].total_amount);
             if (!isNaN(cost) && cost > 0) {
-              setShippingCost(Math.round(cost));
+              setShippingCost(Math.round(cost) + 10);
             } else {
-              setShippingCost(80);
+              setShippingCost(90);
             }
           } else if (data && typeof data === 'object' && 'error' in data) {
             console.warn("Delhivery API error response:", data.error);
-            setShippingCost(80);
+            setShippingCost(90);
           } else {
             console.warn("Unexpected Delhivery API response format:", data);
-            setShippingCost(80);
+            setShippingCost(90);
           }
         }
       } catch (error) {
@@ -159,7 +159,7 @@ export default function Checkout() {
         // Fail-open: do not block if there is a network error or token issue
         if (active) {
           setPincodeError(null);
-          setShippingCost(80);
+          setShippingCost(90);
         }
       } finally {
         if (active) {
