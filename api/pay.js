@@ -51,12 +51,27 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Firebase configuration missing on the server.' });
     }
 
-    // 1. Fetch Order from Firestore REST API
+    // 1. Fetch Order from Firestore REST API with retry loop to handle replication delay (eventual consistency)
     const orderDocUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/orders/${orderId}?key=${firebaseApiKey}`;
-    const orderRes = await fetch(orderDocUrl);
+    
+    let orderRes;
+    let retries = 4;
+    let delayMs = 300;
+    
+    for (let i = 0; i < retries; i++) {
+      orderRes = await fetch(orderDocUrl);
+      if (orderRes.ok) {
+        break;
+      }
+      if (i < retries - 1) {
+        console.warn(`Order ${orderId} not found in Firestore REST API yet, retrying in ${delayMs}ms... (Attempt ${i + 1}/${retries})`);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+        delayMs *= 2; // exponential backoff: 300ms -> 600ms -> 1200ms
+      }
+    }
     
     if (!orderRes.ok) {
-      return res.status(404).json({ error: `Order ${orderId} not found in database.` });
+      return res.status(404).json({ error: `Order ${orderId} not found in database. Please try again.` });
     }
     
     const orderDataRaw = await orderRes.json();
