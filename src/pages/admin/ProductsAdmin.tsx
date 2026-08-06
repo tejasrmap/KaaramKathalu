@@ -234,22 +234,42 @@ export default function ProductsAdmin() {
                     {product.description}
                   </p>
                   
-                  <div className="mt-5 pt-4 border-t border-warm-dark/5 flex justify-end gap-2">
-                    <button 
-                      onClick={() => {
-                        setEditingProduct(product);
-                        setIsModalOpen(true);
+                  <div className="mt-5 pt-4 border-t border-warm-dark/5 flex justify-between items-center gap-2">
+                    <button
+                      onClick={async () => {
+                        const isOutOfStock = product.stock <= 0;
+                        const newStock = isOutOfStock ? 50 : 0;
+                        try {
+                          await updateDoc(doc(db, 'products', product.docId), { stock: newStock });
+                        } catch (err) {
+                          console.error("Error toggling stock status:", err);
+                        }
                       }}
-                      className="px-3.5 py-2 rounded-xl border border-warm-dark/10 bg-white text-warm-dark hover:bg-warm-dark hover:text-white transition-colors flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest cursor-pointer"
+                      className={`px-3 py-2 rounded-xl border flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                        product.stock <= 0
+                          ? 'bg-green-50 text-green-600 border-green-200/60 hover:bg-green-100 hover:border-green-300'
+                          : 'bg-red-50/50 text-red-600 border-red-200/45 hover:bg-red-50 hover:border-red-300'
+                      }`}
                     >
-                      <Edit2 className="w-3.5 h-3.5" /> Edit
+                      {product.stock <= 0 ? '✓ Mark In Stock' : '✕ Out of Stock'}
                     </button>
-                    <button 
-                      onClick={() => handleDelete(product.docId)}
-                      className="px-3.5 py-2 rounded-xl border border-warm-dark/10 bg-warm-accent text-white hover:bg-white hover:text-warm-accent transition-colors flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest cursor-pointer"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" /> Delete
-                    </button>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => {
+                          setEditingProduct(product);
+                          setIsModalOpen(true);
+                        }}
+                        className="px-3.5 py-2 rounded-xl border border-warm-dark/10 bg-white text-warm-dark hover:bg-warm-dark hover:text-white transition-colors flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest cursor-pointer"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" /> Edit
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(product.docId)}
+                        className="px-3.5 py-2 rounded-xl border border-warm-dark/10 bg-warm-accent text-white hover:bg-white hover:text-warm-accent transition-colors flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest cursor-pointer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
               </motion.div>
