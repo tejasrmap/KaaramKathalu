@@ -26,6 +26,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
 
@@ -249,8 +253,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             )}
           </AnimatePresence>
 
-          <main className="flex-1 mt-24 md:mt-32 pb-12">
-            {children}
+          <main className="flex-1 mt-24 md:mt-32 pb-12 overflow-x-hidden">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.25, ease: [0.25, 1, 0.5, 1] }}
+              >
+                {children}
+              </motion.div>
+            </AnimatePresence>
           </main>
 
           {/* FOOTER */}
