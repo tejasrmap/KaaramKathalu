@@ -232,15 +232,15 @@ export default async function handler(req, res) {
                 volumetric_weight: totalWeightGrams,
                 length: 10,
                 width: 10,
-                height: 10,
-                pickup_location: {
-                  name: warehouseName,
-                  add: "002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu",
-                  city: "Bangalore",
-                  pin: 560043,
-                  phone: "7676644366"
-                }
-              }]
+                height: 10
+              }],
+              pickup_location: {
+                name: warehouseName,
+                add: "002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu",
+                city: "Bangalore",
+                pin: 560043,
+                phone: "7676644366"
+              }
             })
           };
 
