@@ -54,7 +54,7 @@ export default function Checkout() {
     };
   });
 
-  const [shippingCost, setShippingCost] = useState<number>(90);
+  const [shippingCost, setShippingCost] = useState<number | null>(null);
   const [isCalculating, setIsCalculating] = useState<boolean>(false);
   const [pincodeError, setPincodeError] = useState<string | null>(null);
 
@@ -66,7 +66,7 @@ export default function Checkout() {
       const pin = formData.pincode.trim();
       if (!/^\d{6}$/.test(pin)) {
         if (active) {
-          setShippingCost(90);
+          setShippingCost(null);
           setPincodeError(null);
         }
         return;
@@ -79,7 +79,7 @@ export default function Checkout() {
       if (!token || token === 'YOUR_DELHIVERY_API_TOKEN') {
         console.warn("Delhivery API token is not configured. Using fallback shipping cost.");
         if (active) {
-          setShippingCost(90);
+          setShippingCost(null);
           setIsCalculating(false);
         }
         return;
@@ -107,7 +107,7 @@ export default function Checkout() {
           if (serviceabilityData && Array.isArray(serviceabilityData.delivery_codes)) {
             if (serviceabilityData.delivery_codes.length === 0) {
               setPincodeError("We do not ship to this pincode. Please try a different location.");
-              setShippingCost(90);
+              setShippingCost(null);
               setIsCalculating(false);
               return;
             } else {
@@ -144,14 +144,14 @@ export default function Checkout() {
             if (!isNaN(cost) && cost > 0) {
               setShippingCost(Math.round(cost) + 10);
             } else {
-              setShippingCost(90);
+              setShippingCost(null);
             }
           } else if (data && typeof data === 'object' && 'error' in data) {
             console.warn("Delhivery API error response:", data.error);
-            setShippingCost(90);
+            setShippingCost(null);
           } else {
             console.warn("Unexpected Delhivery API response format:", data);
-            setShippingCost(90);
+            setShippingCost(null);
           }
         }
       } catch (error) {
@@ -159,7 +159,7 @@ export default function Checkout() {
         // Fail-open: do not block if there is a network error or token issue
         if (active) {
           setPincodeError(null);
-          setShippingCost(90);
+          setShippingCost(null);
         }
       } finally {
         if (active) {
@@ -358,8 +358,8 @@ export default function Checkout() {
             quantity: item.quantity,
             weightGrams: item.product.weightGrams || 500
           })),
-          total: cartTotal + shippingCost,
-          shippingCost: shippingCost,
+          total: cartTotal + (shippingCost ?? 0),
+          shippingCost: shippingCost ?? 0,
           status: 'payment_pending',
           createdAt: serverTimestamp()
         };
@@ -870,6 +870,10 @@ export default function Checkout() {
                   <span className="text-red-500 font-bold font-serif text-xs uppercase">
                     Unserviceable
                   </span>
+                ) : shippingCost === null ? (
+                  <span className="text-warm-dark/40 font-serif text-xs normal-case italic">
+                    Unavailable
+                  </span>
                 ) : (
                   <span className="text-warm-accent font-bold font-serif text-sm">
                     {shippingCost === 0 ? 'Free' : `₹${shippingCost}`}
@@ -883,7 +887,11 @@ export default function Checkout() {
               <div className="flex justify-between items-center pt-5 border-t border-warm-dark/10">
                 <span className="font-serif text-xl font-bold text-warm-dark">Grand Total</span>
                 <span className="font-serif text-2xl font-bold text-warm-accent">
-                  {pincodeError ? '—' : formData.pincode.trim().length !== 6 ? `₹${cartTotal}` : `₹${cartTotal + shippingCost}`}
+                  {pincodeError || shippingCost === null
+                    ? '—'
+                    : formData.pincode.trim().length !== 6
+                    ? `₹${cartTotal}`
+                    : `₹${cartTotal + shippingCost}`}
                 </span>
               </div>
             </div>
