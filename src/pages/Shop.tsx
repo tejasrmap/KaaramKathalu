@@ -142,7 +142,7 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
             </div>
           ) : filteredProducts.length === 0 ? (
              <div className="col-span-full py-20 text-center bg-white border border-warm-dark/5 rounded-[24px] shadow-sm max-w-xl mx-auto w-full">
-              <p className="font-serif font-bold text-xl italic text-warm-dark/30">No snacks found in this section.</p>
+              <p className="font-serif font-bold text-xl italic text-warm-dark/30">No items found in this section.</p>
             </div>
           ) : filteredProducts.map(product => (
             <motion.div

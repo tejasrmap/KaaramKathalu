@@ -11,11 +11,11 @@ interface SEOProps {
 }
 
 export default function SEO({
-  title = 'Authentic Andhra Pickles, Podis & Heritage Snacks',
-  description = 'Kaaram Kathalu brings you handcrafted Andhra pickles (avakaya, gongura), spice podis and heritage snacks made by local artisans using traditional recipes. Free shipping on orders above ₹999.',
+  title = 'Authentic Andhra Pickles, Podis & Spice Blends',
+  description = 'Kaaram Kathalu brings you handcrafted Andhra pickles (avakaya, gongura) and traditional spice podis made by local artisans using heritage recipes. Free shipping on orders above ₹999.',
   image = 'https://www.kaaramkathalu.in/logo.jpg',
   url = 'https://www.kaaramkathalu.in',
-  keywords = 'andhra pickles online, avakaya pickle, gongura pickle, spice podi, kaaram kathalu, artisan pickles india, heritage pickle brands, buy pickles online india',
+  keywords = 'andhra pickles online, avakaya pickle, gongura pickle, spice podi, kaaram kathalu, artisan pickles india, heritage pickle brands, buy pickles online india, spice powders online',
   type = 'website',
 }: SEOProps) {
   const siteTitle = title.includes('Kaaram Kathalu') ? title : `${title} | Kaaram Kathalu`;

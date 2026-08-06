@@ -118,20 +118,20 @@ export default function Home() {
 
   const faqs = [
     {
-      q: "Are your snacks handmade?",
-      a: "Yes! Every batch of murukku, sev, and namkeen is handcrafted in small quantities. We use traditional presses and methods passed down through generations of Andhra households."
+      q: "Are your pickles and podis handmade?",
+      a: "Yes! Every batch of Avakaya, Gongura, and aromatic podis is handcrafted in small quantities. We use traditional stoneware grinding methods passed down through generations of Andhra households."
     },
     {
       q: "Do your products contain preservatives or artificial additives?",
-      a: "Absolutely not. All our snacks are completely free of artificial preservatives, colours, flavour enhancers, or MSG. We use pure cold-pressed oils, fresh spices, and natural ingredients only."
+      a: "Absolutely not. All our pickles and podis are completely free of artificial chemical preservatives, synthetic colours, or MSG. We use cold-pressed sesame oil, sea salt, and lemon juice as natural preservatives just like grandmothers do."
     },
     {
-      q: "What is murukku made from?",
-      a: "Murukku is a traditional South Indian savoury snack made primarily from rice flour and urad dal flour. Our recipes also include pure butter or ghee, sesame seeds, cumin, and fresh spices. Each variety has its own unique ingredient blend."
+      q: "What oils do you use in your pickles?",
+      a: "We exclusively use premium, raw cold-pressed sesame oil (Nuvvula Nune) and pure groundnut oil for our pickles. This not only preserves the pickles naturally but also lends them an authentic coastal Andhra aroma and flavour."
     },
     {
-      q: "How long do the snacks stay fresh?",
-      a: "Our snacks are preservative-free and packed in airtight packaging to lock in crunch. They stay fresh for up to 45–60 days when stored in a cool, dry place with the pack sealed after opening."
+      q: "How long do the pickles and podis stay fresh?",
+      a: "Our pickles stay fresh for up to 6–12 months when stored properly. Spice podis are best consumed within 3–4 months to enjoy their peak aroma. Always use a clean, dry spoon to retain freshness."
     },
     {
       q: "Can I order in bulk for events or gifting?",
@@ -144,8 +144,8 @@ export default function Home() {
   return (
     <>
       <SEO
-        title="Kaaram Kathalu | Handmade Murukku, Namkeen & Traditional Andhra Snacks"
-        description="Kaaram Kathalu brings you handcrafted Andhra murukku, namkeen, sev and crunchy snacks made by local artisans. Zero preservatives. Free shipping on orders above ₹999."
+        title="Kaaram Kathalu | Authentic Andhra Pickles & Podis"
+        description="Kaaram Kathalu brings you handcrafted Andhra pickles, Gongura, Avakaya, and traditional spice podis made by local artisans. Zero preservatives. Free shipping on orders above ₹999."
         url="https://www.kaaramkathalu.in/"
       />
 
@@ -206,11 +206,11 @@ export default function Home() {
             }`}>Handmade Traditions</span>
             <h1 className={`text-4xl sm:text-5xl md:text-6xl font-serif leading-tight ${
               heroImages.length > 0 ? 'text-white drop-shadow-lg' : 'text-warm-dark'
-            }`}>Crunch into <br/>Heritage.</h1>
+            }`}>Savour the <br/>Heritage.</h1>
             <p className={`font-serif italic text-sm md:text-base leading-relaxed max-w-md ${
               heroImages.length > 0 ? 'text-white/90 drop-shadow' : 'text-warm-dark/80'
             }`}>
-              Handcrafted Andhra murukku, namkeen, and crunchy savouries made with pure ingredients and zero preservatives. Every bite tells a story.
+              Handcrafted Andhra pickles, Gongura, Avakaya, and aromatic spice podis made with pure ingredients, cold-pressed oils, and zero preservatives. Every bite tells a story.
             </p>
             <Link 
               to="/shop" 
@@ -220,7 +220,7 @@ export default function Home() {
                   : 'bg-warm-accent text-white hover:bg-warm-dark shadow-[4px_4px_0px_var(--color-warm-dark)]'
               }`}
             >
-              Shop Snacks
+              Shop Pickles & Podis
             </Link>
           </div>
         </div>
