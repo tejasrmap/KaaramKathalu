@@ -13,7 +13,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isAdmin: boolean;
   isLoading: boolean;
-  login: () => Promise<void>;
+  login: (isAdminOnly?: boolean) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe;
   }, []);
 
-  const login = async () => {
+  const login = async (isAdminOnly: boolean = false) => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const loggedInUser = result.user;
@@ -66,13 +66,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }, { merge: true });
 
       // Check admin status
+      let adminStatus = false;
       if (loggedInUser.email) {
-        const adminStatus = await checkIsAdmin(loggedInUser.email);
+        adminStatus = await checkIsAdmin(loggedInUser.email);
         setIsAdmin(adminStatus);
-        if (!adminStatus) {
-          await signOut(auth);
-          throw new Error('Access denied. Your account is not authorised as an admin.');
-        }
+      } else {
+        setIsAdmin(false);
+      }
+
+      if (isAdminOnly && !adminStatus) {
+        await signOut(auth);
+        setIsAdmin(false);
+        setUser(null);
+        throw new Error('Access denied. Your account is not authorised as an admin.');
       }
 
     } catch (error) {

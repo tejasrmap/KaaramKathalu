@@ -23,7 +23,7 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
       const local = localStorage.getItem('kk_cart');
@@ -42,6 +42,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   // 2. Fetch and merge Firestore cart on login
   useEffect(() => {
+    if (authLoading) return;
+
     const syncOnLogin = async () => {
       if (!user) {
         isFirstLoad.current = false;
@@ -80,7 +82,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     };
 
     syncOnLogin();
-  }, [user]);
+  }, [user, authLoading]);
 
   // 3. Write updates to Firestore on cart state changes (after initial merge)
   useEffect(() => {

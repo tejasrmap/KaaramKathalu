@@ -13,7 +13,7 @@ export default function AdminLogin() {
     setIsLoading(true);
     setError(null);
     try {
-      await login();
+      await login(true);
       navigate('/admin');
     } catch (err: any) {
       setError(err.message || 'Failed to sign in with Google');
