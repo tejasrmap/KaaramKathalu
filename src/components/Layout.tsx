@@ -93,28 +93,32 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 : 'py-5 md:py-6'
                 }`}
             >
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex justify-between items-center w-full">
-                <Link to="/" className="flex items-center">
-                  <img
-                    src="/logo_icon.jpg"
-                    alt="Kaaram Kathalu"
-                    className={`transition-all duration-300 object-contain rounded-full ${isScrolled || location.pathname !== '/'
-                      ? 'h-8 md:h-12'
-                      : 'h-10 md:h-16'
-                      }`}
-                  />
-                </Link>
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 grid grid-cols-3 items-center w-full">
+                <div className="flex justify-start">
+                  <Link to="/" className="flex items-center">
+                    <img
+                      src="/logo_icon.jpg"
+                      alt="Kaaram Kathalu"
+                      className={`transition-all duration-300 object-contain rounded-full ${isScrolled || location.pathname !== '/'
+                        ? 'h-8 md:h-12'
+                        : 'h-10 md:h-16'
+                        }`}
+                    />
+                  </Link>
+                </div>
 
-                {/* Desktop Nav Links */}
-                <nav className="hidden lg:flex gap-8 items-center font-heading text-base tracking-wider uppercase text-warm-dark font-medium">
-                  <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Home</Link>
-                  <Link to="/shop" className={`${location.pathname === '/shop' && !location.search ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Shop All</Link>
-                  <Link to="/shop?category=pickle" className={`${location.pathname === '/shop' && location.search.includes('category=pickle') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Pickles</Link>
-                  <Link to="/shop?category=podi" className={`${location.pathname === '/shop' && location.search.includes('category=podi') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Podis</Link>
-                </nav>
+                <div className="flex justify-center">
+                  {/* Desktop Nav Links */}
+                  <nav className="hidden lg:flex gap-8 items-center font-heading text-base tracking-wider uppercase text-warm-dark font-medium">
+                    <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Home</Link>
+                    <Link to="/shop" className={`${location.pathname === '/shop' && !location.search ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Shop All</Link>
+                    <Link to="/shop?category=pickle" className={`${location.pathname === '/shop' && location.search.includes('category=pickle') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Pickles</Link>
+                    <Link to="/shop?category=podi" className={`${location.pathname === '/shop' && location.search.includes('category=podi') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Podis</Link>
+                  </nav>
+                </div>
 
                 {/* Desktop & Mobile Actions */}
-                <div className="flex items-center gap-3 sm:gap-4">
+                <div className="flex justify-end items-center gap-3 sm:gap-4">
                   {/* Mobile Menu Toggle button */}
                   <button
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
