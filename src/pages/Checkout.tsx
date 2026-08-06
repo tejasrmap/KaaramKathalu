@@ -298,7 +298,9 @@ export default function Checkout() {
         return { ...item, resolvedDocId: docId };
       }));
 
-      const orderRef = doc(collection(db, 'orders'));
+      // Generate custom Order ID starting with 'KK' followed by a random 6-digit number (e.g. KK839201)
+      const customOrderId = 'KK' + Math.floor(100000 + Math.random() * 900000);
+      const orderRef = doc(db, 'orders', customOrderId);
       const orderId = orderRef.id;
 
       await runTransaction(db, async (transaction) => {
