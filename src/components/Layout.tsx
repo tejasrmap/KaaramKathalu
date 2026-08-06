@@ -109,6 +109,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <nav className="hidden lg:flex gap-8 items-center font-heading text-base tracking-wider uppercase text-warm-dark font-medium">
                   <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Home</Link>
                   <Link to="/shop" className={`${location.pathname === '/shop' && !location.search ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Shop All</Link>
+                  <Link to="/shop?category=pickle" className={`${location.pathname === '/shop' && location.search.includes('category=pickle') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Pickles</Link>
+                  <Link to="/shop?category=podi" className={`${location.pathname === '/shop' && location.search.includes('category=podi') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Podis</Link>
                 </nav>
 
                 {/* Desktop & Mobile Actions */}
@@ -225,6 +227,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 font-heading text-lg tracking-wider uppercase text-warm-dark">
                     <Link to="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Home</Link>
                     <Link to="/shop" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Shop All</Link>
+                    <Link to="/shop?category=pickle" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Pickles</Link>
+                    <Link to="/shop?category=podi" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Podis</Link>
                     {user ? (
                       <>
                         <Link to="/my-orders" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">My Orders</Link>

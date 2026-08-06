@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Leaf, Flame, Loader2 } from 'lucide-react';
 import { ProductType } from '../data/products';
 import { db } from '../firebase';
@@ -81,15 +81,24 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
     fetchActiveCategories();
   }, []);
 
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlCategory = searchParams.get('category');
+  const selectedCategory = urlCategory || 'all';
+
+  const setSelectedCategory = (category: string) => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (category === 'all') {
+      nextParams.delete('category');
+    } else {
+      nextParams.set('category', category);
+    }
+    setSearchParams(nextParams);
+  };
 
   const categories = [
     { id: 'all', label: 'All Pantry' },
     { id: 'pickle', label: 'Pickles' },
-    { id: 'podi', label: 'Podis' },
-    { id: 'snacks', label: 'Snacks' },
-    { id: 'fryums', label: 'Fryums' },
-    { id: 'bundle', label: 'Bundles' }
+    { id: 'podi', label: 'Podis' }
   ].filter(cat => cat.id === 'all' || activeCategories[cat.id] !== false);
 
   const getCategoryLabel = (type: string) => {
