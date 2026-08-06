@@ -42,27 +42,62 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
     return unsubscribe;
   }, []);
 
-  const filteredProducts = category 
-    ? products.filter(p => p.type === category)
-    : products;
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  const pageTitle = category === 'murukku'
-    ? 'Murukku'
-    : category === 'namkeen'
-      ? 'Namkeen & Sev'
-      : category === 'snacks'
-        ? 'Snacks'
-        : 'Shop All';
+  const categories = [
+    { id: 'all', label: 'All Pantry' },
+    { id: 'pickle', label: 'Pickles' },
+    { id: 'podi', label: 'Podis' },
+    { id: 'snacks', label: 'Snacks' },
+    { id: 'fryums', label: 'Fryums' },
+    { id: 'bundle', label: 'Bundles' }
+  ];
+
+  const getCategoryLabel = (type: string) => {
+    switch (type) {
+      case 'pickle': return 'Pickle';
+      case 'podi': return 'Podi';
+      case 'snacks': return 'Snacks';
+      case 'fryums': return 'Fryums';
+      case 'bundle': return 'Bundle';
+      default: return type;
+    }
+  };
+
+  const filteredProducts = selectedCategory === 'all'
+    ? products
+    : products.filter(p => p.type === selectedCategory);
+
+  const pageTitle = selectedCategory === 'all'
+    ? 'Shop All'
+    : getCategoryLabel(selectedCategory);
 
   return (
     <div className="pt-8 md:pt-12 pb-24 px-4 sm:px-6 md:px-12 max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto min-h-screen">
       <SEO title={pageTitle} description={`Explore our collection of authentic, hand-made ${pageTitle.toLowerCase()}.`} />
       
-      <div className="text-center mb-12 relative w-full mx-auto">
+      <div className="text-center mb-6 relative w-full mx-auto">
         <h1 className="text-3xl md:text-5xl font-heading font-bold text-warm-dark uppercase tracking-wider">
           {pageTitle}
         </h1>
         <div className="w-12 h-0.5 bg-warm-accent mx-auto mt-4 mb-6"></div>
+      </div>
+
+      {/* Category Tabs */}
+      <div className="flex flex-wrap justify-center gap-2 mb-10 pb-6 border-b border-warm-dark/5">
+        {categories.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => setSelectedCategory(cat.id)}
+            className={`px-5 py-2.5 rounded-full text-xs font-heading tracking-widest uppercase transition-all duration-300 border cursor-pointer ${
+              selectedCategory === cat.id
+                ? 'bg-warm-accent text-white border-warm-accent font-semibold shadow-sm scale-[1.02]'
+                : 'bg-warm-light/40 text-warm-dark/70 border-warm-dark/10 hover:border-warm-dark hover:text-warm-dark'
+            }`}
+          >
+            {cat.label}
+          </button>
+        ))}
       </div>
 
       <motion.div layout className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
@@ -104,7 +139,7 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
                     
                     <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-20">
                       <span className="bg-warm-dark text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded">
-                        {product.type}
+                        {getCategoryLabel(product.type)}
                       </span>
                       {product.stock <= 0 && (
                         <span className="bg-red-600 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded animate-pulse">
