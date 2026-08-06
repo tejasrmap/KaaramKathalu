@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
@@ -14,13 +14,20 @@ export default function Checkout() {
   const { user } = useAuth();
   const { showAlert, showToast, showConfirm } = usePopups();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const status = searchParams.get('status');
+  const successOrderId = searchParams.get('id');
+  const waybill = searchParams.get('waybill');
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(() => {
-    return sessionStorage.getItem('kk_checkout_success') === 'true';
+    return sessionStorage.getItem('kk_checkout_success') === 'true' || searchParams.get('status') === 'success';
   });
   const [successWaybill, setSuccessWaybill] = useState<string>(() => {
-    return sessionStorage.getItem('kk_checkout_waybill') || "";
+    return sessionStorage.getItem('kk_checkout_waybill') || searchParams.get('waybill') || "";
   });
+  const [paymentFailed, setPaymentFailed] = useState(false);
+  const [failedOrderId, setFailedOrderId] = useState<string | null>(null);
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState(() => {
     return sessionStorage.getItem('kk_checkout_selected_address_id') || "";
@@ -181,14 +188,32 @@ export default function Checkout() {
   }, [showNewAddressForm]);
 
   React.useEffect(() => {
-    // If there are items in the cart, it's a new checkout session, so clear any old success state
-    if (cart.length > 0) {
+    // If there are items in the cart and we are NOT in a successful callback, clear old success state
+    if (cart.length > 0 && status !== 'success') {
       sessionStorage.removeItem('kk_checkout_success');
       sessionStorage.removeItem('kk_checkout_waybill');
       setIsSuccess(false);
       setSuccessWaybill("");
     }
-  }, [cart]);
+  }, [cart, status]);
+
+  React.useEffect(() => {
+    if (status === 'success' && successOrderId) {
+      setIsSuccess(true);
+      setSuccessWaybill(waybill || "");
+      sessionStorage.setItem('kk_checkout_success', 'true');
+      if (waybill) {
+        sessionStorage.setItem('kk_checkout_waybill', waybill);
+      }
+      clearCart();
+      sessionStorage.removeItem('kk_checkout_form');
+      sessionStorage.removeItem('kk_checkout_selected_address_id');
+      sessionStorage.removeItem('kk_checkout_show_new_address_form');
+    } else if (status === 'failure') {
+      setPaymentFailed(true);
+      setFailedOrderId(successOrderId);
+    }
+  }, [status, successOrderId, waybill, clearCart]);
 
   const hasLoadedInitialData = React.useRef(sessionStorage.getItem('kk_checkout_form') !== null);
 
@@ -325,8 +350,9 @@ export default function Checkout() {
         const orderData = {
           customer: formData,
           userId: user.uid,
-          items: cart.map(item => ({
+          items: resolvedCartItems.map(item => ({
             id: item.product.id,
+            docId: item.resolvedDocId,
             name: item.product.name,
             price: item.product.price,
             quantity: item.quantity,
@@ -334,7 +360,7 @@ export default function Checkout() {
           })),
           total: cartTotal + shippingCost,
           shippingCost: shippingCost,
-          status: 'pending',
+          status: 'payment_pending',
           createdAt: serverTimestamp()
         };
 
@@ -385,141 +411,31 @@ export default function Checkout() {
         }
       }
 
-      // 4. Try to book the shipment on Delhivery automatically
-      try {
-        let warehouseName = "Kaaram Kathalu";
-        try {
-          const settingsSnap = await getDoc(doc(db, 'settings', 'general'));
-          if (settingsSnap.exists()) {
-            const settingsData = settingsSnap.data();
-            if (settingsData.delhiveryWarehouseName) {
-              warehouseName = settingsData.delhiveryWarehouseName;
-            }
-          }
-        } catch (err) {
-          console.warn("Failed to fetch settings from Firestore, using default warehouse name:", err);
-        }
+      // 4. Request PhonePe Redirect URL from Backend API Proxy
+      const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+        ? 'http://localhost:3000' 
+        : '';
+        
+      const response = await fetch(`${host}/api/pay`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ orderId })
+      });
 
-        const pickupLocation = {
-          name: warehouseName,
-          add: "002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu",
-          city: "Bangalore",
-          pin: 560043,
-          phone: "7676644366"
-        };
-
-        const consigneePhone = (() => {
-          const p = formData.phone;
-          if (!p) return "7676644366";
-          let cleaned = p.replace(/\D/g, '');
-          if (cleaned.length === 12 && cleaned.startsWith('91')) {
-            cleaned = cleaned.substring(2);
-          }
-          if (cleaned.length === 11 && cleaned.startsWith('0')) {
-            cleaned = cleaned.substring(1);
-          }
-          if (cleaned.length !== 10) {
-            return "7676644366";
-          }
-          return cleaned;
-        })();
-
-        const shipments = [
-          {
-            waybill: "",
-            order: orderId,
-            product: cart.map(item => `${item.product.name} (x${item.quantity})`).join(', ') || "Andhra Delicacies",
-            products_desc: cart.map(item => `${item.product.name} (x${item.quantity})`).join(', ') || "Andhra Delicacies",
-            package_desc: cart.map(item => `${item.product.name} (x${item.quantity})`).join(', ') || "Andhra Delicacies",
-            
-            name: formData.name || "Customer",
-            add: formData.address || "",
-            city: formData.city || "",
-            state: "Karnataka",
-            pin: Number(formData.pincode) || 560043,
-            phone: consigneePhone,
-            country: "India",
-
-            consignee: {
-              name: formData.name || "Customer",
-              address: formData.address || "",
-              city: formData.city || "",
-              state: "Karnataka",
-              pincode: Number(formData.pincode) || 560043,
-              phone: consigneePhone
-            },
-            payment_mode: "Pre-paid",
-            package_type: "Prepaid",
-            weight: totalWeightGrams || 500,
-            cod_amount: 0,
-            order_date: new Date().toISOString(),
-            total_amount: cartTotal + shippingCost,
-            quantity: cart.reduce((sum, item) => sum + item.quantity, 0) || 1
-          }
-        ];
-
-        const payload = {
-          shipments,
-          pickup_location: pickupLocation
-        };
-
-        const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-          ? 'https://kaaramkathalu.in'
-          : '';
-
-        const response = await fetch(`${host}/api/shipping`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            type: 'create_shipment',
-            data: payload
-          })
-        });
-
-        if (response.ok) {
-          const resData = await response.json();
-          let waybill = "";
-          
-          if (resData.success && resData.packages && resData.packages.length > 0) {
-            waybill = resData.packages[0].waybill;
-          } else if (resData.pickups && resData.pickups.length > 0 && resData.pickups[0].waybills && resData.pickups[0].waybills.length > 0) {
-            const waybillObj = resData.pickups[0].waybills[0];
-            if (waybillObj.status === 'Success' || waybillObj.waybill) {
-              waybill = waybillObj.waybill;
-            }
-          }
-
-          if (waybill) {
-            setSuccessWaybill(waybill);
-            sessionStorage.setItem('kk_checkout_waybill', waybill);
-            // Update order in Firestore
-            await updateDoc(doc(db, 'orders', orderId), {
-              status: 'Shipped',
-              waybill: waybill,
-              carrier: 'Delhivery',
-              shippedAt: new Date()
-            });
-            console.log(`Delhivery shipment auto-created successfully! Waybill: ${waybill}`);
-          } else {
-            console.warn("Delhivery shipment response did not return a valid waybill:", resData);
-          }
-        } else {
-          console.warn(`Delhivery shipment API returned status ${response.status}`);
-        }
-      } catch (err) {
-        // Fail-open: do not crash checkout if Delhivery fails (e.g. balance or API down).
-        // The admin can always generate the AWB manually later.
-        console.error("Failed to auto-create Delhivery shipment during checkout:", err);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to initialize payment gateway.');
       }
-      
-      sessionStorage.setItem('kk_checkout_success', 'true');
-      sessionStorage.removeItem('kk_checkout_form');
-      sessionStorage.removeItem('kk_checkout_selected_address_id');
-      sessionStorage.removeItem('kk_checkout_show_new_address_form');
-      setIsSuccess(true);
-      clearCart();
+
+      const payData = await response.json();
+      if (payData.url) {
+        // Redirect to PhonePe payment page
+        window.location.href = payData.url;
+      } else {
+        throw new Error('Payment gateway did not return a valid URL.');
+      }
     } catch (error: any) {
       console.error("Error placing order:", error);
       showAlert(error.message || "Failed to place order. Please try again.", "Order Placement Failed");
@@ -534,6 +450,63 @@ export default function Checkout() {
       [e.target.name]: e.target.value
     }));
   };
+
+  if (paymentFailed) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center max-w-2xl mx-auto">
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="w-24 h-24 bg-red-50 text-red-600 rounded-full flex items-center justify-center mb-8 border border-red-100 shadow-sm"
+        >
+          <AlertTriangle className="w-12 h-12" />
+        </motion.div>
+
+        <motion.h2
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-4xl md:text-5xl font-serif text-warm-dark mb-6"
+        >
+          Payment Unsuccessful
+        </motion.h2>
+
+        <motion.p
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="text-warm-dark/60 mb-8 font-serif italic text-lg leading-relaxed"
+        >
+          {failedOrderId ? `We couldn't process your payment for order ${failedOrderId}.` : "We couldn't process your payment."} If money was deducted, it will be automatically refunded by PhonePe. Please try checking out again.
+        </motion.p>
+
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="flex flex-col sm:flex-row gap-4"
+        >
+          <button
+            onClick={() => {
+              setPaymentFailed(false);
+              setFailedOrderId(null);
+              navigate('/checkout');
+            }}
+            className="px-8 py-4 bg-warm-accent hover:bg-warm-accent/90 text-white rounded-full font-bold tracking-widest uppercase text-xs transition-colors shadow-sm cursor-pointer"
+          >
+            Retry Checkout
+          </button>
+          <Link
+            to="/shop"
+            className="px-8 py-4 bg-white hover:bg-warm-light/40 border border-warm-dark/15 text-warm-dark rounded-full font-bold tracking-widest uppercase text-xs transition-colors shadow-sm cursor-pointer flex items-center justify-center"
+          >
+            Back to Pantry
+          </Link>
+        </motion.div>
+      </div>
+    );
+  }
 
   if (isSuccess) {
     return (
@@ -555,6 +528,17 @@ export default function Checkout() {
         >
           Order Placed Successfully!
         </motion.h2>
+
+        {successOrderId && (
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.25 }}
+            className="text-sm font-heading font-black tracking-widest text-warm-accent uppercase mb-4"
+          >
+            Order ID: {successOrderId}
+          </motion.p>
+        )}
 
         <motion.p
           initial={{ y: 20, opacity: 0 }}
