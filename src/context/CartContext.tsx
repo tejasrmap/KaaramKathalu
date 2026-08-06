@@ -25,6 +25,11 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const { user, isLoading: authLoading } = useAuth();
   const [cart, setCart] = useState<CartItem[]>(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('status') === 'success') {
+      localStorage.removeItem('kk_cart');
+      return [];
+    }
     try {
       const local = localStorage.getItem('kk_cart');
       return local ? JSON.parse(local) : [];
@@ -43,6 +48,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // 2. Fetch and merge Firestore cart on login
   useEffect(() => {
     if (authLoading) return;
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('status') === 'success') {
+      isFirstLoad.current = false;
+      return;
+    }
 
     const syncOnLogin = async () => {
       if (!user) {
@@ -129,7 +140,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const clearCart = () => setCart([]);
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem('kk_cart');
+    if (user) {
+      const userRef = doc(db, 'users', user.uid);
+      setDoc(userRef, { cart: [] }, { merge: true }).catch(err => {
+        console.error("Error clearing cart in Firestore:", err);
+      });
+    }
+  };
   const cartTotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
