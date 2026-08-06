@@ -334,19 +334,27 @@ export default function Orders() {
                           {openDropdown === order.id && (
                             <>
                               <div className="fixed inset-0 z-10" onClick={() => setOpenDropdown(null)} />
-                              <div className="absolute right-0 mt-2 w-48 bg-white border border-warm-dark/10 rounded-2xl shadow-lg z-20 py-2">
-                                <div className="px-4 py-2 border-b border-warm-dark/5 text-[10px] font-bold text-warm-dark/40 uppercase tracking-widest mb-1">Update Status To:</div>
-                                {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(status => (
-                                  <button
-                                    key={status}
-                                    onClick={() => updateStatus(order.id, status)}
-                                    className="w-full text-left px-4 py-2.5 text-xs font-serif text-warm-dark hover:bg-warm-light hover:text-warm-accent transition-colors flex items-center justify-between cursor-pointer"
-                                  >
-                                    {status}
-                                    {order.status === status && <div className="w-1.5 h-1.5 rounded-full bg-warm-accent"></div>}
-                                  </button>
-                                ))}
-                              </div>
+                              <AnimatePresence>
+                                <motion.div
+                                  initial={{ opacity: 0, scale: 0.92, y: -6 }}
+                                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                                  exit={{ opacity: 0, scale: 0.92, y: -6 }}
+                                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                                  className="absolute right-0 mt-2 w-48 bg-white border border-warm-dark/10 rounded-2xl shadow-lg z-20 py-2 origin-top-right"
+                                >
+                                  <div className="px-4 py-2 border-b border-warm-dark/5 text-[10px] font-bold text-warm-dark/40 uppercase tracking-widest mb-1">Update Status To:</div>
+                                  {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(status => (
+                                    <button
+                                      key={status}
+                                      onClick={() => updateStatus(order.id, status)}
+                                      className="w-full text-left px-4 py-2.5 text-xs font-serif text-warm-dark hover:bg-warm-light hover:text-warm-accent transition-colors flex items-center justify-between cursor-pointer"
+                                    >
+                                      {status}
+                                      {order.status === status && <div className="w-1.5 h-1.5 rounded-full bg-warm-accent"></div>}
+                                    </button>
+                                  ))}
+                                </motion.div>
+                              </AnimatePresence>
                             </>
                           )}
                         </div>
@@ -394,18 +402,27 @@ export default function Orders() {
                   {openDropdown === order.id && (
                     <>
                       <div className="fixed inset-0 z-10" onClick={() => setOpenDropdown(null)} />
-                      <div className="absolute right-0 bottom-full mb-2 w-48 bg-white border border-warm-dark/10 rounded-2xl shadow-lg z-20 py-2">
-                        <div className="px-4 py-2 border-b border-warm-dark/5 text-[10px] font-bold text-warm-dark/40 uppercase tracking-widest mb-1">Update Status:</div>
-                        {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(status => (
-                          <button
-                            key={status}
-                            onClick={() => updateStatus(order.id, status)}
-                            className="w-full text-left px-4 py-2 text-xs font-bold font-serif text-warm-dark hover:bg-warm-light transition-colors"
-                          >
-                            {status}
-                          </button>
-                        ))}
-                      </div>
+                      <AnimatePresence>
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.92, y: 6 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.92, y: 6 }}
+                          transition={{ duration: 0.15, ease: 'easeOut' }}
+                          className="absolute right-0 bottom-full mb-2 w-48 bg-white border border-warm-dark/10 rounded-2xl shadow-lg z-20 py-2 origin-bottom-right"
+                        >
+                          <div className="px-4 py-2 border-b border-warm-dark/5 text-[10px] font-bold text-warm-dark/40 uppercase tracking-widest mb-1">Update Status:</div>
+                          {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(status => (
+                            <button
+                              key={status}
+                              onClick={() => updateStatus(order.id, status)}
+                              className="w-full text-left px-4 py-2 text-xs font-bold font-serif text-warm-dark hover:bg-warm-light hover:text-warm-accent transition-colors flex items-center justify-between cursor-pointer"
+                            >
+                              {status}
+                              {order.status === status && <div className="w-1.5 h-1.5 rounded-full bg-warm-accent"></div>}
+                            </button>
+                          ))}
+                        </motion.div>
+                      </AnimatePresence>
                     </>
                   )}
                 </div>
