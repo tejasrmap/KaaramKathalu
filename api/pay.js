@@ -142,7 +142,8 @@ export default async function handler(req, res) {
       return res.status(200).json({ url: data.data.instrumentResponse.redirectInfo.url });
     } else {
       console.error("PhonePe pay endpoint error:", data);
-      return res.status(400).json({ error: data.message || 'Failed to initiate payment with PhonePe' });
+      const detailedError = data.message || (data.code ? `PhonePe Gateway Error Code: ${data.code}` : null) || 'Failed to initiate payment with PhonePe';
+      return res.status(400).json({ error: detailedError });
     }
   } catch (error) {
     console.error("Payment initialization error:", error);
