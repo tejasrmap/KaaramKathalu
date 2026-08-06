@@ -93,7 +93,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 : 'py-5 md:py-6'
                 }`}
             >
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 grid grid-cols-3 items-center w-full">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex justify-between items-center w-full relative">
                 <div className="flex justify-start">
                   <Link to="/" className="flex items-center">
                     <img
@@ -107,16 +107,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </Link>
                 </div>
 
-                <div className="flex justify-center">
-                  {/* Desktop Nav Links */}
-                  <nav className="hidden lg:flex gap-8 items-center font-heading text-base tracking-wider uppercase text-warm-dark font-medium">
-                    <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Home</Link>
-                    <Link to="/shop" className={`${location.pathname === '/shop' && !location.search ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Shop All</Link>
-                    <Link to="/shop?category=pickle" className={`${location.pathname === '/shop' && location.search.includes('category=pickle') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Pickles</Link>
-                    <Link to="/shop?category=podi" className={`${location.pathname === '/shop' && location.search.includes('category=podi') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Podis</Link>
-                    <Link to="/about" className={`${location.pathname === '/about' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Our Story</Link>
-                  </nav>
-                </div>
+                {/* Desktop Nav Links - Absolutely Centered */}
+                <nav className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 hidden lg:flex gap-8 items-center font-heading text-base tracking-wider uppercase text-warm-dark font-medium whitespace-nowrap">
+                  <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Home</Link>
+                  <Link to="/shop" className={`${location.pathname === '/shop' && !location.search ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Shop All</Link>
+                  <Link to="/shop?category=pickle" className={`${location.pathname === '/shop' && location.search.includes('category=pickle') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Pickles</Link>
+                  <Link to="/shop?category=podi" className={`${location.pathname === '/shop' && location.search.includes('category=podi') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Podis</Link>
+                  <Link to="/about" className={`${location.pathname === '/about' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Our Story</Link>
+                </nav>
 
                 {/* Desktop & Mobile Actions */}
                 <div className="flex justify-end items-center gap-3 sm:gap-4">
