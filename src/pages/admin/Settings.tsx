@@ -3,8 +3,10 @@ import { Save, Loader2, CheckCircle2, Globe, Phone, Mail, Bell, ShieldCheck, Ima
 import { db } from '../../firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { supabase } from '../../supabase';
+import { usePopups } from '../../context/PopupContext';
 
 export default function Settings() {
+  const { showAlert, showToast } = usePopups();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -213,11 +215,10 @@ export default function Settings() {
         setSec1File(null);
         setSec2File(null);
       }
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      showToast("Settings saved successfully!", "success");
     } catch (error: any) {
       console.error("Error saving settings:", error);
-      alert("Failed to save settings: " + (error?.message || error?.error_description || JSON.stringify(error)));
+      showAlert("Failed to save settings: " + (error?.message || error?.error_description || JSON.stringify(error)), "Error");
     } finally {
       setIsSaving(false);
       setIsUploading(false);

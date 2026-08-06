@@ -6,7 +6,10 @@ import { collection, onSnapshot, query, orderBy, doc, updateDoc, getDoc } from '
 
 const STATUSES = ['All', 'Pending', 'Processing', 'Shipped', 'Delivered'];
 
+import { usePopups } from '../../context/PopupContext';
+
 export default function Orders() {
+  const { showAlert, showToast } = usePopups();
   const [orders, setOrders] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('All');
@@ -222,9 +225,10 @@ export default function Orders() {
     try {
       await updateDoc(doc(db, 'orders', id), { status: newStatus });
       setOpenDropdown(null);
+      showToast("Order status updated successfully!", "success");
     } catch (error) {
       console.error("Error updating status:", error);
-      alert("Failed to update status.");
+      showAlert("Failed to update status.", "Error");
     }
   };
 

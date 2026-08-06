@@ -5,8 +5,10 @@ import { motion, AnimatePresence } from 'motion/react';
 import { db } from '../../firebase';
 import { collection, onSnapshot, query, doc, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { supabase } from '../../supabase';
+import { usePopups } from '../../context/PopupContext';
 
 export default function ProductsAdmin() {
+  const { showAlert, showToast, showConfirm } = usePopups();
   const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -64,12 +66,14 @@ export default function ProductsAdmin() {
 
 
   const handleDelete = async (docId: string) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
+    const confirmed = await showConfirm("Are you sure you want to delete this product?", "Delete Product");
+    if (!confirmed) return;
     try {
       await deleteDoc(doc(db, 'products', docId));
+      showToast("Product deleted successfully!", "success");
     } catch (error) {
       console.error("Error deleting product:", error);
-      alert("Failed to delete product.");
+      showAlert("Failed to delete product.", "Error");
     }
   };
 
@@ -105,7 +109,7 @@ export default function ProductsAdmin() {
         imageUrl = publicUrl;
       } catch (error: any) {
         console.error("Error uploading image to Supabase:", error);
-        alert("Failed to upload image: " + (error?.message || error?.error_description || JSON.stringify(error)));
+        showAlert("Failed to upload image: " + (error?.message || error?.error_description || JSON.stringify(error)), "Upload Error");
         setIsSubmitting(false);
         setIsUploading(false);
         return;
@@ -129,16 +133,16 @@ export default function ProductsAdmin() {
     try {
       if (editingProduct) {
         await updateDoc(doc(db, 'products', editingProduct.docId), productData);
-        alert('Product updated successfully!');
+        showToast('Product updated successfully!', 'success');
       } else {
         await addDoc(collection(db, 'products'), productData);
-        alert('New product added to inventory!');
+        showToast('New product added to inventory!', 'success');
       }
       setIsModalOpen(false);
       setEditingProduct(null);
     } catch (error: any) {
       console.error("Error saving product:", error);
-      alert(`Failed to save product: ${error.message || 'Unknown error'}. Please check your Firebase rules.`);
+      showAlert(`Failed to save product: ${error.message || 'Unknown error'}. Please check your Firebase rules.`, "Save Error");
     } finally {
       setIsSubmitting(false);
     }

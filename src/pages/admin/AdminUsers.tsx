@@ -4,6 +4,7 @@ import { UserPlus, Trash2, Shield, ShieldOff, Loader2, CheckCircle2, AlertTriang
 import { db } from '../../firebase';
 import { collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../../context/AuthContext';
+import { usePopups } from '../../context/PopupContext';
 
 interface AdminUser {
   email: string;
@@ -15,6 +16,7 @@ interface AdminUser {
 
 export default function AdminUsers() {
   const { user } = useAuth();
+  const { showAlert, showToast, showConfirm } = usePopups();
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [newEmail, setNewEmail] = useState('');
@@ -107,7 +109,8 @@ export default function AdminUsers() {
       showError("You cannot remove yourself as an admin.");
       return;
     }
-    if (!window.confirm(`Remove ${email} from admin access? They will immediately lose access.`)) return;
+    const confirmed = await showConfirm(`Remove ${email} from admin access? They will immediately lose access.`, "Remove Admin Access");
+    if (!confirmed) return;
 
     setDeletingEmail(email);
     try {

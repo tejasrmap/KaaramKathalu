@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { WishlistProvider } from './context/WishlistContext';
+import { PopupProvider } from './context/PopupContext';
 
 // Storefront components
 import Layout from './components/Layout';
@@ -41,8 +42,9 @@ import AdminUsers from './pages/admin/AdminUsers';
 export default function App() {
   return (
     <AuthProvider>
-      <WishlistProvider>
-        <CartProvider>
+      <PopupProvider>
+        <WishlistProvider>
+          <CartProvider>
           <BrowserRouter>
           <Routes>
             {/* Admin Login (No Layout) */}
@@ -85,6 +87,7 @@ export default function App() {
         </BrowserRouter>
       </CartProvider>
     </WishlistProvider>
+   </PopupProvider>
   </AuthProvider>
   );
 }

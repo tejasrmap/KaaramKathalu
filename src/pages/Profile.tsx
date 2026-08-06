@@ -6,9 +6,11 @@ import { User, MapPin, Phone, Mail, Save, Loader2, CheckCircle2, ShieldCheck, Co
 import SEO from '../components/SEO';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
+import { usePopups } from '../context/PopupContext';
 
 export default function Profile() {
   const { user, isLoading: authLoading } = useAuth();
+  const { showAlert, showToast, showConfirm } = usePopups();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -76,11 +78,10 @@ export default function Profile() {
         email: user.email,
         updatedAt: serverTimestamp()
       }, { merge: true });
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      showToast("Profile saved successfully!", "success");
     } catch (error) {
       console.error("Error saving profile:", error);
-      alert("Failed to save profile.");
+      showAlert("Failed to save profile.", "Error");
     } finally {
       setIsSaving(false);
     }
@@ -163,14 +164,18 @@ export default function Profile() {
           pincode: defaultAddr.pincode
         } : {})
       }, { merge: true });
+      showToast("Address saved successfully!", "success");
     } catch (err) {
       console.error("Error saving address list:", err);
-      alert("Failed to save address.");
+      showAlert("Failed to save address.", "Error");
     }
   };
 
   const handleDeleteAddress = async (idToDelete: string) => {
     if (!user) return;
+    
+    const confirmed = await showConfirm("Are you sure you want to delete this address?", "Delete Address");
+    if (!confirmed) return;
     
     let updatedAddresses = addresses.filter(addr => addr.id !== idToDelete);
     
@@ -218,8 +223,10 @@ export default function Profile() {
           pincode: ''
         })
       }, { merge: true });
+      showToast("Address deleted successfully!", "success");
     } catch (err) {
       console.error("Error deleting address:", err);
+      showAlert("Failed to delete address.", "Error");
     }
   };
 

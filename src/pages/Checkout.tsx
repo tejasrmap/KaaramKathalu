@@ -7,10 +7,12 @@ import { collection, addDoc, serverTimestamp, runTransaction, doc, getDoc, query
 import { ArrowLeft, Package, Send, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { motion } from 'motion/react';
+import { usePopups } from '../context/PopupContext';
 
 export default function Checkout() {
   const { cart, cartTotal, clearCart } = useCart();
   const { user } = useAuth();
+  const { showAlert, showToast, showConfirm } = usePopups();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(() => {
@@ -270,11 +272,11 @@ export default function Checkout() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
-      alert("Please log in to place an order.");
+      showAlert("Please log in to place an order.", "Authentication Required");
       return;
     }
     if (pincodeError) {
-      alert("Please enter a serviceable pincode before placing your order.");
+      showAlert("Please enter a serviceable pincode before placing your order.", "Unserviceable Location");
       return;
     }
 
@@ -518,7 +520,7 @@ export default function Checkout() {
       clearCart();
     } catch (error: any) {
       console.error("Error placing order:", error);
-      alert(error.message || "Failed to place order. Please try again.");
+      showAlert(error.message || "Failed to place order. Please try again.", "Order Placement Failed");
     } finally {
       setIsSubmitting(false);
     }
