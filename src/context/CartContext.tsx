@@ -122,7 +122,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       return prev.map(item => {
         if (String(item.product.id) === String(productId)) {
           const newQ = item.quantity + delta;
-          return newQ > 0 ? { ...item, quantity: newQ } : item;
+          return { ...item, quantity: newQ };
         }
         return item;
       }).filter(item => item.quantity > 0);
