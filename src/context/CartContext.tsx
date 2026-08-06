@@ -14,7 +14,7 @@ interface CartContextType {
   isCartOpen: boolean;
   setIsCartOpen: (isOpen: boolean) => void;
   addToCart: (product: Product, quantity?: number) => void;
-  updateQuantity: (productId: number, delta: number) => void;
+  updateQuantity: (productId: string | number, delta: number) => void;
   cartTotal: number;
   cartCount: number;
   clearCart: () => void;
@@ -104,10 +104,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const addToCart = (product: Product, quantity: number = 1) => {
     setCart(prev => {
-      const existing = prev.find(item => item.product.id === product.id);
+      const existing = prev.find(item => String(item.product.id) === String(product.id));
       if (existing) {
         return prev.map(item => 
-          item.product.id === product.id 
+          String(item.product.id) === String(product.id)
             ? { ...item, quantity: item.quantity + quantity } 
             : item
         );
@@ -117,10 +117,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setIsCartOpen(true);
   };
 
-  const updateQuantity = (productId: number, delta: number) => {
+  const updateQuantity = (productId: string | number, delta: number) => {
     setCart(prev => {
       return prev.map(item => {
-        if (item.product.id === productId) {
+        if (String(item.product.id) === String(productId)) {
           const newQ = item.quantity + delta;
           return newQ > 0 ? { ...item, quantity: newQ } : item;
         }
