@@ -1,5 +1,3 @@
-import crypto from 'crypto';
-
 function getFieldValue(field) {
   if (!field) return null;
   if ('stringValue' in field) return field.stringValue;
@@ -17,6 +15,36 @@ function getFieldValue(field) {
     return (field.arrayValue.values || []).map(getFieldValue);
   }
   return null;
+}
+
+// Fetch PhonePe OAuth Token helper
+async function getOAuthToken(clientId, clientSecret, clientVersion, env) {
+  const postData = new URLSearchParams({
+    client_id: clientId,
+    client_version: clientVersion,
+    client_secret: clientSecret,
+    grant_type: "client_credentials"
+  }).toString();
+
+  const host = env === 'production' 
+    ? 'https://api.phonepe.com' 
+    : 'https://api-preprod.phonepe.com';
+
+  const response = await fetch(`${host}/apis/identity-manager/v1/oauth/token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: postData
+  });
+
+  if (!response.ok) {
+    const errBody = await response.text();
+    throw new Error(`Failed to fetch OAuth token: ${response.status} - ${errBody}`);
+  }
+
+  const data = await response.json();
+  return data.access_token;
 }
 
 export default async function handler(req, res) {
@@ -66,7 +94,7 @@ export default async function handler(req, res) {
       if (i < retries - 1) {
         console.warn(`Order ${orderId} not found in Firestore REST API yet, retrying in ${delayMs}ms... (Attempt ${i + 1}/${retries})`);
         await new Promise(resolve => setTimeout(resolve, delayMs));
-        delayMs *= 2; // exponential backoff: 300ms -> 600ms -> 1200ms
+        delayMs *= 2; // exponential backoff
       }
     }
     
@@ -80,69 +108,66 @@ export default async function handler(req, res) {
     // Parse order fields
     const status = fields.status?.stringValue;
     const total = getFieldValue(fields.total);
-    const userId = fields.userId?.stringValue || 'KK-USER-GUEST';
-    
-    const customer = getFieldValue(fields.customer) || {};
-    const customerPhone = customer.phone || '7676644366';
 
     if (status !== 'payment_pending') {
       return res.status(400).json({ error: `Order is not in payment_pending status. Current: ${status}` });
     }
 
-    // 2. Build PhonePe Payment Request Payload
-    const merchantId = process.env.PHONEPE_MERCHANT_ID;
-    const phonepeApiKey = process.env.PHONEPE_API_KEY;
-    const keyIndex = process.env.PHONEPE_KEY_INDEX || '1';
+    // 2. Fetch PhonePe V2 Credentials
+    const clientId = process.env.PHONEPE_CLIENT_ID;
+    const clientSecret = process.env.PHONEPE_CLIENT_SECRET;
+    const clientVersion = process.env.PHONEPE_CLIENT_VERSION || '1';
     const env = process.env.PHONEPE_ENV || 'production';
-    
-    // Fallback to vercel system url or window origin if APP_URL is not set
     const appUrl = process.env.APP_URL || (req.headers.host ? `https://${req.headers.host}` : 'https://www.kaaramkathalu.in');
 
-    if (!merchantId || !phonepeApiKey) {
-      return res.status(500).json({ error: 'PhonePe credentials are not configured on the server.' });
+    if (!clientId || !clientSecret) {
+      return res.status(500).json({ error: 'PhonePe V2 credentials are not configured on the server.' });
     }
 
+    // 3. Generate OAuth Access Token
+    let token;
+    try {
+      token = await getOAuthToken(clientId, clientSecret, clientVersion, env);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to authenticate with PhonePe OAuth server.' });
+    }
+
+    // 4. Request PhonePe V2 Checkout Pay Link
+    const phonepeHost = env === 'production' 
+      ? 'https://api.phonepe.com'
+      : 'https://api-preprod.phonepe.com';
+    
+    const phonepeUrl = `${phonepeHost}/apis/pg/checkout/v2/pay`;
+    
     const payload = {
-      merchantId: merchantId,
-      merchantTransactionId: orderId,
-      merchantUserId: userId,
-      amount: Math.round(total * 100), // PhonePe expects amount in paise
-      redirectUrl: `${appUrl}/api/pay-callback`,
-      redirectMode: "POST",
-      callbackUrl: `${appUrl}/api/pay-callback`,
-      mobileNumber: customerPhone.replace(/\D/g, '').slice(-10),
-      paymentInstrument: {
-        type: "PAY_PAGE"
+      merchantOrderId: orderId,
+      amount: Math.round(total * 100), // paise
+      expireAfter: 1200,
+      paymentFlow: {
+        type: "PG_CHECKOUT",
+        message: `Kaaram Kathalu Order ${orderId}`,
+        merchantUrls: {
+          redirectUrl: `${appUrl}/api/pay-callback?merchantOrderId=${orderId}`
+        }
       }
     };
 
-    // 3. Generate SHA256 verify signature
-    const base64 = Buffer.from(JSON.stringify(payload)).toString('base64');
-    const stringToSign = base64 + "/pg/v1/pay" + phonepeApiKey;
-    const sha256 = crypto.createHash('sha256').update(stringToSign).digest('hex');
-    const checksum = sha256 + "###" + keyIndex;
-
-    // 4. Request PhonePe Gateway URL
-    const phonepeHost = env === 'production' 
-      ? 'https://api.phonepe.com/apis/hermes'
-      : 'https://api-preprod.phonepe.com/apis/pg-sandbox';
-    
-    const phonepeUrl = `${phonepeHost}/pg/v1/pay`;
     const response = await fetch(phonepeUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-VERIFY': checksum
+        'Authorization': `O-Bearer ${token}`
       },
-      body: JSON.stringify({ request: base64 })
+      body: JSON.stringify(payload)
     });
 
     const data = await response.json();
-    if (data.success && data.data && data.data.instrumentResponse && data.data.instrumentResponse.redirectInfo) {
-      return res.status(200).json({ url: data.data.instrumentResponse.redirectInfo.url });
+    if (response.ok && data.redirectUrl) {
+      return res.status(200).json({ url: data.redirectUrl });
     } else {
-      console.error("PhonePe pay endpoint error:", data);
-      const detailedError = data.message || (data.code ? `PhonePe Gateway Error Code: ${data.code}` : null) || 'Failed to initiate payment with PhonePe';
+      console.error("PhonePe V2 pay endpoint error:", data);
+      const detailedError = data.message || (data.code ? `PhonePe V2 Error Code: ${data.code}` : null) || 'Failed to initiate payment with PhonePe';
       return res.status(400).json({ error: detailedError });
     }
   } catch (error) {

@@ -1,5 +1,3 @@
-import crypto from 'crypto';
-
 function getFieldValue(field) {
   if (!field) return null;
   if ('stringValue' in field) return field.stringValue;
@@ -19,6 +17,36 @@ function getFieldValue(field) {
   return null;
 }
 
+// Fetch PhonePe OAuth Token helper
+async function getOAuthToken(clientId, clientSecret, clientVersion, env) {
+  const postData = new URLSearchParams({
+    client_id: clientId,
+    client_version: clientVersion,
+    client_secret: clientSecret,
+    grant_type: "client_credentials"
+  }).toString();
+
+  const host = env === 'production' 
+    ? 'https://api.phonepe.com' 
+    : 'https://api-preprod.phonepe.com';
+
+  const response = await fetch(`${host}/apis/identity-manager/v1/oauth/token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: postData
+  });
+
+  if (!response.ok) {
+    const errBody = await response.text();
+    throw new Error(`Failed to fetch OAuth token: ${response.status} - ${errBody}`);
+  }
+
+  const data = await response.json();
+  return data.access_token;
+}
+
 export default async function handler(req, res) {
   // CORS Headers
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -35,63 +63,90 @@ export default async function handler(req, res) {
   }
 
   const appUrl = process.env.APP_URL || (req.headers.host ? `https://${req.headers.host}` : 'https://www.kaaramkathalu.in');
+  
+  let orderId = req.query.merchantOrderId || req.query.orderId || req.query.transactionId || req.query.id;
+  let isS2SCallback = req.method === 'POST';
 
   try {
-    // 1. Verify Callback Checksum Signature from PhonePe
-    let bodyResponse = '';
-    
-    // Express/Vercel body parsing compatibility
-    if (typeof req.body === 'string') {
-      bodyResponse = req.body;
-    } else if (req.body && req.body.response) {
-      bodyResponse = req.body.response;
-    } else {
-      // If POST body is empty, redirect user back to checkout failure state
-      console.warn("PhonePe callback received empty body payload");
-      res.writeHead(302, { Location: `${appUrl}/checkout?status=failure` });
-      res.end();
-      return;
-    }
-
-    const xVerifyHeader = req.headers['x-verify'];
-    const phonepeApiKey = process.env.PHONEPE_API_KEY;
-    const keyIndex = process.env.PHONEPE_KEY_INDEX || '1';
-
-    if (bodyResponse && xVerifyHeader && phonepeApiKey) {
-      const stringToVerify = bodyResponse + phonepeApiKey;
-      const sha256 = crypto.createHash('sha256').update(stringToVerify).digest('hex');
-      const calculatedChecksum = sha256 + "###" + keyIndex;
-
-      if (calculatedChecksum !== xVerifyHeader) {
-        console.error("PhonePe callback signature verification failed!");
-        return res.status(401).send("Unauthorized callback payload");
+    // 1. If it's a POST request (S2S Callback), decode request body response payload to get orderId
+    if (req.method === 'POST' && req.body) {
+      let payload = req.body;
+      if (typeof payload === 'string') {
+        try {
+          payload = JSON.parse(payload);
+        } catch {}
+      }
+      
+      const base64Response = payload.response;
+      if (base64Response) {
+        try {
+          const decoded = JSON.parse(Buffer.from(base64Response, 'base64').toString('utf-8'));
+          const responseData = decoded.data || {};
+          if (responseData.merchantOrderId) {
+            orderId = responseData.merchantOrderId;
+          }
+        } catch (err) {
+          console.error("Failed to decode S2S callback body payload:", err);
+        }
       }
     }
 
-    // 2. Decode Payload and Extract Details
-    const decoded = JSON.parse(Buffer.from(bodyResponse, 'base64').toString('utf-8'));
-    const isSuccess = decoded.success && decoded.code === 'PAYMENT_SUCCESS';
-    const orderId = decoded.data?.merchantTransactionId;
-    const paymentId = decoded.data?.transactionId || 'PHONEPE-' + Date.now();
-
     if (!orderId) {
-      console.error("PhonePe decoded payload missing merchantTransactionId:", decoded);
-      res.writeHead(302, { Location: `${appUrl}/checkout?status=failure` });
-      res.end();
-      return;
+      console.error("PhonePe callback received without a valid orderId. Method:", req.method, "Query:", req.query);
+      if (isS2SCallback) {
+        return res.status(400).json({ error: "Missing orderId" });
+      } else {
+        res.writeHead(302, { Location: `${appUrl}/checkout?status=failure` });
+        res.end();
+        return;
+      }
     }
 
+    // 2. Fetch PhonePe V2 Credentials & Generate Token
+    const clientId = process.env.PHONEPE_CLIENT_ID;
+    const clientSecret = process.env.PHONEPE_CLIENT_SECRET;
+    const clientVersion = process.env.PHONEPE_CLIENT_VERSION || '1';
+    const env = process.env.PHONEPE_ENV || 'production';
+
+    if (!clientId || !clientSecret) {
+      throw new Error("PhonePe V2 credentials missing on the server.");
+    }
+
+    const token = await getOAuthToken(clientId, clientSecret, clientVersion, env);
+
+    // 3. Query PhonePe V2 Order Status API directly for verification (100% Secure)
+    const phonepeHost = env === 'production' 
+      ? 'https://api.phonepe.com'
+      : 'https://api-preprod.phonepe.com';
+    
+    const statusUrl = `${phonepeHost}/apis/pg/checkout/v2/order/${orderId}/status`;
+    const statusRes = await fetch(statusUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `O-Bearer ${token}`
+      }
+    });
+
+    if (!statusRes.ok) {
+      const errText = await statusRes.text();
+      throw new Error(`PhonePe status query failed for order ${orderId}: ${statusRes.status} - ${errText}`);
+    }
+
+    const statusData = await statusRes.json();
+    const isSuccess = statusData.state === 'COMPLETED';
+    const paymentId = (statusData.paymentDetails && statusData.paymentDetails.length > 0)
+      ? statusData.paymentDetails[0].transactionId
+      : 'PHONEPE-V2-' + Date.now();
+
+    // 4. Fetch Order Document from Firestore
     const projectId = process.env.VITE_FIREBASE_PROJECT_ID;
     const firebaseApiKey = process.env.VITE_FIREBASE_API_KEY;
     const orderDocUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/orders/${orderId}?key=${firebaseApiKey}`;
 
-    // 3. Fetch Order Doc from Firestore
     const orderDocRes = await fetch(orderDocUrl);
     if (!orderDocRes.ok) {
-      console.error(`Order ${orderId} document fetch returned status ${orderDocRes.status}`);
-      res.writeHead(302, { Location: `${appUrl}/checkout?status=failure` });
-      res.end();
-      return;
+      throw new Error(`Order ${orderId} document fetch returned status ${orderDocRes.status}`);
     }
 
     const orderDocRaw = await orderDocRes.json();
@@ -101,17 +156,21 @@ export default async function handler(req, res) {
     const items = getFieldValue(fields.items) || [];
     const customer = getFieldValue(fields.customer) || {};
 
-    // Prevent duplicate processing if already updated
+    // Prevent duplicate processing if already marked complete
     if (currentStatus === 'pending' || currentStatus === 'Shipped') {
       const existingWaybill = fields.waybill?.stringValue || '';
-      res.writeHead(302, { Location: `${appUrl}/checkout?status=success&id=${orderId}&waybill=${existingWaybill}` });
-      res.end();
-      return;
+      if (isS2SCallback) {
+        return res.status(200).json({ success: true, message: "Already processed" });
+      } else {
+        res.writeHead(302, { Location: `${appUrl}/checkout?status=success&id=${orderId}&waybill=${existingWaybill}` });
+        res.end();
+        return;
+      }
     }
 
     if (isSuccess) {
       // ── PAYMENT SUCCESS FLOW ──
-      console.log(`Payment successful for order: ${orderId}. Starting shipment booking...`);
+      console.log(`V2 Payment successful for order: ${orderId}. Starting shipment booking...`);
       let waybill = "";
       const delhiveryToken = process.env.VITE_DELHIVERY_API_TOKEN;
 
@@ -210,7 +269,7 @@ export default async function handler(req, res) {
         }
       }
 
-      // Update Firestore Order status
+      // Update Firestore Order status to paid ('Shipped' if waybill exists, else 'pending')
       const updatePayload = {
         fields: {
           customer: orderDocRaw.fields.customer,
@@ -237,15 +296,19 @@ export default async function handler(req, res) {
       });
 
       if (!updateRes.ok) {
-        console.error("Failed to update Firestore order status after successful payment:", await updateRes.text());
+        console.error("Failed to update Firestore order status after successful V2 payment:", await updateRes.text());
       }
 
-      res.writeHead(302, { Location: `${appUrl}/checkout?status=success&id=${orderId}&waybill=${waybill}` });
-      res.end();
-      return;
+      if (isS2SCallback) {
+        return res.status(200).json({ success: true, waybill: waybill });
+      } else {
+        res.writeHead(302, { Location: `${appUrl}/checkout?status=success&id=${orderId}&waybill=${waybill}` });
+        res.end();
+        return;
+      }
     } else {
       // ── PAYMENT FAILURE FLOW ──
-      console.warn(`Payment failed/cancelled for order: ${orderId}. Restoring inventory stocks...`);
+      console.warn(`V2 Payment failed/cancelled for order: ${orderId}. Restoring inventory stocks...`);
 
       // Restore product stock in Firestore
       for (const item of items) {
@@ -294,13 +357,21 @@ export default async function handler(req, res) {
         body: JSON.stringify(updateFailPayload)
       });
 
-      res.writeHead(302, { Location: `${appUrl}/checkout?status=failure&id=${orderId}` });
-      res.end();
-      return;
+      if (isS2SCallback) {
+        return res.status(200).json({ success: true, state: statusData.state });
+      } else {
+        res.writeHead(302, { Location: `${appUrl}/checkout?status=failure&id=${orderId}` });
+        res.end();
+        return;
+      }
     }
   } catch (error) {
     console.error("Error inside pay-callback serverless handler:", error);
-    res.writeHead(302, { Location: `${appUrl}/checkout?status=failure` });
-    res.end();
+    if (isS2SCallback) {
+      return res.status(500).json({ error: error.message });
+    } else {
+      res.writeHead(302, { Location: `${appUrl}/checkout?status=failure` });
+      res.end();
+    }
   }
 }
