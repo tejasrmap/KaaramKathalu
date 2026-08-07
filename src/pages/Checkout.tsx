@@ -323,7 +323,7 @@ export default function Checkout() {
         return { ...item, resolvedDocId: docId };
       }));
 
-      // Generate sequential Order ID in format KKYYMMXXX starting from 001 (e.g. KK2608001, KK2608002)
+      // Generate sequential Order ID in format KKYYMMXXXX starting from 0001 (e.g. KK26080001, KK26080002)
       const now = new Date();
       const year = String(now.getFullYear()).slice(-2);
       const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -354,7 +354,7 @@ export default function Checkout() {
         nextSeq = 1;
       }
 
-      const seqFormatted = String(nextSeq).padStart(3, '0');
+      const seqFormatted = String(nextSeq).padStart(4, '0');
       const customOrderId = `${monthPrefix}${seqFormatted}`;
 
       const orderRef = doc(db, 'orders', customOrderId);
