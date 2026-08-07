@@ -43,7 +43,7 @@
   background: var(--color-warm-accent);
 }
 
-/* Premium Manduva UI Utilities */
+/* Premium Kaaram Kathalu UI Utilities */
 @layer utilities {
   .rustic-shadow {
     box-shadow: 4px 4px 0px var(--color-warm-dark);

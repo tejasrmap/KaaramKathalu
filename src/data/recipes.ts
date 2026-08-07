@@ -20,7 +20,7 @@ export const RECIPES: Recipe[] = [
     difficulty: 'Easy',
     ingredients: [
       '2 cups Fermented Idli/Dosa batter',
-      '2 tbsp Manduva Tiffin Sprinkle Podi',
+      '2 tbsp Kaaram Kathalu Tiffin Sprinkle Podi',
       '1 small Onion, finely chopped',
       '1 green Chili, chopped',
       'A pinch of mustard seeds and curry leaves for tempering',
@@ -32,7 +32,7 @@ export const RECIPES: Recipe[] = [
       'Heat the paniyaram pan (appe pan) and drizzle a few drops of ghee in each cavity.',
       'Pour the batter into each cavity, filling it up to 3/4th.',
       'Cook covered on medium heat until the bottom turns golden brown. Flip and cook the other side.',
-      'Remove and immediately dust with Manduva Tiffin Sprinkle. Serve hot with coconut chutney.'
+      'Remove and immediately dust with Kaaram Kathalu Tiffin Sprinkle. Serve hot with coconut chutney.'
     ],
     pairing: 'Tiffin Sprinkle'
   },
@@ -46,7 +46,7 @@ export const RECIPES: Recipe[] = [
     ingredients: [
       '1 cup chilled thick yogurt',
       '1 cup cooked warm rice',
-      '1.5 tbsp Manduva Bittergourd Pickle',
+      '1.5 tbsp Kaaram Kathalu Bittergourd Pickle',
       'A sprinkle of roasted cumin powder'
     ],
     instructions: [
@@ -67,7 +67,7 @@ export const RECIPES: Recipe[] = [
     difficulty: 'Easy',
     ingredients: [
       '1.5 cups Steaming hot white rice',
-      '2 tbsp Manduva Avakaya Mango Pickle',
+      '2 tbsp Kaaram Kathalu Avakaya Mango Pickle',
       '1 tbsp Ghee or Pure Cold-Pressed Sesame Oil'
     ],
     instructions: [

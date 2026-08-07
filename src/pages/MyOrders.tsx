@@ -13,9 +13,9 @@ export default function MyOrders() {
   const [isLoading, setIsLoading] = useState(true);
 
 
-  const [activeTracking, setActiveTracking] = useState<{[key: string]: any}>({});
-  const [trackingError, setTrackingError] = useState<{[key: string]: string}>({});
-  const [loadingTracking, setLoadingTracking] = useState<{[key: string]: boolean}>({});
+  const [activeTracking, setActiveTracking] = useState<{ [key: string]: any }>({});
+  const [trackingError, setTrackingError] = useState<{ [key: string]: string }>({});
+  const [loadingTracking, setLoadingTracking] = useState<{ [key: string]: boolean }>({});
 
   const fetchTracking = async (orderId: string, waybill: string) => {
     if (activeTracking[orderId]) {
@@ -32,17 +32,17 @@ export default function MyOrders() {
       const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? 'https://kaaramkathalu.in'
         : '';
-      
+
       const response = await fetch(`${host}/api/shipping?type=track&waybill=${waybill}`);
       if (!response.ok) {
         throw new Error(`Delhivery returned status ${response.status}`);
       }
 
       const resData = await response.json();
-      
+
       if (resData && resData.ShipmentData && resData.ShipmentData.length > 0) {
         const shipment = resData.ShipmentData[0].Shipment;
-        
+
         const scans = (shipment.Scans || []).map((item: any) => {
           const scan = item.ScanDetail || {};
           return {
@@ -108,7 +108,7 @@ export default function MyOrders() {
       const ordersData = snapshot.docs.map(doc => {
         const data = doc.data();
         let dateStr = 'Recent';
-        
+
         if (data.createdAt) {
           if (typeof data.createdAt.toDate === 'function') {
             dateStr = data.createdAt.toDate().toLocaleDateString('en-IN', {
@@ -146,19 +146,19 @@ export default function MyOrders() {
 
       // Sort client-side by createdAt descending to avoid composite index requirement
       ordersData.sort((a, b) => {
-        const timeA = a.createdAt?.seconds 
-          ? a.createdAt.seconds 
-          : a.createdAt instanceof Date 
-            ? a.createdAt.getTime() / 1000 
-            : typeof a.createdAt === 'string' 
-              ? new Date(a.createdAt).getTime() / 1000 
+        const timeA = a.createdAt?.seconds
+          ? a.createdAt.seconds
+          : a.createdAt instanceof Date
+            ? a.createdAt.getTime() / 1000
+            : typeof a.createdAt === 'string'
+              ? new Date(a.createdAt).getTime() / 1000
               : 0;
-        const timeB = b.createdAt?.seconds 
-          ? b.createdAt.seconds 
-          : b.createdAt instanceof Date 
-            ? b.createdAt.getTime() / 1000 
-            : typeof b.createdAt === 'string' 
-              ? new Date(b.createdAt).getTime() / 1000 
+        const timeB = b.createdAt?.seconds
+          ? b.createdAt.seconds
+          : b.createdAt instanceof Date
+            ? b.createdAt.getTime() / 1000
+            : typeof b.createdAt === 'string'
+              ? new Date(b.createdAt).getTime() / 1000
               : 0;
         return timeB - timeA;
       });
@@ -175,7 +175,7 @@ export default function MyOrders() {
 
   const getStatusDetails = (status?: string) => {
     const s = (status || 'pending').toLowerCase();
-    switch(s) {
+    switch (s) {
       case 'cancelled':
       case 'canceled':
         return {
@@ -183,25 +183,25 @@ export default function MyOrders() {
           icon: <AlertCircle className="w-3.5 h-3.5" />,
           label: 'Cancelled'
         };
-      case 'delivered': 
+      case 'delivered':
         return {
           bg: 'bg-green-50 text-green-700 border-green-200/50',
           icon: <CheckCircle className="w-3.5 h-3.5" />,
           label: 'Delivered'
         };
-      case 'shipped': 
+      case 'shipped':
         return {
           bg: 'bg-indigo-50 text-indigo-700 border-indigo-200/50',
           icon: <Truck className="w-3.5 h-3.5" />,
           label: 'In Transit'
         };
-      case 'processing': 
+      case 'processing':
         return {
           bg: 'bg-blue-50 text-blue-700 border-blue-200/50',
           icon: <Clock className="w-3.5 h-3.5" />,
           label: 'Processing'
         };
-      default: 
+      default:
         return {
           bg: 'bg-amber-50 text-amber-700 border-amber-200/50',
           icon: <Clock className="w-3.5 h-3.5" />,
@@ -231,7 +231,7 @@ export default function MyOrders() {
         <p className="text-warm-dark/60 mb-8 font-serif italic text-sm leading-relaxed">
           Please sign in to view your culinary parcel status and track current shipments.
         </p>
-        <Link 
+        <Link
           to="/login"
           className="w-full bg-warm-accent text-white py-4 rounded-xl font-heading font-black tracking-widest uppercase hover:bg-warm-dark transition-all duration-300 shadow-md text-sm block"
         >
@@ -244,19 +244,19 @@ export default function MyOrders() {
   return (
     <div className="pt-8 md:pt-12 pb-24 px-4 sm:px-6 md:px-12 max-w-5xl mx-auto min-h-screen bg-warm-bg/30">
       <SEO title="My Orders - Kaaram Kathalu" description="Track your heritage pickle and podi orders." />
-      
+
       {/* Title Block */}
       <div className="mb-12 mt-6">
         <span className="font-heading text-warm-accent text-xs font-bold uppercase tracking-[0.2em] block mb-2">Track Orders</span>
         <h1 className="text-4xl md:text-5xl font-heading font-black text-warm-dark uppercase tracking-tight">
-          My <span className="text-warm-accent italic font-light font-serif">Parcels</span>
+          My <span className="text-4xl md:text-5xl font-heading font-black text-warm-dark uppercase tracking-tight">Orders</span>
         </h1>
         <p className="text-warm-dark/60 font-serif italic text-sm mt-1">Track your spicy treasures as they travel from our kitchen to yours.</p>
         <div className="w-16 h-1 bg-warm-accent/80 mt-4 rounded-full"></div>
       </div>
 
       {orders.length === 0 ? (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -269,8 +269,8 @@ export default function MyOrders() {
           <p className="text-warm-dark/60 mb-8 font-serif italic text-sm leading-relaxed max-w-md mx-auto">
             Your culinary journey with Kaaram Kathalu hasn't started yet. Let's fill your pantry with authentic delicacies!
           </p>
-          <Link 
-            to="/shop" 
+          <Link
+            to="/shop"
             className="inline-block bg-warm-accent text-white px-10 py-4 rounded-xl font-heading font-black tracking-widest uppercase text-xs hover:bg-warm-dark transition-all duration-300 shadow-md"
           >
             Explore Pantry
@@ -281,8 +281,8 @@ export default function MyOrders() {
           {orders.map((order, idx) => {
             const statusInfo = getStatusDetails(order.status);
             return (
-              <motion.div 
-                key={order.id} 
+              <motion.div
+                key={order.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: idx * 0.05 }}
@@ -297,7 +297,7 @@ export default function MyOrders() {
                       <p className="text-[10px] font-heading font-black tracking-widest text-warm-dark/40 uppercase mb-1">Order ID</p>
                       <p className="font-bold text-warm-dark font-serif text-base">#{order.id.slice(0, 8).toUpperCase()}</p>
                     </div>
-                    
+
                     <div className="mt-0 md:mt-8 w-full flex flex-col gap-1">
                       <p className="text-[10px] font-heading font-black tracking-widest text-warm-dark/40 uppercase mb-1.5 hidden md:block text-left">Status</p>
                       <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-heading font-black uppercase tracking-wider border ${statusInfo.bg} w-fit`}>
@@ -320,14 +320,14 @@ export default function MyOrders() {
                         <p className="text-[10px] font-heading font-black tracking-widest text-warm-dark/40 uppercase mb-1">Tracking AWB</p>
                         <p className="font-mono text-xs font-bold text-warm-dark/80 mb-2 bg-warm-light/70 px-2.5 py-1 rounded w-fit tracking-wide">{order.waybill}</p>
                         <div className="flex flex-col gap-1.5">
-                          <button 
+                          <button
                             onClick={() => fetchTracking(order.id, order.waybill)}
                             className="inline-flex items-center justify-between gap-2 bg-green-50 hover:bg-green-100 text-green-700 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border border-green-200 cursor-pointer w-full transition-colors font-heading"
                           >
                             <span>{loadingTracking[order.id] ? 'Loading...' : activeTracking[order.id] ? 'Hide Live' : 'Track Live'}</span>
                             <ArrowRight className={`w-3.5 h-3.5 transition-transform ${activeTracking[order.id] ? 'rotate-90' : 'group-hover:translate-x-0.5'}`} />
                           </button>
-                          <a 
+                          <a
                             href={`https://www.delhivery.com/track/package/${order.waybill}`}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -361,12 +361,12 @@ export default function MyOrders() {
                     {/* Order Items */}
                     <div className="space-y-2.5">
                       {order.items?.map((item: any, idx: number) => (
-                        <div 
-                          key={idx} 
+                        <div
+                          key={idx}
                           className="flex justify-between items-center bg-warm-light/20 px-4 py-2.5 rounded-xl border border-warm-accent/5 hover:border-warm-accent/10 transition-colors duration-200"
                         >
                           <span className="font-serif font-semibold text-warm-dark text-sm">
-                            {item.name} 
+                            {item.name}
                             <span className="text-warm-dark/40 font-sans text-xs ml-2 font-normal">x{item.quantity}</span>
                           </span>
                           <span className="font-bold text-warm-dark/60 text-sm">₹{item.price * item.quantity}</span>
@@ -379,7 +379,7 @@ export default function MyOrders() {
                 {/* Expandable Live Tracking Timeline */}
                 <AnimatePresence>
                   {order.waybill && (activeTracking[order.id] || loadingTracking[order.id] || trackingError[order.id]) && (
-                    <motion.div 
+                    <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
@@ -393,7 +393,7 @@ export default function MyOrders() {
                             <p className="font-serif italic text-sm text-warm-dark/50">Calling Delhivery live servers...</p>
                           </div>
                         )}
-                        
+
                         {trackingError[order.id] && (
                           <div className="text-red-600 text-sm font-serif p-4 bg-red-50 rounded-2xl border border-red-100 flex items-center gap-2">
                             <AlertCircle className="w-4.5 h-4.5 flex-shrink-0" />
@@ -414,9 +414,8 @@ export default function MyOrders() {
                             <div className="relative border-l border-dashed border-warm-accent/30 ml-2.5 pl-6 space-y-6 py-1">
                               {activeTracking[order.id].scans.map((scan: any, sIdx: number) => (
                                 <div key={sIdx} className="relative">
-                                  <div className={`absolute -left-[31px] top-1 w-4.5 h-4.5 rounded-full border bg-white flex items-center justify-center ${
-                                    sIdx === 0 ? 'border-warm-accent text-warm-accent' : 'border-warm-dark/20 text-warm-dark/40'
-                                  }`}>
+                                  <div className={`absolute -left-[31px] top-1 w-4.5 h-4.5 rounded-full border bg-white flex items-center justify-center ${sIdx === 0 ? 'border-warm-accent text-warm-accent' : 'border-warm-dark/20 text-warm-dark/40'
+                                    }`}>
                                     <div className={`w-2 h-2 rounded-full ${sIdx === 0 ? 'bg-warm-accent' : 'bg-warm-dark/20'}`} />
                                   </div>
                                   <div>
