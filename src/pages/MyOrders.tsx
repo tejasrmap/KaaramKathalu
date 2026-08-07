@@ -290,16 +290,16 @@ export default function MyOrders() {
                 {/* Main Card Columns */}
                 <div className="flex flex-col md:flex-row w-full">
                   {/* Status Column */}
-                  <div className="bg-warm-light/40 p-5 md:p-6 md:w-72 border-b md:border-b-0 md:border-r border-warm-accent/10 flex flex-col gap-4 justify-between relative overflow-hidden text-left">
-                    <div className="flex items-center justify-between gap-2 w-full flex-wrap sm:flex-nowrap">
-                      <div>
-                        <p className="text-[10px] font-heading font-black tracking-widest text-warm-dark/40 uppercase mb-0.5">Order ID</p>
-                        <p className="font-bold text-warm-dark font-serif text-base">#{order.id.toUpperCase()}</p>
+                  <div className="bg-warm-light/40 p-5 md:p-6 md:w-80 border-b md:border-b-0 md:border-r border-warm-accent/10 flex flex-col gap-4 justify-between relative text-left">
+                    <div className="flex flex-col gap-2 w-full">
+                      <div className="flex items-center justify-between gap-2 w-full">
+                        <p className="text-[10px] font-heading font-black tracking-widest text-warm-dark/40 uppercase">Order ID</p>
+                        <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-heading font-black uppercase tracking-wider border ${statusInfo.bg} shrink-0`}>
+                          {statusInfo.icon}
+                          {statusInfo.label}
+                        </div>
                       </div>
-                      <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-heading font-black uppercase tracking-wider border ${statusInfo.bg} w-fit`}>
-                        {statusInfo.icon}
-                        {statusInfo.label}
-                      </div>
+                      <p className="font-bold text-warm-dark font-serif text-base break-all tracking-tight">#{order.id.toUpperCase()}</p>
                     </div>
 
                     <div className="flex flex-col sm:flex-row md:flex-col gap-3 w-full pt-1">
