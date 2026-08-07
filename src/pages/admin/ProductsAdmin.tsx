@@ -23,6 +23,8 @@ export default function ProductsAdmin() {
   const [spiciness, setSpiciness] = useState<number>(1);
   const [imageTab, setImageTab] = useState<'upload' | 'url'>('upload');
   const [isBestseller, setIsBestseller] = useState<boolean>(false);
+  const [hasJarOption, setHasJarOption] = useState<boolean>(true);
+  const [availableWeights, setAvailableWeights] = useState<number[]>([500, 1000]);
 
   useEffect(() => {
     if (!isModalOpen) {
@@ -37,6 +39,8 @@ export default function ProductsAdmin() {
         setCategoryType(editingProduct.type || 'pickle');
         setSpiciness(editingProduct.spiciness || 1);
         setIsBestseller(!!editingProduct.isBestseller);
+        setHasJarOption(editingProduct.hasJarOption !== false);
+        setAvailableWeights(editingProduct.availableWeights || [500, 1000]);
         if (editingProduct.image && !editingProduct.image.includes('supabase.co') && !editingProduct.image.includes('firebasestorage')) {
           setImageTab('url');
         } else {
@@ -46,6 +50,8 @@ export default function ProductsAdmin() {
         setCategoryType('pickle');
         setSpiciness(1);
         setIsBestseller(false);
+        setHasJarOption(true);
+        setAvailableWeights([500, 1000]);
         setImageTab('upload');
       }
     }
@@ -122,6 +128,8 @@ export default function ProductsAdmin() {
       price: Number(formData.get('price')),
       stock: Number(formData.get('stock')),
       weightGrams: Number(formData.get('weightGrams')) || 500,
+      availableWeights: availableWeights,
+      hasJarOption: hasJarOption,
       type: formData.get('type') as ProductType,
       description: formData.get('description') as string,
       image: imageUrl,
@@ -440,6 +448,62 @@ export default function ProductsAdmin() {
                         />
                       </button>
                       <input type="hidden" name="isBestseller" value={isBestseller ? 'true' : 'false'} />
+                    </div>
+
+                    {/* Glass Jar Packaging Option (+₹100) Toggle */}
+                    <div className="flex items-center justify-between p-4 bg-warm-light/40 border border-warm-dark/10 rounded-xl shadow-sm">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold uppercase tracking-wider text-warm-dark flex items-center gap-1.5">
+                          🫙 Glass Jar Option (+₹100)
+                        </span>
+                        <span className="text-[10px] text-warm-dark/40 font-serif italic">Enable customer option to upgrade packaging to Glass Jar for +₹100</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setHasJarOption(!hasJarOption)}
+                        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                          hasJarOption ? 'bg-warm-accent' : 'bg-warm-dark/10'
+                        }`}
+                      >
+                        <span
+                          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                            hasJarOption ? 'translate-x-5' : 'translate-x-0'
+                          }`}
+                        />
+                      </button>
+                    </div>
+
+                    {/* Available Weight Options (500g & 1000g) */}
+                    <div className="space-y-2 p-4 bg-warm-light/40 border border-warm-dark/10 rounded-xl shadow-sm">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-warm-dark">Available Weight Options</label>
+                      <div className="flex gap-3 pt-1">
+                        {[500, 1000].map(weight => {
+                          const isSelected = availableWeights.includes(weight);
+                          return (
+                            <button
+                              key={weight}
+                              type="button"
+                              onClick={() => {
+                                if (isSelected) {
+                                  if (availableWeights.length > 1) {
+                                    setAvailableWeights(availableWeights.filter(w => w !== weight));
+                                  }
+                                } else {
+                                  setAvailableWeights([...availableWeights, weight].sort((a,b) => a-b));
+                                }
+                              }}
+                              className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border shadow-sm cursor-pointer ${
+                                isSelected
+                                  ? 'bg-warm-dark text-white border-warm-dark'
+                                  : 'bg-white text-warm-dark/60 border-warm-dark/10 hover:bg-warm-light/50'
+                              }`}
+                            >
+                              {weight === 1000 ? '1000g (1kg)' : `${weight}g`}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <p className="text-[10px] text-warm-dark/40 font-serif italic mt-1">Select available weight variants for customers (1000g multiplies base price by 2).</p>
                     </div>
 
                     {/* Product Image uploads (Tabbed selector) */}

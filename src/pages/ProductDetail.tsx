@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Flame, Plus, Minus, Info, Loader2, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Flame, Plus, Minus, Info, Loader2, Check } from 'lucide-react';
 import { Product } from '../data/products';
 import { RECIPES } from '../data/recipes';
 import { useCart } from '../context/CartContext';
@@ -11,6 +11,8 @@ import SEO from '../components/SEO';
 export default function ProductDetail() {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
+  const [selectedWeight, setSelectedWeight] = useState<number>(500);
+  const [isJar, setIsJar] = useState<boolean>(false);
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { addToCart, setIsCartOpen } = useCart();
@@ -21,7 +23,9 @@ export default function ProductDetail() {
         const q = query(collection(db, 'products'), where('id', '==', Number(id)), limit(1));
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
-          setProduct(querySnapshot.docs[0].data() as Product);
+          const prod = querySnapshot.docs[0].data() as Product;
+          setProduct(prod);
+          setSelectedWeight(prod.weightGrams || 500);
         }
       } catch (error) {
         console.error("Error fetching product from firestore:", error);
@@ -53,8 +57,11 @@ export default function ProductDetail() {
     );
   }
 
+  const weightMultiplier = selectedWeight === 1000 ? 2 : 1;
+  const computedUnitPrice = (product.price * weightMultiplier) + (isJar ? 100 : 0);
+
   const handleAddToCart = () => {
-    addToCart(product, quantity);
+    addToCart(product, quantity, selectedWeight, isJar);
     setIsCartOpen(true);
   };
 
@@ -108,17 +115,77 @@ export default function ProductDetail() {
           </h1>
 
           <div className="flex items-center gap-4 mb-6">
-            <div className="text-2xl font-serif font-bold text-warm-accent">
-              ₹{product.price}
+            <div className="text-3xl font-serif font-bold text-warm-accent">
+              ₹{computedUnitPrice}
             </div>
-            <span className="bg-warm-light/60 border border-warm-dark/5 px-2.5 py-1 rounded-lg text-xs font-semibold text-warm-dark/70 font-sans">
-              Net Weight: {product.weightGrams || 500}g
+            <span className="bg-warm-light/60 border border-warm-dark/5 px-3 py-1 rounded-lg text-xs font-semibold text-warm-dark/70 font-sans">
+              Weight: {selectedWeight}g
             </span>
+            {isJar && (
+              <span className="bg-warm-accent/10 border border-warm-accent/30 text-warm-accent px-2.5 py-1 rounded-lg text-xs font-bold">
+                🫙 Glass Jar (+₹100)
+              </span>
+            )}
           </div>
           
           <p className="text-base text-warm-dark/70 font-serif mb-8 italic">
             {product.description}
           </p>
+
+          {/* Weight Options Selector */}
+          <div className="mb-6">
+            <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-2.5">Select Weight</label>
+            <div className="flex gap-3">
+              {(product.availableWeights || [500, 1000]).map(weight => (
+                <button
+                  key={weight}
+                  type="button"
+                  onClick={() => setSelectedWeight(weight)}
+                  className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border shadow-sm cursor-pointer ${
+                    selectedWeight === weight
+                      ? 'bg-warm-dark text-white border-warm-dark font-extrabold'
+                      : 'bg-white text-warm-dark/70 border-warm-dark/15 hover:bg-warm-light'
+                  }`}
+                >
+                  {weight === 1000 ? '1000g (1kg)' : `${weight}g`}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Glass Jar Packaging Option (+₹100) */}
+          {product.hasJarOption !== false && (
+            <div className="mb-6">
+              <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-2.5">Packaging Option</label>
+              <div 
+                onClick={() => setIsJar(!isJar)}
+                className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between shadow-sm ${
+                  isJar 
+                    ? 'bg-warm-accent/10 border-warm-accent ring-1 ring-warm-accent' 
+                    : 'bg-white border-warm-dark/15 hover:border-warm-dark/40'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-6 h-6 rounded-lg border flex items-center justify-center transition-colors ${
+                    isJar ? 'bg-warm-accent border-warm-accent text-white' : 'bg-white border-warm-dark/20'
+                  }`}>
+                    {isJar && <Check className="w-4 h-4 stroke-[3]" />}
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold uppercase tracking-wider text-warm-dark block">
+                      🫙 Add Premium Glass Jar Packaging (+₹100)
+                    </span>
+                    <span className="text-[11px] text-warm-dark/60 font-serif italic">
+                      Preserves freshness in an authentic sealed glass jar
+                    </span>
+                  </div>
+                </div>
+                <span className="text-xs font-heading font-black text-warm-accent bg-warm-accent/10 px-2.5 py-1 rounded-full border border-warm-accent/20">
+                  +₹100
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Quantity Selector */}
           <div className="mb-6">

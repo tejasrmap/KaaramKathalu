@@ -387,40 +387,54 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         </Link>
                       </div>
                     ) : (
-                      cart.map(item => (
-                        <div key={item.product.id} className="flex gap-4 items-center bg-warm-light/50 p-4 border border-warm-dark/10 relative">
-                          <div className="w-16 h-16 border border-warm-dark/10 bg-white flex-shrink-0">
-                            <img
-                              src={item.product.image}
-                              alt={item.product.name}
-                              className="w-full h-full object-cover"
-                              referrerPolicy="no-referrer"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <Link to={`/product/${item.product.id}`} onClick={() => setIsCartOpen(false)}>
-                              <h4 className="font-heading font-bold text-base text-warm-dark hover:text-warm-accent transition-colors leading-tight mb-1 truncate">{item.product.name}</h4>
-                            </Link>
-                            <div className="font-bold text-warm-accent text-sm mb-2">₹{item.product.price}</div>
+                      cart.map(item => {
+                        const itemKey = item.cartItemId || String(item.product.id);
+                        const weight = item.selectedWeight || item.product.weightGrams || 500;
+                        const weightMultiplier = weight === 1000 ? 2 : 1;
+                        const price = item.unitPrice ?? ((item.product.price * weightMultiplier) + (item.selectedJar ? 100 : 0));
+                        return (
+                          <div key={itemKey} className="flex gap-4 items-center bg-warm-light/50 p-4 border border-warm-dark/10 relative rounded-xl">
+                            <div className="w-16 h-16 border border-warm-dark/10 bg-white flex-shrink-0 rounded-lg overflow-hidden">
+                              <img
+                                src={item.product.image}
+                                alt={item.product.name}
+                                className="w-full h-full object-cover"
+                                referrerPolicy="no-referrer"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <Link to={`/product/${item.product.id}`} onClick={() => setIsCartOpen(false)}>
+                                <h4 className="font-heading font-bold text-base text-warm-dark hover:text-warm-accent transition-colors leading-tight mb-1 truncate">{item.product.name}</h4>
+                              </Link>
+                              <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                                <span className="font-bold text-warm-accent text-sm">₹{price}</span>
+                                <span className="text-[10px] bg-warm-dark/5 px-2 py-0.5 rounded font-medium text-warm-dark/70 font-sans">{weight}g</span>
+                                {item.selectedJar && (
+                                  <span className="text-[9px] bg-warm-accent/10 border border-warm-accent/30 text-warm-accent px-1.5 py-0.5 rounded font-bold">
+                                    🫙 Jar (+₹100)
+                                  </span>
+                                )}
+                              </div>
 
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={() => updateQuantity(item.product.id, -1)}
-                                className="w-6 h-6 bg-warm-bg border border-warm-dark/10 flex items-center justify-center hover:bg-warm-dark hover:text-white transition-colors"
-                              >
-                                <Minus className="w-3 h-3" />
-                              </button>
-                              <span className="w-6 text-center font-bold text-sm">{item.quantity}</span>
-                              <button
-                                onClick={() => updateQuantity(item.product.id, 1)}
-                                className="w-6 h-6 bg-warm-bg border border-warm-dark/10 flex items-center justify-center hover:bg-warm-dark hover:text-white transition-colors"
-                              >
-                                <Plus className="w-3 h-3" />
-                              </button>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => updateQuantity(itemKey, -1)}
+                                  className="w-6 h-6 bg-warm-bg border border-warm-dark/10 flex items-center justify-center hover:bg-warm-dark hover:text-white transition-colors cursor-pointer rounded"
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </button>
+                                <span className="w-6 text-center font-bold text-sm">{item.quantity}</span>
+                                <button
+                                  onClick={() => updateQuantity(itemKey, 1)}
+                                  className="w-6 h-6 bg-warm-bg border border-warm-dark/10 flex items-center justify-center hover:bg-warm-dark hover:text-white transition-colors cursor-pointer rounded"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))
+                        );
+                      })
                     )}
                   </div>
 

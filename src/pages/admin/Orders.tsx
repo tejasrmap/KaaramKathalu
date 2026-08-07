@@ -499,7 +499,17 @@ export default function Orders() {
                       <tbody className="divide-y divide-warm-dark/10">
                         {selectedOrder.items?.map((item: any, idx: number) => (
                           <tr key={idx} className="bg-white">
-                            <td className="px-4 py-4 font-serif font-bold text-warm-dark">{item.name}</td>
+                            <td className="px-4 py-4 font-serif font-bold text-warm-dark">
+                              <div>{item.name}</div>
+                              <div className="flex items-center gap-1.5 mt-1 font-sans font-normal text-xs">
+                                <span className="bg-warm-dark/5 px-2 py-0.5 rounded text-[10px] text-warm-dark/70 font-medium">{item.weightGrams || 500}g</span>
+                                {item.selectedJar && (
+                                  <span className="bg-warm-accent/10 border border-warm-accent/30 text-warm-accent text-[9px] font-bold px-1.5 py-0.5 rounded">
+                                    🫙 Glass Jar (+₹100)
+                                  </span>
+                                )}
+                              </div>
+                            </td>
                             <td className="px-4 py-4 text-center font-bold">{item.quantity}</td>
                             <td className="px-4 py-4 text-right font-bold">₹{item.price * item.quantity}</td>
                           </tr>

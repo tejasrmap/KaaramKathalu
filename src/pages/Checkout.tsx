@@ -350,14 +350,21 @@ export default function Checkout() {
         const orderData = {
           customer: formData,
           userId: user.uid,
-          items: resolvedCartItems.map(item => ({
-            id: item.product.id,
-            docId: item.resolvedDocId,
-            name: item.product.name,
-            price: item.product.price,
-            quantity: item.quantity,
-            weightGrams: item.product.weightGrams || 500
-          })),
+          items: resolvedCartItems.map(item => {
+            const itemWeight = item.selectedWeight || item.product.weightGrams || 500;
+            const weightMultiplier = itemWeight === 1000 ? 2 : 1;
+            const unitPrice = item.unitPrice ?? ((item.product.price * weightMultiplier) + (item.selectedJar ? 100 : 0));
+            return {
+              id: item.product.id,
+              docId: item.resolvedDocId,
+              name: item.product.name,
+              price: unitPrice,
+              quantity: item.quantity,
+              weightGrams: itemWeight,
+              selectedWeight: itemWeight,
+              selectedJar: !!item.selectedJar
+            };
+          }),
           total: cartTotal + (shippingCost ?? 0),
           shippingCost: shippingCost ?? 0,
           status: 'payment_pending',
@@ -840,15 +847,29 @@ export default function Checkout() {
             </h3>
             
             <div className="space-y-6 mb-8">
-              {cart.map(item => (
-                <div key={item.product.id} className="flex justify-between items-start gap-4">
-                  <div className="flex-1">
-                    <h4 className="font-serif font-bold text-warm-dark">{item.product.name}</h4>
-                    <p className="text-sm text-warm-dark/50">Quantity: {item.quantity}</p>
+              {cart.map(item => {
+                const itemKey = item.cartItemId || String(item.product.id);
+                const weight = item.selectedWeight || item.product.weightGrams || 500;
+                const weightMultiplier = weight === 1000 ? 2 : 1;
+                const price = item.unitPrice ?? ((item.product.price * weightMultiplier) + (item.selectedJar ? 100 : 0));
+                return (
+                  <div key={itemKey} className="flex justify-between items-start gap-4">
+                    <div className="flex-1">
+                      <h4 className="font-serif font-bold text-warm-dark">{item.product.name}</h4>
+                      <div className="flex flex-wrap items-center gap-2 mt-1">
+                        <span className="text-xs text-warm-dark/50 font-serif">Qty: {item.quantity}</span>
+                        <span className="text-[10px] bg-warm-dark/5 px-2 py-0.5 rounded font-medium text-warm-dark/70 font-sans">{weight}g</span>
+                        {item.selectedJar && (
+                          <span className="text-[9px] bg-warm-accent/10 border border-warm-accent/30 text-warm-accent px-1.5 py-0.5 rounded font-bold">
+                            🫙 Glass Jar (+₹100)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="font-bold text-warm-dark font-serif">₹{price * item.quantity}</div>
                   </div>
-                  <div className="font-bold text-warm-dark font-serif">₹{item.product.price * item.quantity}</div>
-                </div>
-              ))}
+                );
+              })}
             </div>
             
             <div className="pt-6 border-t border-dashed border-warm-dark/10 space-y-4">

@@ -11,6 +11,8 @@ export interface Product {
   longDescription?: string;
   ingredients?: string[];
   weightGrams?: number;
+  availableWeights?: number[];
+  hasJarOption?: boolean;
   stock: number;
 }
 

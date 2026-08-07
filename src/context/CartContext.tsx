@@ -5,16 +5,20 @@ import { db } from '../firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 export interface CartItem {
+  cartItemId?: string;
   product: Product;
   quantity: number;
+  selectedWeight?: number;
+  selectedJar?: boolean;
+  unitPrice?: number;
 }
 
 interface CartContextType {
   cart: CartItem[];
   isCartOpen: boolean;
   setIsCartOpen: (isOpen: boolean) => void;
-  addToCart: (product: Product, quantity?: number) => void;
-  updateQuantity: (productId: string | number, delta: number) => void;
+  addToCart: (product: Product, quantity?: number, selectedWeight?: number, selectedJar?: boolean) => void;
+  updateQuantity: (cartItemIdOrProductId: string | number, delta: number) => void;
   cartTotal: number;
   cartCount: number;
   clearCart: () => void;
@@ -73,9 +77,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             setCart(prevLocal => {
               const merged = [...prevLocal];
               firestoreCart.forEach((fItem: CartItem) => {
-                const existingIndex = merged.findIndex(lItem => lItem.product.id === fItem.product.id);
+                const fKey = fItem.cartItemId || String(fItem.product.id);
+                const existingIndex = merged.findIndex(lItem => (lItem.cartItemId || String(lItem.product.id)) === fKey);
                 if (existingIndex > -1) {
-                  // Keep the larger quantity or combine them
                   merged[existingIndex].quantity = Math.max(merged[existingIndex].quantity, fItem.quantity);
                 } else {
                   merged.push(fItem);
@@ -108,30 +112,48 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       }
     };
 
-    // Debounce database writes to avoid unnecessary Firebase calls during fast quantity clicks
     const timeout = setTimeout(syncToFirestore, 600);
     return () => clearTimeout(timeout);
   }, [cart, user]);
 
-  const addToCart = (product: Product, quantity: number = 1) => {
+  const addToCart = (
+    product: Product, 
+    quantity: number = 1,
+    selectedWeight?: number,
+    selectedJar?: boolean
+  ) => {
+    const weight = selectedWeight || product.weightGrams || 500;
+    const isJar = !!selectedJar;
+    const weightMultiplier = weight === 1000 ? 2 : 1;
+    const computedUnitPrice = (product.price * weightMultiplier) + (isJar ? 100 : 0);
+    const cartItemId = `${product.id}-${weight}-${isJar ? 'jar' : 'pouch'}`;
+
     setCart(prev => {
-      const existing = prev.find(item => String(item.product.id) === String(product.id));
+      const existing = prev.find(item => (item.cartItemId || String(item.product.id)) === cartItemId);
       if (existing) {
         return prev.map(item => 
-          String(item.product.id) === String(product.id)
+          (item.cartItemId || String(item.product.id)) === cartItemId
             ? { ...item, quantity: item.quantity + quantity } 
             : item
         );
       }
-      return [...prev, { product, quantity }];
+      return [...prev, { 
+        cartItemId, 
+        product, 
+        quantity, 
+        selectedWeight: weight, 
+        selectedJar: isJar, 
+        unitPrice: computedUnitPrice 
+      }];
     });
     setIsCartOpen(true);
   };
 
-  const updateQuantity = (productId: string | number, delta: number) => {
+  const updateQuantity = (cartItemIdOrProductId: string | number, delta: number) => {
     setCart(prev => {
       return prev.map(item => {
-        if (String(item.product.id) === String(productId)) {
+        const key = item.cartItemId || String(item.product.id);
+        if (key === String(cartItemIdOrProductId)) {
           const newQ = item.quantity + delta;
           return { ...item, quantity: newQ };
         }
@@ -150,7 +172,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
     }
   };
-  const cartTotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+
+  const cartTotal = cart.reduce((sum, item) => {
+    const itemWeight = item.selectedWeight || item.product.weightGrams || 500;
+    const price = item.unitPrice ?? ((item.product.price * (itemWeight === 1000 ? 2 : 1)) + (item.selectedJar ? 100 : 0));
+    return sum + (price * item.quantity);
+  }, 0);
+
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
