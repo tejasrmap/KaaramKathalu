@@ -7,6 +7,7 @@ export interface Product {
   type: ProductType;
   spiciness: number;
   image: string;
+  images?: string[];
   description: string;
   longDescription?: string;
   ingredients?: string[];

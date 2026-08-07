@@ -13,6 +13,7 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [selectedWeight, setSelectedWeight] = useState<number>(500);
   const [isJar, setIsJar] = useState<boolean>(false);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { addToCart, setIsCartOpen } = useCart();
@@ -26,6 +27,7 @@ export default function ProductDetail() {
           const prod = querySnapshot.docs[0].data() as Product;
           setProduct(prod);
           setSelectedWeight(prod.weightGrams || 500);
+          setActiveImageIndex(0);
         }
       } catch (error) {
         console.error("Error fetching product from firestore:", error);
@@ -57,6 +59,9 @@ export default function ProductDetail() {
     );
   }
 
+  const imagesList = product.images && product.images.length > 0 ? product.images : [product.image];
+  const activeImage = imagesList[activeImageIndex] || product.image;
+
   const weightMultiplier = selectedWeight === 250 ? 0.5 : selectedWeight === 1000 ? 2 : 1;
   const computedUnitPrice = (product.price * weightMultiplier) + (isJar ? 100 : 0);
 
@@ -73,7 +78,7 @@ export default function ProductDetail() {
 
   return (
     <div className="pt-8 md:pt-12 pb-24 px-4 sm:px-6 md:px-12 max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto">
-      <SEO title={product.name} description={product.description} image={product.image} />
+      <SEO title={product.name} description={product.description} image={activeImage} />
       
       <div className="mb-8">
         <Link to="/shop" className="inline-flex items-center gap-2 text-warm-dark font-bold uppercase tracking-widest text-xs hover:text-warm-accent transition-colors">
@@ -82,16 +87,41 @@ export default function ProductDetail() {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 w-full max-w-[95vw] mx-auto relative z-10">
-        {/* Product Image */}
-        <div className="w-full lg:w-1/2">
+        {/* Product Image & Gallery */}
+        <div className="w-full lg:w-1/2 flex flex-col">
           <div className="relative aspect-square bg-white overflow-hidden rounded-[24px] border border-warm-dark/5 shadow-sm">
             <img 
-              src={product.image} 
+              src={activeImage} 
               alt={product.name} 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-all duration-300"
               referrerPolicy="no-referrer"
             />
           </div>
+
+          {/* Gallery Thumbnails */}
+          {imagesList.length > 1 && (
+            <div className="flex gap-3 mt-4 overflow-x-auto pb-2 scrollbar-hide">
+              {imagesList.map((imgUrl, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setActiveImageIndex(idx)}
+                  className={`w-20 h-20 rounded-2xl overflow-hidden border-2 transition-all flex-shrink-0 cursor-pointer shadow-xs ${
+                    activeImageIndex === idx
+                      ? 'border-warm-accent ring-2 ring-warm-accent/30 scale-105'
+                      : 'border-warm-dark/10 hover:border-warm-dark/30 opacity-75 hover:opacity-100'
+                  }`}
+                >
+                  <img 
+                    src={imgUrl} 
+                    alt={`${product.name} thumbnail ${idx + 1}`} 
+                    className="w-full h-full object-cover" 
+                    referrerPolicy="no-referrer"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Product Info */}

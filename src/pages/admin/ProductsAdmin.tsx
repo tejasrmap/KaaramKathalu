@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Edit2, Trash2, Image as ImageIcon, Loader2, X } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Image as ImageIcon, Loader2, X, Check } from 'lucide-react';
 import { Product, ProductType } from '../../data/products';
 import { motion, AnimatePresence } from 'motion/react';
 import { db } from '../../firebase';
@@ -26,10 +26,14 @@ export default function ProductsAdmin() {
   const [hasJarOption, setHasJarOption] = useState<boolean>(true);
   const [availableWeights, setAvailableWeights] = useState<number[]>([250, 500, 1000]);
 
+  const [imageList, setImageList] = useState<string[]>([]);
+  const [newUrlInput, setNewUrlInput] = useState<string>('');
+
   useEffect(() => {
     if (!isModalOpen) {
       setImageFile(null);
       setImagePreview(null);
+      setNewUrlInput('');
     }
   }, [isModalOpen]);
 
@@ -41,6 +45,12 @@ export default function ProductsAdmin() {
         setIsBestseller(!!editingProduct.isBestseller);
         setHasJarOption(editingProduct.hasJarOption !== false);
         setAvailableWeights(editingProduct.availableWeights || [250, 500, 1000]);
+        
+        const imgs = editingProduct.images && editingProduct.images.length > 0 
+          ? editingProduct.images 
+          : editingProduct.image ? [editingProduct.image] : [];
+        setImageList(imgs);
+
         if (editingProduct.image && !editingProduct.image.includes('supabase.co') && !editingProduct.image.includes('firebasestorage')) {
           setImageTab('url');
         } else {
@@ -52,10 +62,44 @@ export default function ProductsAdmin() {
         setIsBestseller(false);
         setHasJarOption(true);
         setAvailableWeights([250, 500, 1000]);
+        setImageList([]);
         setImageTab('upload');
       }
     }
   }, [isModalOpen, editingProduct]);
+
+  const handleMultiFileUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setIsUploading(true);
+    const uploadedUrls: string[] = [];
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 10)}.${fileExt}`;
+        const filePath = `products/${fileName}`;
+
+        const { error } = await supabase.storage
+          .from('media')
+          .upload(filePath, file, { cacheControl: '3600', upsert: false });
+
+        if (error) throw error;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('media')
+          .getPublicUrl(filePath);
+
+        uploadedUrls.push(publicUrl);
+      }
+      setImageList(prev => [...prev, ...uploadedUrls]);
+      showToast(`Uploaded ${uploadedUrls.length} image(s)!`, 'success');
+    } catch (error: any) {
+      console.error("Error uploading images to Supabase:", error);
+      showAlert("Failed to upload images: " + (error?.message || JSON.stringify(error)), "Upload Error");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   useEffect(() => {
     const q = query(collection(db, 'products'));
@@ -123,6 +167,7 @@ export default function ProductsAdmin() {
       setIsUploading(false);
     }
 
+    const mainImage = imageList[0] || (formData.get('image') as string) || '';
     const productData = {
       name: formData.get('name') as string,
       price: Number(formData.get('price')),
@@ -132,7 +177,8 @@ export default function ProductsAdmin() {
       hasJarOption: hasJarOption,
       type: formData.get('type') as ProductType,
       description: formData.get('description') as string,
-      image: imageUrl,
+      image: mainImage,
+      images: imageList.length > 0 ? imageList : (mainImage ? [mainImage] : []),
       spiciness: Number(formData.get('spiciness')),
       isBestseller: formData.get('isBestseller') === 'true',
       id: editingProduct ? editingProduct.id : Date.now()
@@ -492,13 +538,14 @@ export default function ProductsAdmin() {
                                   setAvailableWeights([...availableWeights, weight].sort((a,b) => a-b));
                                 }
                               }}
-                              className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border shadow-sm cursor-pointer ${
+                              className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border flex items-center gap-2 shadow-xs cursor-pointer ${
                                 isSelected
-                                  ? 'bg-warm-dark text-white border-warm-dark font-extrabold'
-                                  : 'bg-white text-warm-dark/60 border-warm-dark/10 hover:bg-warm-light/50'
+                                  ? 'bg-warm-accent/10 border-warm-accent text-warm-accent ring-1 ring-warm-accent/30 font-black'
+                                  : 'bg-white text-warm-dark/70 border-warm-dark/15 hover:border-warm-dark/40 hover:bg-warm-light/40'
                               }`}
                             >
-                              {weight === 1000 ? '1000g (1kg)' : `${weight}g`}
+                              {isSelected && <Check className="w-4 h-4 stroke-[3] text-warm-accent" />}
+                              <span>{weight === 1000 ? '1000g (1kg)' : `${weight}g`}</span>
                             </button>
                           );
                         })}
@@ -506,112 +553,101 @@ export default function ProductsAdmin() {
                       <p className="text-[10px] text-warm-dark/40 font-serif italic mt-1">Select available weight variants for customers (250g = 0.5x, 500g = 1x, 1000g = 2x base price).</p>
                     </div>
 
-                    {/* Product Image uploads (Tabbed selector) */}
-                    <div className="space-y-3">
-                      <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Product Image</label>
-                      
-                      {/* Image Tabs */}
-                      <div className="flex border-b border-warm-dark/10 mb-4 gap-4">
-                        <button
-                          type="button"
-                          onClick={() => setImageTab('upload')}
-                          className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
-                            imageTab === 'upload'
-                              ? 'border-warm-accent text-warm-dark font-black'
-                              : 'border-transparent text-warm-dark/40 hover:text-warm-dark'
-                          }`}
-                        >
-                          Upload File
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setImageTab('url')}
-                          className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
-                            imageTab === 'url'
-                              ? 'border-warm-accent text-warm-dark font-black'
-                              : 'border-transparent text-warm-dark/40 hover:text-warm-dark'
-                          }`}
-                        >
-                          Paste URL
-                        </button>
+                    {/* Product Images Gallery (Multiple Images) */}
+                    <div className="space-y-4 p-4 bg-warm-light/40 border border-warm-dark/10 rounded-xl shadow-sm">
+                      <div className="flex justify-between items-center">
+                        <label className="block text-xs font-bold uppercase tracking-wider text-warm-dark">Product Gallery Images ({imageList.length})</label>
+                        <span className="text-[10px] text-warm-dark/40 font-serif italic">First image is used as main cover</span>
                       </div>
 
-                      {/* Tab Content */}
-                      {imageTab === 'upload' ? (
-                        <div className="space-y-4">
-                          {imagePreview || (editingProduct?.image && !imageFile && editingProduct.image !== '') ? (
-                            <div className="relative w-full aspect-[2/1] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
-                              <img 
-                                src={imagePreview || editingProduct?.image} 
-                                alt="Preview" 
-                                className="w-full h-full object-cover" 
-                                referrerPolicy="no-referrer"
-                              />
-                              <button 
+                      {/* Existing Images Thumbnails */}
+                      {imageList.length > 0 && (
+                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                          {imageList.map((url, index) => (
+                            <div key={index} className="relative aspect-square rounded-xl overflow-hidden border border-warm-dark/15 bg-white shadow-xs group">
+                              <img src={url} alt={`Product view ${index + 1}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                              {index === 0 && (
+                                <span className="absolute top-1.5 left-1.5 bg-warm-accent text-white text-[8px] font-bold uppercase px-1.5 py-0.5 rounded shadow-sm">
+                                  ★ Main Cover
+                                </span>
+                              )}
+                              <button
                                 type="button"
-                                onClick={() => {
-                                  setImageFile(null);
-                                  setImagePreview(null);
-                                  if (editingProduct) {
-                                    editingProduct.image = '';
-                                  }
-                                }}
-                                className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                                onClick={() => setImageList(prev => prev.filter((_, idx) => idx !== index))}
+                                className="absolute top-1.5 right-1.5 p-1 bg-red-600/90 hover:bg-red-600 text-white rounded-full shadow-md transition-all cursor-pointer opacity-90 group-hover:opacity-100"
+                                title="Remove image"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
-                          ) : (
-                            <div 
-                              onClick={() => document.getElementById('image-upload')?.click()}
-                              className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-8 flex flex-col items-center justify-center cursor-pointer min-h-[160px]"
-                            >
-                              <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
-                              <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Image File</span>
-                              <span className="text-[10px] text-warm-dark/30 mt-1 font-serif italic">Drag & drop or click to browse</span>
-                              <input 
-                                id="image-upload"
-                                type="file" 
-                                accept="image/*" 
-                                className="hidden" 
-                                onChange={(e) => {
-                                  const file = e.target.files?.[0];
-                                  if (file) {
-                                    setImageFile(file);
-                                    setImagePreview(URL.createObjectURL(file));
-                                  }
-                                }}
-                              />
-                            </div>
-                          )}
-                          {/* Ensure default input name image is present but empty if uploading */}
-                          <input type="hidden" name="image" value={editingProduct?.image || ''} />
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          <div className="space-y-2">
-                            <input 
-                              name="image" 
-                              defaultValue={editingProduct?.image} 
-                              className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none transition-all shadow-sm focus:shadow-md text-sm" 
-                              placeholder="https://example.com/image.jpg" 
-                            />
-                          </div>
-                          {editingProduct?.image && (
-                            <div className="relative w-full aspect-[2/1] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
-                              <img 
-                                src={editingProduct?.image} 
-                                alt="URL Preview" 
-                                className="w-full h-full object-cover" 
-                                referrerPolicy="no-referrer"
-                              />
-                            </div>
-                          )}
-                          <p className="text-[10px] text-warm-dark/40 font-serif italic leading-relaxed">
-                            Provide a direct link to the hosted image. WEBP, JPG or PNG formats are recommended.
-                          </p>
+                          ))}
                         </div>
                       )}
+
+                      {/* Image Add Selector Tabs */}
+                      <div className="pt-2 border-t border-warm-dark/10">
+                        <div className="flex border-b border-warm-dark/10 mb-3 gap-4">
+                          <button
+                            type="button"
+                            onClick={() => setImageTab('upload')}
+                            className={`pb-1.5 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                              imageTab === 'upload' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
+                            }`}
+                          >
+                            Upload File(s)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setImageTab('url')}
+                            className={`pb-1.5 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                              imageTab === 'url' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
+                            }`}
+                          >
+                            Add Image URL
+                          </button>
+                        </div>
+
+                        {imageTab === 'upload' ? (
+                          <div 
+                            onClick={() => document.getElementById('multi-image-upload')?.click()}
+                            className="border-2 border-dashed border-warm-dark/15 bg-white hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[110px]"
+                          >
+                            <ImageIcon className="w-6 h-6 text-warm-dark/30 mb-1" />
+                            <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/60">Upload Image File(s)</span>
+                            <span className="text-[10px] text-warm-dark/40 mt-0.5 font-serif italic">Select one or multiple photos to add to gallery</span>
+                            <input 
+                              id="multi-image-upload"
+                              type="file" 
+                              accept="image/*" 
+                              multiple
+                              className="hidden" 
+                              onChange={(e) => handleMultiFileUpload(e.target.files)}
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex gap-2">
+                            <input 
+                              type="url"
+                              value={newUrlInput} 
+                              onChange={e => setNewUrlInput(e.target.value)}
+                              className="flex-1 bg-white border border-warm-dark/10 rounded-xl p-3 font-serif text-xs outline-none focus:border-warm-accent"
+                              placeholder="https://example.com/product-image.jpg"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (newUrlInput.trim()) {
+                                  setImageList(prev => [...prev, newUrlInput.trim()]);
+                                  setNewUrlInput('');
+                                }
+                              }}
+                              className="px-4 py-3 bg-warm-dark hover:bg-warm-accent text-white font-bold text-xs uppercase rounded-xl transition-colors cursor-pointer"
+                            >
+                              Add URL
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {/* Description */}
