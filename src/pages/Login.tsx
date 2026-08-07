@@ -35,7 +35,7 @@ export default function Login() {
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
           <span className="font-serif font-bold text-4xl tracking-tight text-warm-dark">
-            Welcome <span className="text-warm-accent italic">Patron</span>
+            Welcome to <span className="text-warm-accent font-heading">Kaaram Kathalu</span>
           </span>
           <p className="text-warm-dark/60 mt-3 font-medium uppercase tracking-widest text-sm text-center">
             Sign in to track your jars of heritage
@@ -78,7 +78,7 @@ export default function Login() {
 
           <div className="mt-8 pt-6 border-t border-dashed border-warm-dark/10">
             <Link to="/shop" className="text-warm-accent font-bold uppercase tracking-widest text-[10px] hover:underline flex items-center justify-center gap-2 cursor-pointer">
-              <ArrowLeft className="w-3.5 h-3.5" /> Back to Pantry
+              <ArrowLeft className="w-3.5 h-3.5" /> Back to Shop
             </Link>
           </div>
         </div>

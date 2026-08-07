@@ -22,7 +22,7 @@ export default function Wishlist() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
         <div>
           <Link to="/shop" className="inline-flex items-center gap-2 text-warm-dark font-bold uppercase tracking-widest text-xs mb-6 hover:text-warm-accent transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Pantry
+            <ArrowLeft className="w-4 h-4" /> Back to Shop
           </Link>
           <h1 className="text-5xl font-serif text-warm-dark italic">My Wishlist</h1>
           <p className="text-warm-dark/60 font-serif mt-2 italic">A collection of your favorite spicy treasures.</p>
@@ -33,7 +33,7 @@ export default function Wishlist() {
         <div className="bg-white border border-warm-dark/5 p-12 md:p-16 rounded-[24px] text-center shadow-md max-w-xl mx-auto">
           <Heart className="w-16 h-16 text-warm-dark/10 mx-auto mb-6" />
           <h2 className="text-2xl font-serif text-warm-dark mb-3">Your wishlist is empty</h2>
-          <p className="text-warm-dark/60 mb-8 font-serif italic">Start exploring our pantry and save your favorites!</p>
+          <p className="text-warm-dark/60 mb-8 font-serif italic">Start exploring our collection and save your favorites!</p>
           <Link to="/shop" className="px-8 py-3.5 bg-warm-accent hover:bg-warm-accent/90 text-white font-bold tracking-widest uppercase text-xs rounded-full transition-colors shadow-sm hover:shadow-md inline-block cursor-pointer">
             Browse Shop
           </Link>
@@ -64,7 +64,7 @@ export default function Wishlist() {
               </div>
               
               <div className="pt-1 flex flex-col text-left">
-                <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-warm-accent mb-1">{product.type || 'Pantry'}</span>
+                <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-warm-accent mb-1">{product.type || 'Delicacy'}</span>
                 <Link to={`/product/${product.id}`}>
                   <h3 className="font-heading font-semibold text-sm sm:text-base text-warm-dark hover:text-warm-accent transition-colors leading-tight mb-3 line-clamp-1">{product.name}</h3>
                 </Link>

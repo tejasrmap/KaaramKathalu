@@ -94,7 +94,7 @@ export default function Dashboard() {
         <StatCard title="Total Cash" value={`₹${Math.round(stats.totalRevenue/1000)}k`} trend="+12%" icon={CreditCard} />
         <StatCard title="Parcels" value={stats.orderCount.toString()} trend="+8%" icon={TrendingUp} />
         <StatCard title="Packing" value={stats.activePacking.toString()} trend="+2%" icon={ShoppingBag} />
-        <StatCard title="Patrons" value={stats.customerCount.toString()} trend="+18%" icon={Users} />
+        <StatCard title="Customers" value={stats.customerCount.toString()} trend="+18%" icon={Users} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

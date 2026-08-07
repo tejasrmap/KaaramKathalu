@@ -317,7 +317,7 @@ export default function Checkout() {
           if (!snap.empty) {
             docId = snap.docs[0].id;
           } else {
-            throw new Error(`Product ${item.product.name} not found in our pantry.`);
+            throw new Error(`Product ${item.product.name} not found in our catalog.`);
           }
         }
         return { ...item, resolvedDocId: docId };
@@ -501,7 +501,7 @@ export default function Checkout() {
             to="/shop"
             className="px-8 py-4 bg-white hover:bg-warm-light/40 border border-warm-dark/15 text-warm-dark rounded-full font-bold tracking-widest uppercase text-xs transition-colors shadow-sm cursor-pointer flex items-center justify-center"
           >
-            Back to Pantry
+            Back to Shop
           </Link>
         </motion.div>
       </div>
@@ -590,7 +590,7 @@ export default function Checkout() {
       
       <div className="mb-8">
         <Link to="/shop" className="inline-flex items-center gap-2 text-warm-dark font-bold uppercase tracking-widest text-xs hover:text-warm-accent transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to Pantry
+          <ArrowLeft className="w-4 h-4" /> Back to Shop
         </Link>
       </div>
 

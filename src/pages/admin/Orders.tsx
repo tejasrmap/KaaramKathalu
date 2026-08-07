@@ -282,7 +282,7 @@ export default function Orders() {
             <thead className="bg-warm-light text-warm-dark font-bold font-serif border-b border-warm-dark/10 tracking-widest uppercase">
               <tr>
                 <th className="px-6 py-4 text-xs">Parcel ID</th>
-                <th className="px-6 py-4 text-xs">Patron</th>
+                <th className="px-6 py-4 text-xs">Customer</th>
                 <th className="px-6 py-4 text-xs">Date</th>
                 <th className="px-6 py-4 text-xs text-right">Value</th>
                 <th className="px-6 py-4 text-xs text-center">Status</th>
@@ -468,7 +468,7 @@ export default function Orders() {
               <div className="p-8 overflow-y-auto bg-white">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
                   <div className="space-y-4">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-warm-accent border-b border-dashed border-warm-accent/20 pb-2">Patron Details</h3>
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-warm-accent border-b border-dashed border-warm-accent/20 pb-2">Customer Details</h3>
                     <div className="bg-warm-light p-5 rounded-2xl border border-warm-dark/5">
                       <p className="font-serif font-bold text-xl text-warm-dark">{selectedOrder.customer?.name}</p>
                       <p className="text-sm text-warm-dark/60 mt-1">{selectedOrder.customer?.email}</p>

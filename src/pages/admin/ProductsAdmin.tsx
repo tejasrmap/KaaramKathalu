@@ -193,11 +193,11 @@ export default function ProductsAdmin() {
         {isLoading ? (
           <div className="col-span-full py-20 flex flex-col items-center justify-center gap-4">
              <Loader2 className="w-12 h-12 text-warm-accent animate-spin" />
-             <p className="font-serif italic text-warm-dark/40">Opening the pantry drawers...</p>
+             <p className="font-serif italic text-warm-dark/40">Loading inventory catalog...</p>
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="col-span-full py-20 text-center bg-white border border-warm-dark/5 rounded-[24px] shadow-sm">
-            <p className="font-serif font-bold text-2xl italic text-warm-dark/30">Your pantry is currently empty.</p>
+            <p className="font-serif font-bold text-2xl italic text-warm-dark/30">Your inventory is currently empty.</p>
           </div>
         ) : (
           <AnimatePresence>

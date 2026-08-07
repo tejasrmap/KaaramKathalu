@@ -235,7 +235,7 @@ export default function Profile() {
       <div className="min-h-[60vh] flex items-center justify-center bg-warm-bg/30">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-12 h-12 text-warm-accent animate-spin" />
-          <p className="text-sm font-serif italic text-warm-dark/50">Retrieving patron files...</p>
+          <p className="text-sm font-serif italic text-warm-dark/50">Retrieving profile details...</p>
         </div>
       </div>
     );
@@ -247,7 +247,7 @@ export default function Profile() {
         <div className="w-16 h-16 rounded-full bg-warm-accent/10 flex items-center justify-center text-warm-accent mb-6 shadow-inner">
           <ShieldCheck className="w-8 h-8" />
         </div>
-        <h2 className="text-3xl font-heading font-black text-warm-dark uppercase tracking-wide mb-4">Patron Identification Required</h2>
+        <h2 className="text-3xl font-heading font-black text-warm-dark uppercase tracking-wide mb-4">Sign In Required</h2>
         <p className="text-warm-dark/60 mb-8 font-serif italic text-sm leading-relaxed">
           Please sign in to your Kaaram Kathalu account to manage your delivery address, contact details, and heritage preferences.
         </p>
@@ -263,7 +263,7 @@ export default function Profile() {
 
   return (
     <div className="pt-8 md:pt-12 pb-24 px-4 sm:px-6 md:px-12 w-full max-w-5xl mx-auto min-h-screen bg-warm-bg/30">
-      <SEO title="Patron Profile - Kaaram Kathalu" />
+      <SEO title="My Profile - Kaaram Kathalu" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -275,7 +275,7 @@ export default function Profile() {
         <div className="lg:col-span-12 mb-4 mt-6">
           <span className="font-heading text-warm-accent text-xs font-bold uppercase tracking-[0.2em] block mb-2">My Account</span>
           <h1 className="text-4xl md:text-5xl font-heading font-black text-warm-dark uppercase tracking-tight">
-            Patron <span className="text-warm-accent italic font-light font-serif">Profile</span>
+            My <span className="text-warm-accent italic font-light font-serif">Profile</span>
           </h1>
           <p className="text-warm-dark/60 font-serif italic text-sm mt-1">Manage your details for faster heritage deliveries.</p>
           <div className="w-16 h-1 bg-warm-accent/80 mt-4 rounded-full"></div>
@@ -290,7 +290,7 @@ export default function Profile() {
             <div className="absolute inset-0 bg-gradient-to-tr from-warm-accent/20 to-transparent rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="w-24 h-24 rounded-full bg-warm-light/50 border-[4px] border-white ring-4 ring-warm-accent/10 shadow-lg overflow-hidden relative z-10 flex items-center justify-center">
               {user.photoURL ? (
-                <img src={user.photoURL} alt={profileData.name || user.displayName || 'Patron'} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                <img src={user.photoURL} alt={profileData.name || user.displayName || 'Customer'} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-warm-accent/30 bg-warm-light">
                   <User className="w-12 h-12" />
@@ -304,7 +304,7 @@ export default function Profile() {
           </div>
 
           <h2 className="text-xl font-heading font-bold text-warm-dark mb-1 uppercase tracking-wider">
-            {profileData.name || user.displayName || 'Patron'}
+            {profileData.name || user.displayName || 'Valued Customer'}
           </h2>
           <div className="flex items-center gap-1.5 text-xs text-warm-dark/50 font-serif mb-6">
             <Mail className="w-3.5 h-3.5 text-warm-accent/60" />
@@ -339,7 +339,7 @@ export default function Profile() {
                     value={profileData.name}
                     onChange={e => setProfileData(prev => ({ ...prev, name: e.target.value }))}
                     className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-warm-dark/10 bg-warm-light/20 focus:outline-none focus:border-warm-accent focus:bg-white transition-all duration-300 font-serif text-sm font-semibold text-warm-dark placeholder-warm-dark/30 shadow-inner"
-                    placeholder="Patron Name"
+                    placeholder="Your Full Name"
                     required
                   />
                 </div>

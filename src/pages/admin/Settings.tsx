@@ -377,7 +377,7 @@ export default function Settings() {
               </div>
               <div className="p-6 space-y-4">
                 <p className="text-xs font-serif italic text-warm-dark/50 leading-relaxed mb-2">
-                  Toggle categories on or off. Disabled categories will be hidden from the storefront pantry list.
+                  Toggle categories on or off. Disabled categories will be hidden from the storefront product list.
                 </p>
                 
                 {[

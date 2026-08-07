@@ -267,13 +267,13 @@ export default function MyOrders() {
           </div>
           <h2 className="text-2xl font-heading font-bold text-warm-dark mb-3 uppercase tracking-wider">No parcels yet</h2>
           <p className="text-warm-dark/60 mb-8 font-serif italic text-sm leading-relaxed max-w-md mx-auto">
-            Your culinary journey with Kaaram Kathalu hasn't started yet. Let's fill your pantry with authentic delicacies!
+            Your culinary journey with Kaaram Kathalu hasn't started yet. Let's explore our authentic delicacies!
           </p>
           <Link
             to="/shop"
             className="inline-block bg-warm-accent text-white px-10 py-4 rounded-xl font-heading font-black tracking-widest uppercase text-xs hover:bg-warm-dark transition-all duration-300 shadow-md"
           >
-            Explore Pantry
+            Explore Shop
           </Link>
         </motion.div>
       ) : (

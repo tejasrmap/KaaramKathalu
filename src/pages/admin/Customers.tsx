@@ -30,7 +30,7 @@ export default function Customers() {
   return (
     <div className="space-y-6">
       <div className="bg-warm-light p-6 rounded-2xl border border-warm-dark/5 shadow-sm mb-6">
-        <h2 className="text-2xl font-serif font-bold text-warm-dark">Patron Register</h2>
+        <h2 className="text-2xl font-serif font-bold text-warm-dark">Customer Directory</h2>
         <p className="text-sm text-warm-dark/60 mt-1 font-serif">Manage and view your loyal customer base.</p>
       </div>
 
@@ -39,7 +39,7 @@ export default function Customers() {
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-dark/40" />
           <input 
             type="text" 
-            placeholder="Search patrons by name or email..." 
+            placeholder="Search customers by name or email..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-warm-dark/10 bg-white focus:outline-none focus:ring-0 focus:border-warm-accent text-sm font-serif"
@@ -77,14 +77,14 @@ export default function Customers() {
                 <div className="flex items-center gap-1.5 text-[10px] font-semibold text-warm-dark/40 uppercase tracking-widest">
                   <Calendar className="w-3.5 h-3.5" /> Active: {customer.lastActive}
                 </div>
-                <span className="bg-green-50 text-green-700 text-[10px] font-semibold px-2.5 py-1 rounded-full">Verified Patron</span>
+                <span className="bg-green-50 text-green-700 text-[10px] font-semibold px-2.5 py-1 rounded-full">Registered Customer</span>
               </div>
             </div>
           </div>
         ))}
         {filteredCustomers.length === 0 && !isLoading && (
           <div className="col-span-full py-20 text-center bg-white border border-warm-dark/5 rounded-[24px] shadow-sm">
-            <p className="font-serif font-bold text-2xl italic text-warm-dark/30">No patrons found in the registry.</p>
+            <p className="font-serif font-bold text-2xl italic text-warm-dark/30">No customers found.</p>
           </div>
         )}
       </div>

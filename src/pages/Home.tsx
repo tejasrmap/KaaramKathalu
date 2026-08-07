@@ -312,7 +312,7 @@ export default function Home() {
       {/* FAQ SECTION */}
       <section className="py-20 md:py-28 px-4 sm:px-6 md:px-12 max-w-3xl mx-auto">
         <div className="text-center mb-16">
-          <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">Pantry Queries</span>
+          <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">Frequently Asked Questions</span>
           <h2 className="text-3xl sm:text-4xl font-heading font-bold text-warm-dark mt-2 uppercase">FAQ</h2>
         </div>
 

@@ -34,7 +34,7 @@ export default function AdminLayout() {
           <div className="inline-flex items-center gap-2 bg-warm-accent/10 text-warm-accent px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-widest mb-3">
             Admin Portal
           </div>
-          <h1 className="font-serif text-3xl md:text-5xl font-bold text-warm-dark mb-3">Pantry Registry</h1>
+          <h1 className="font-serif text-3xl md:text-5xl font-bold text-warm-dark mb-3">Store Dashboard</h1>
           <p className="text-sm font-serif italic text-warm-dark/60 max-w-md mx-auto mb-8">
             Manage transactions, update stock parameters, and adjust announcement configurations.
           </p>

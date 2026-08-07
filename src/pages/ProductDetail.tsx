@@ -36,7 +36,7 @@ export default function ProductDetail() {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
         <Loader2 className="w-12 h-12 text-warm-accent animate-spin mb-4" />
-        <p className="font-serif italic text-warm-dark/40">Fetching the jars...</p>
+        <p className="font-serif italic text-warm-dark/40">Loading product details...</p>
       </div>
     );
   }
@@ -45,7 +45,7 @@ export default function ProductDetail() {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
         <h2 className="text-3xl font-serif text-warm-dark mb-4">Product Not Found</h2>
-        <p className="text-warm-dark/60 mb-8 font-serif italic text-lg">The jar you are looking for seems to be missing from our pantry.</p>
+        <p className="text-warm-dark/60 mb-8 font-serif italic text-lg">The product you are looking for seems to be unavailable right now.</p>
         <Link to="/shop" className="px-8 py-3 bg-warm-accent hover:bg-warm-accent/90 text-white rounded-full font-bold tracking-widest uppercase text-xs transition-colors">
           Return to Shop
         </Link>
@@ -70,7 +70,7 @@ export default function ProductDetail() {
       
       <div className="mb-8">
         <Link to="/shop" className="inline-flex items-center gap-2 text-warm-dark font-bold uppercase tracking-widest text-xs hover:text-warm-accent transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to Pantry
+          <ArrowLeft className="w-4 h-4" /> Back to Shop
         </Link>
       </div>
 

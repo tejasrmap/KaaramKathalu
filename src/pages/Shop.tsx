@@ -96,7 +96,7 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
   };
 
   const categories = [
-    { id: 'all', label: 'All Pantry' },
+    { id: 'all', label: 'All Products' },
     { id: 'pickle', label: 'Pickles' },
     { id: 'podi', label: 'Podis' }
   ].filter(cat => cat.id === 'all' || activeCategories[cat.id] !== false);
@@ -138,7 +138,7 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
           {isLoading ? (
             <div className="col-span-full flex flex-col items-center justify-center py-20 gap-4">
               <Loader2 className="w-12 h-12 text-warm-accent animate-spin" />
-              <p className="font-serif italic text-warm-dark/40">Opening the pantry door...</p>
+              <p className="font-serif italic text-warm-dark/40">Loading products...</p>
             </div>
           ) : filteredProducts.length === 0 ? (
              <div className="col-span-full py-20 text-center bg-white border border-warm-dark/5 rounded-[24px] shadow-sm max-w-xl mx-auto w-full">

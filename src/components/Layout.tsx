@@ -67,7 +67,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-warm-bg">
           <div className="max-w-md bg-white p-8 md:p-12 rounded-[32px] shadow-xl border border-warm-dark/5 flex flex-col items-center">
             <img src="/logo_icon.jpg" alt={settings.companyName} className="h-24 md:h-32 object-contain rounded-full mb-8 animate-pulse" />
-            <h1 className="font-serif text-3xl font-bold text-warm-dark mb-4">Pantry Under Maintenance</h1>
+            <h1 className="font-serif text-3xl font-bold text-warm-dark mb-4">Store Under Maintenance</h1>
             <p className="text-sm font-serif italic text-warm-dark/60 mb-6">
               Our digital courtyard is temporarily closed for maintenance while we restock our jars and refresh our pages. We'll be back shortly!
             </p>
