@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2, AlertTriangle, Info, X } from 'lucide-react';
 
@@ -29,15 +29,15 @@ export const PopupProvider = ({ children }: { children: ReactNode }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [dialog, setDialog] = useState<DialogConfig | null>(null);
 
-  const showToast = (message: string, type: ToastType = 'success') => {
+  const showToast = useCallback((message: string, type: ToastType = 'success') => {
     const id = Math.random().toString(36).substring(2, 9);
     setToasts(prev => [...prev, { id, message, type }]);
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
     }, 3500);
-  };
+  }, []);
 
-  const showAlert = (message: string, title = 'Message'): Promise<void> => {
+  const showAlert = useCallback((message: string, title = 'Message'): Promise<void> => {
     return new Promise<void>(resolve => {
       setDialog({
         title,
@@ -49,9 +49,9 @@ export const PopupProvider = ({ children }: { children: ReactNode }) => {
         }
       });
     });
-  };
+  }, []);
 
-  const showConfirm = (message: string, title = 'Confirm Action'): Promise<boolean> => {
+  const showConfirm = useCallback((message: string, title = 'Confirm Action'): Promise<boolean> => {
     return new Promise<boolean>(resolve => {
       setDialog({
         title,
@@ -63,7 +63,7 @@ export const PopupProvider = ({ children }: { children: ReactNode }) => {
         }
       });
     });
-  };
+  }, []);
 
   return (
     <PopupContext.Provider value={{ showToast, showAlert, showConfirm }}>
