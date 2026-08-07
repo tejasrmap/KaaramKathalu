@@ -35,6 +35,7 @@ import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard';
 import Orders from './pages/admin/Orders';
 import ProductsAdmin from './pages/admin/ProductsAdmin';
+import ProductFormAdmin from './pages/admin/ProductFormAdmin';
 import Customers from './pages/admin/Customers';
 import Settings from './pages/admin/Settings';
 import AdminUsers from './pages/admin/AdminUsers';
@@ -55,6 +56,8 @@ export default function App() {
               <Route index element={<Dashboard />} />
               <Route path="orders" element={<Orders />} />
               <Route path="products" element={<ProductsAdmin />} />
+              <Route path="products/new" element={<ProductFormAdmin />} />
+              <Route path="products/edit/:id" element={<ProductFormAdmin />} />
               <Route path="customers" element={<Customers />} />
               <Route path="settings" element={<Settings />} />
               <Route path="users" element={<AdminUsers />} />
