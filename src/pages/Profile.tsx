@@ -278,7 +278,6 @@ export default function Profile() {
             My <span className="text-warm-accent">Profile</span>
           </h1>
           <p className="text-warm-dark/60 font-serif italic text-sm mt-1">Manage your details for faster heritage deliveries.</p>
-          <div className="w-16 h-1 bg-warm-accent/80 mt-4 rounded-full"></div>
         </div>
 
         {/* Left Card: Account Card */}

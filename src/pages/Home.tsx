@@ -232,7 +232,6 @@ export default function Home() {
         <div className="text-center mb-16 max-w-2xl mx-auto">
           <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">Curated Favorites</span>
           <h2 className="text-3xl sm:text-5xl font-heading font-bold text-warm-dark mt-2 mb-4 uppercase">Our Bestsellers</h2>
-          <div className="w-16 h-0.5 bg-warm-accent mx-auto mb-6"></div>
           <p className="font-serif italic text-warm-dark/70 text-base md:text-lg">
             Introducing several creations with bold flavors and fresh traditions! Our bestsellers and loved products change every month!
           </p>

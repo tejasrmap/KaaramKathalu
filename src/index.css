@@ -15,29 +15,36 @@
 }
 
 @layer base {
-  body {
+  html, body {
     @apply font-sans text-warm-dark bg-warm-bg antialiased selection:bg-warm-accent selection:text-white;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
     background-attachment: fixed;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
   }
   
   h1, h2, h3, h4, .font-heading {
     font-family: var(--font-heading), var(--font-sans);
     letter-spacing: 0.05em;
   }
+
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
 }
 
 /* Custom Premium Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: var(--color-warm-bg);
-  border-left: 1px solid rgba(42, 27, 25, 0.1);
+  border-left: 1px solid rgba(42, 27, 25, 0.05);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(184, 58, 32, 0.2);
-  border-radius: 4px;
+  background: rgba(184, 58, 32, 0.25);
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-warm-accent);
@@ -58,6 +65,7 @@
   
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
@@ -68,5 +76,15 @@
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: var(--color-warm-accent);
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
   }
 }

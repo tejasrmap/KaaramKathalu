@@ -275,18 +275,18 @@ export default function ProductDetail() {
           </div>
 
           {/* Mobile Sticky Bottom Bar */}
-          <div className="sm:hidden fixed bottom-16 left-0 right-0 z-40 bg-warm-bg/95 backdrop-blur-md border-t border-warm-dark/10 p-4 flex gap-3 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
-             <div className="flex items-center bg-white border border-warm-dark/15 rounded-xl w-32 h-12 shadow-sm">
-                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="flex-1 h-full flex items-center justify-center text-warm-dark/50 cursor-pointer"><Minus className="w-3.5 h-3.5" /></button>
-                <span className="w-10 text-center font-bold text-warm-dark text-sm">{quantity}</span>
-                <button onClick={() => setQuantity(quantity + 1)} className="flex-1 h-full flex items-center justify-center text-warm-dark/50 cursor-pointer"><Plus className="w-3.5 h-3.5" /></button>
+          <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-warm-dark/15 p-3 flex gap-2.5 shadow-[0_-6px_16px_rgba(0,0,0,0.12)]">
+             <div className="flex items-center bg-warm-light/60 border border-warm-dark/15 rounded-xl w-28 h-11">
+                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="flex-1 h-full flex items-center justify-center text-warm-dark/60 cursor-pointer active:scale-90"><Minus className="w-3.5 h-3.5" /></button>
+                <span className="w-8 text-center font-bold text-warm-dark text-xs">{quantity}</span>
+                <button onClick={() => setQuantity(quantity + 1)} className="flex-1 h-full flex items-center justify-center text-warm-dark/60 cursor-pointer active:scale-90"><Plus className="w-3.5 h-3.5" /></button>
              </div>
              <button 
               onClick={handleAddToCart}
               disabled={product.stock <= 0}
-              className="flex-1 bg-warm-accent hover:bg-warm-dark text-white h-12 rounded-xl font-heading tracking-wider uppercase text-xs transition-colors cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-warm-accent hover:bg-warm-dark active:scale-[0.98] text-white h-11 rounded-xl font-heading tracking-wider uppercase text-xs font-bold transition-all cursor-pointer shadow-md disabled:opacity-50"
             >
-              {product.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
+              {product.stock <= 0 ? 'Out of Stock' : `Add to Cart • ₹${computedUnitPrice * quantity}`}
             </button>
           </div>
 

@@ -86,7 +86,6 @@ export default function NotFound() {
         <h2 className="text-xl md:text-2xl font-serif font-bold text-warm-dark mb-4">
           Lost in the Spice Courtyard!
         </h2>
-        <div className="w-16 h-0.5 bg-warm-accent mx-auto mb-6"></div>
         <p className="font-serif italic text-warm-dark/70 text-sm md:text-base max-w-md mx-auto leading-relaxed mb-10">
           The traditional recipe or page you are looking for has wandered off our digital shelves. Let us help you find your way back to the aromas of Andhra.
         </p>

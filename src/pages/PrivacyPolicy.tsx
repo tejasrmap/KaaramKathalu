@@ -99,7 +99,6 @@ export default function PrivacyPolicy() {
             Privacy{' '}
             <span className="text-warm-accent">Policy</span>
           </h1>
-          <div className="w-16 h-0.5 bg-warm-accent mx-auto mb-6" />
           <p className="font-serif italic text-warm-dark/70 text-base md:text-lg max-w-2xl mx-auto">
             Your trust means everything to us. Here's how we handle and protect your personal information.
           </p>

@@ -67,7 +67,6 @@ export default function About() {
               {storySettings.title.split(' ').slice(-1)[0]}
             </span>
           </h1>
-          <div className="w-16 h-0.5 bg-warm-accent mx-auto mb-6"></div>
           <p className="font-serif italic text-warm-dark/70 text-lg md:text-xl max-w-2xl mx-auto whitespace-pre-line">
             {storySettings.subtitle}
           </p>

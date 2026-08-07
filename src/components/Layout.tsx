@@ -71,7 +71,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <p className="text-sm font-serif italic text-warm-dark/60 mb-6">
               Our digital courtyard is temporarily closed for maintenance while we restock our jars and refresh our pages. We'll be back shortly!
             </p>
-            <div className="w-16 h-0.5 bg-warm-accent mb-6"></div>
             <p className="text-[10px] uppercase font-bold tracking-widest text-warm-dark/40">
               For urgent inquiries: {settings.supportEmail}
             </p>

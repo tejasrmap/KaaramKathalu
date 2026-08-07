@@ -139,7 +139,6 @@ export default function TermsAndConditions() {
             Terms &amp;{' '}
             <span className="text-warm-accent">Conditions</span>
           </h1>
-          <div className="w-16 h-0.5 bg-warm-accent mx-auto mb-6" />
           <p className="font-serif italic text-warm-dark/70 text-base md:text-lg max-w-2xl mx-auto">
             By using our website and placing orders, you agree to the following terms. Please read them carefully.
           </p>

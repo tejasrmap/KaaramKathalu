@@ -163,7 +163,6 @@ export default function TrackOrder() {
         <h1 className="text-4xl md:text-5xl font-heading font-black text-warm-dark uppercase tracking-tight">
           Track Your <span className="text-warm-accent">Parcels</span>
         </h1>
-        <div className="w-16 h-1 bg-warm-accent/80 mx-auto mt-4 rounded-full"></div>
       </div>
 
       {/* Search Input Card */}

@@ -252,7 +252,6 @@ export default function MyOrders() {
           My <span className="text-4xl md:text-5xl font-heading font-black text-warm-dark uppercase tracking-tight">Orders</span>
         </h1>
         <p className="text-warm-dark/60 font-serif italic text-sm mt-1">Track your spicy treasures as they travel from our kitchen to yours.</p>
-        <div className="w-16 h-1 bg-warm-accent/80 mt-4 rounded-full"></div>
       </div>
 
       {orders.length === 0 ? (
