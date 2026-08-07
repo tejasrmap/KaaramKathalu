@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Flame, Plus, Minus, Info, Loader2, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Flame, Plus, Minus, Info, Loader2, Check } from 'lucide-react';
 import { Product } from '../data/products';
 import { RECIPES } from '../data/recipes';
 import { useCart } from '../context/CartContext';
