@@ -21,8 +21,6 @@ import Login from './pages/Login';
 import MyOrders from './pages/MyOrders';
 import Profile from './pages/Profile';
 import Wishlist from './pages/Wishlist';
-import Recipes from './pages/Recipes';
-import RecipeDetail from './pages/RecipeDetail';
 import NotFound from './pages/NotFound';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
@@ -70,8 +68,6 @@ export default function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="/shop" element={<Shop />} />
                   <Route path="/about" element={<About />} />
-                  <Route path="/recipes" element={<Recipes />} />
-                  <Route path="/recipes/:id" element={<RecipeDetail />} />
                   <Route path="/product/:id" element={<ProductDetail />} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/login" element={<Login />} />

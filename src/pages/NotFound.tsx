@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { Home, ShoppingBag, BookOpen, Scroll, HelpCircle } from 'lucide-react';
+import { Home, ShoppingBag, Truck, Scroll, HelpCircle } from 'lucide-react';
 import SEO from '../components/SEO';
 
 export default function NotFound() {
@@ -114,11 +114,11 @@ export default function NotFound() {
             <span>Privacy Policy</span>
           </Link>
           <Link
-            to="/recipes"
+            to="/track-order"
             className="flex items-center justify-center gap-3 px-6 py-3.5 bg-warm-light text-warm-dark rounded-xl font-heading uppercase text-xs sm:text-sm tracking-wider hover:bg-warm-dark/5 hover:text-warm-dark transition-all duration-300 group"
           >
-            <BookOpen className="w-4 h-4 transition-transform group-hover:scale-105" />
-            <span>Traditional Recipes</span>
+            <Truck className="w-4 h-4 transition-transform group-hover:scale-105" />
+            <span>Track Shipment</span>
           </Link>
         </div>
       </motion.div>

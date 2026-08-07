@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Flame, Plus, Minus, Info, Loader2, Check, Heart } from 'lucide-react';
 import { Product } from '../data/products';
-import { RECIPES } from '../data/recipes';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { db } from '../firebase';
@@ -75,12 +74,6 @@ export default function ProductDetail() {
     addToCart(product, quantity, selectedWeight, isJar);
     setIsCartOpen(true);
   };
-
-  // Find matching recipes based on product name
-  const matchingRecipes = RECIPES.filter(recipe => 
-    recipe.pairing.toLowerCase().includes(product.name.toLowerCase()) ||
-    product.name.toLowerCase().includes(recipe.pairing.split(' (')[0].toLowerCase())
-  );
 
   return (
     <div className="pt-8 md:pt-12 pb-24 px-4 sm:px-6 md:px-12 max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto">
@@ -344,33 +337,6 @@ export default function ProductDetail() {
             </div>
           )}
 
-          {/* Culinary Pairings Integration */}
-          {matchingRecipes.length > 0 && (
-            <div className="pt-10 mt-10 border-t border-warm-dark/10">
-              <h3 className="text-xs font-bold tracking-widest uppercase text-warm-accent mb-6 flex items-center gap-2">
-                 <div className="w-1.5 h-1.5 bg-warm-accent rounded-full"></div>
-                 Culinary Pairings
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {matchingRecipes.map(recipe => (
-                  <Link 
-                    key={recipe.id}
-                    to={`/recipes/${recipe.id}`}
-                    className="group flex items-center gap-4 p-4 bg-white border border-warm-dark/5 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
-                  >
-                    <div className="w-16 h-16 flex-shrink-0 rounded-xl border border-warm-dark/5 overflow-hidden">
-                      <img src={recipe.image} alt={recipe.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-serif font-bold text-warm-dark text-base group-hover:text-warm-accent transition-colors">{recipe.title}</h4>
-                      <p className="text-xs text-warm-dark/50 font-serif italic line-clamp-1">{recipe.description}</p>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-warm-dark/30 group-hover:text-warm-accent group-hover:translate-x-0.5 transition-all" />
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
