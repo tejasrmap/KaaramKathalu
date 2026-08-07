@@ -97,7 +97,7 @@ export default function PrivacyPolicy() {
           </span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-warm-dark mt-2 mb-4 uppercase">
             Privacy{' '}
-            <span className="text-warm-accent italic">Policy</span>
+            <span className="text-warm-accent">Policy</span>
           </h1>
           <div className="w-16 h-0.5 bg-warm-accent mx-auto mb-6" />
           <p className="font-serif italic text-warm-dark/70 text-base md:text-lg max-w-2xl mx-auto">
