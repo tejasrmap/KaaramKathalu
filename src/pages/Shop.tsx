@@ -112,9 +112,25 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
     }
   };
 
-  const filteredProducts = selectedCategory === 'all'
+  const getCategoryPriority = (type: string) => {
+    switch (type?.toLowerCase()) {
+      case 'podi': return 1;
+      case 'pickle': return 2;
+      case 'snacks': return 3;
+      case 'fryums': return 4;
+      case 'bundle': return 5;
+      default: return 6;
+    }
+  };
+
+  const filteredProducts = (selectedCategory === 'all'
     ? products.filter(p => activeCategories[p.type] !== false)
-    : products.filter(p => p.type === selectedCategory);
+    : products.filter(p => p.type === selectedCategory)
+  ).sort((a, b) => {
+    const rankA = getCategoryPriority(a.type);
+    const rankB = getCategoryPriority(b.type);
+    return rankA - rankB;
+  });
 
   const pageTitle = selectedCategory === 'all'
     ? 'Shop All'
