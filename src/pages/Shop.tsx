@@ -140,27 +140,10 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
     <div className="pt-8 md:pt-12 pb-24 px-4 sm:px-6 md:px-12 max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto min-h-screen">
       <SEO title={pageTitle} description={`Explore our collection of authentic, hand-made ${pageTitle.toLowerCase()}.`} />
       
-      <div className="text-center mb-6 relative w-full mx-auto">
+      <div className="text-center mb-10 relative w-full mx-auto">
         <h1 className="text-3xl md:text-5xl font-heading font-bold text-warm-dark uppercase tracking-wider">
           {pageTitle}
         </h1>
-      </div>
-
-      {/* Category Filter Pills */}
-      <div className="flex items-center justify-center gap-2 mb-8 overflow-x-auto no-scrollbar pb-1 px-2">
-        {categories.map(cat => (
-          <button
-            key={cat.id}
-            onClick={() => setSelectedCategory(cat.id)}
-            className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all border whitespace-nowrap cursor-pointer active:scale-95 ${
-              selectedCategory === cat.id
-                ? 'bg-warm-dark text-white border-warm-dark shadow-sm'
-                : 'bg-white text-warm-dark/65 border-warm-dark/15 hover:border-warm-dark/40 hover:bg-warm-light/40'
-            }`}
-          >
-            {cat.label}
-          </button>
-        ))}
       </div>
 
 
