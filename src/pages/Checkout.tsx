@@ -352,7 +352,7 @@ export default function Checkout() {
           userId: user.uid,
           items: resolvedCartItems.map(item => {
             const itemWeight = item.selectedWeight || item.product.weightGrams || 500;
-            const weightMultiplier = itemWeight === 1000 ? 2 : 1;
+            const weightMultiplier = itemWeight === 250 ? 0.5 : itemWeight === 1000 ? 2 : 1;
             const unitPrice = item.unitPrice ?? ((item.product.price * weightMultiplier) + (item.selectedJar ? 100 : 0));
             return {
               id: item.product.id,
@@ -850,7 +850,7 @@ export default function Checkout() {
               {cart.map(item => {
                 const itemKey = item.cartItemId || String(item.product.id);
                 const weight = item.selectedWeight || item.product.weightGrams || 500;
-                const weightMultiplier = weight === 1000 ? 2 : 1;
+                const weightMultiplier = weight === 250 ? 0.5 : weight === 1000 ? 2 : 1;
                 const price = item.unitPrice ?? ((item.product.price * weightMultiplier) + (item.selectedJar ? 100 : 0));
                 return (
                   <div key={itemKey} className="flex justify-between items-start gap-4">

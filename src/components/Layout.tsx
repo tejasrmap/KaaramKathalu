@@ -390,7 +390,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       cart.map(item => {
                         const itemKey = item.cartItemId || String(item.product.id);
                         const weight = item.selectedWeight || item.product.weightGrams || 500;
-                        const weightMultiplier = weight === 1000 ? 2 : 1;
+                        const weightMultiplier = weight === 250 ? 0.5 : weight === 1000 ? 2 : 1;
                         const price = item.unitPrice ?? ((item.product.price * weightMultiplier) + (item.selectedJar ? 100 : 0));
                         return (
                           <div key={itemKey} className="flex gap-4 items-center bg-warm-light/50 p-4 border border-warm-dark/10 relative rounded-xl">

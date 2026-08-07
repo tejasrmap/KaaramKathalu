@@ -24,7 +24,7 @@ export default function ProductsAdmin() {
   const [imageTab, setImageTab] = useState<'upload' | 'url'>('upload');
   const [isBestseller, setIsBestseller] = useState<boolean>(false);
   const [hasJarOption, setHasJarOption] = useState<boolean>(true);
-  const [availableWeights, setAvailableWeights] = useState<number[]>([500, 1000]);
+  const [availableWeights, setAvailableWeights] = useState<number[]>([250, 500, 1000]);
 
   useEffect(() => {
     if (!isModalOpen) {
@@ -40,7 +40,7 @@ export default function ProductsAdmin() {
         setSpiciness(editingProduct.spiciness || 1);
         setIsBestseller(!!editingProduct.isBestseller);
         setHasJarOption(editingProduct.hasJarOption !== false);
-        setAvailableWeights(editingProduct.availableWeights || [500, 1000]);
+        setAvailableWeights(editingProduct.availableWeights || [250, 500, 1000]);
         if (editingProduct.image && !editingProduct.image.includes('supabase.co') && !editingProduct.image.includes('firebasestorage')) {
           setImageTab('url');
         } else {
@@ -51,7 +51,7 @@ export default function ProductsAdmin() {
         setSpiciness(1);
         setIsBestseller(false);
         setHasJarOption(true);
-        setAvailableWeights([500, 1000]);
+        setAvailableWeights([250, 500, 1000]);
         setImageTab('upload');
       }
     }
@@ -473,11 +473,11 @@ export default function ProductsAdmin() {
                       </button>
                     </div>
 
-                    {/* Available Weight Options (500g & 1000g) */}
+                    {/* Available Weight Options (250g, 500g & 1000g) */}
                     <div className="space-y-2 p-4 bg-warm-light/40 border border-warm-dark/10 rounded-xl shadow-sm">
                       <label className="block text-xs font-bold uppercase tracking-wider text-warm-dark">Available Weight Options</label>
                       <div className="flex gap-3 pt-1">
-                        {[500, 1000].map(weight => {
+                        {[250, 500, 1000].map(weight => {
                           const isSelected = availableWeights.includes(weight);
                           return (
                             <button
@@ -494,7 +494,7 @@ export default function ProductsAdmin() {
                               }}
                               className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border shadow-sm cursor-pointer ${
                                 isSelected
-                                  ? 'bg-warm-dark text-white border-warm-dark'
+                                  ? 'bg-warm-dark text-white border-warm-dark font-extrabold'
                                   : 'bg-white text-warm-dark/60 border-warm-dark/10 hover:bg-warm-light/50'
                               }`}
                             >
@@ -503,7 +503,7 @@ export default function ProductsAdmin() {
                           );
                         })}
                       </div>
-                      <p className="text-[10px] text-warm-dark/40 font-serif italic mt-1">Select available weight variants for customers (1000g multiplies base price by 2).</p>
+                      <p className="text-[10px] text-warm-dark/40 font-serif italic mt-1">Select available weight variants for customers (250g = 0.5x, 500g = 1x, 1000g = 2x base price).</p>
                     </div>
 
                     {/* Product Image uploads (Tabbed selector) */}

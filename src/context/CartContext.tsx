@@ -124,7 +124,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     const weight = selectedWeight || product.weightGrams || 500;
     const isJar = !!selectedJar;
-    const weightMultiplier = weight === 1000 ? 2 : 1;
+    const weightMultiplier = weight === 250 ? 0.5 : weight === 1000 ? 2 : 1;
     const computedUnitPrice = (product.price * weightMultiplier) + (isJar ? 100 : 0);
     const cartItemId = `${product.id}-${weight}-${isJar ? 'jar' : 'pouch'}`;
 
@@ -175,7 +175,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const cartTotal = cart.reduce((sum, item) => {
     const itemWeight = item.selectedWeight || item.product.weightGrams || 500;
-    const price = item.unitPrice ?? ((item.product.price * (itemWeight === 1000 ? 2 : 1)) + (item.selectedJar ? 100 : 0));
+    const weightMultiplier = itemWeight === 250 ? 0.5 : itemWeight === 1000 ? 2 : 1;
+    const price = item.unitPrice ?? ((item.product.price * weightMultiplier) + (item.selectedJar ? 100 : 0));
     return sum + (price * item.quantity);
   }, 0);
 

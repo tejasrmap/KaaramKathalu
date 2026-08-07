@@ -57,7 +57,7 @@ export default function ProductDetail() {
     );
   }
 
-  const weightMultiplier = selectedWeight === 1000 ? 2 : 1;
+  const weightMultiplier = selectedWeight === 250 ? 0.5 : selectedWeight === 1000 ? 2 : 1;
   const computedUnitPrice = (product.price * weightMultiplier) + (isJar ? 100 : 0);
 
   const handleAddToCart = () => {
@@ -136,7 +136,7 @@ export default function ProductDetail() {
           <div className="mb-6">
             <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-2.5">Select Weight</label>
             <div className="flex gap-3">
-              {(product.availableWeights || [500, 1000]).map(weight => (
+              {(product.availableWeights || [250, 500, 1000]).map(weight => (
                 <button
                   key={weight}
                   type="button"
