@@ -31,6 +31,9 @@ export default function ProductFormAdmin() {
   const [isBestseller, setIsBestseller] = useState<boolean>(false);
   const [hasJarOption, setHasJarOption] = useState<boolean>(true);
   const [availableWeights, setAvailableWeights] = useState<number[]>([250, 500, 1000]);
+  const [price250, setPrice250] = useState<string>('');
+  const [price500, setPrice500] = useState<string>('');
+  const [price1000, setPrice1000] = useState<string>('');
   
   const [description, setDescription] = useState<string>('');
   const [longDescription, setLongDescription] = useState<string>('');
@@ -83,6 +86,19 @@ export default function ProductFormAdmin() {
           setIsBestseller(!!prod.isBestseller);
           setHasJarOption(prod.hasJarOption !== false);
           setAvailableWeights(prod.availableWeights || [250, 500, 1000]);
+
+          if ((prod as any).weightPrices) {
+            const wp = (prod as any).weightPrices;
+            if (wp[250] !== undefined) setPrice250(String(wp[250]));
+            if (wp[500] !== undefined) setPrice500(String(wp[500]));
+            if (wp[1000] !== undefined) setPrice1000(String(wp[1000]));
+          } else if (prod.price) {
+            const baseP = Number(prod.price);
+            setPrice250(String(Math.round(baseP * 0.5)));
+            setPrice500(String(baseP));
+            setPrice1000(String(baseP * 2));
+          }
+
           setDescription(prod.description || '');
           setLongDescription(prod.longDescription || '');
           setIngredients(prod.ingredients || []);
@@ -167,10 +183,17 @@ export default function ProductFormAdmin() {
 
     try {
       const mainImage = imageList[0] || '';
+      
+      const weightPricesMap: Record<number, number> = {};
+      if (price250 && !isNaN(Number(price250))) weightPricesMap[250] = Number(price250);
+      if (price500 && !isNaN(Number(price500))) weightPricesMap[500] = Number(price500);
+      if (price1000 && !isNaN(Number(price1000))) weightPricesMap[1000] = Number(price1000);
+
       const productPayload = {
         id: productId,
         name: name.trim(),
         price: Number(price),
+        weightPrices: weightPricesMap,
         stock: Number(stock) || 0,
         weightGrams: Number(weightGrams) || 250,
         availableWeights: availableWeights,
@@ -330,6 +353,57 @@ export default function ProductFormAdmin() {
                     placeholder="250"
                     className="w-full bg-warm-light/30 border border-warm-dark/15 rounded-xl p-3 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
                   />
+                </div>
+              </div>
+
+              {/* Rate Setting for Weight Options */}
+              <div className="bg-warm-light/40 border border-warm-dark/10 p-4.5 rounded-2xl space-y-3 mt-4">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-warm-dark">
+                    Custom Rates per Weight Option (₹)
+                  </label>
+                  <span className="text-[11px] text-warm-dark/60 font-serif italic">Set exact rates for each weight</span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-warm-dark/60 mb-1">
+                      250g Rate (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={price250}
+                      onChange={e => setPrice250(e.target.value)}
+                      placeholder={price ? String(Math.round(Number(price) * 0.5)) : "150"}
+                      className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-warm-dark/60 mb-1">
+                      500g Rate (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={price500}
+                      onChange={e => setPrice500(e.target.value)}
+                      placeholder={price || "275"}
+                      className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-warm-dark/60 mb-1">
+                      1000g (1kg) Rate (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={price1000}
+                      onChange={e => setPrice1000(e.target.value)}
+                      placeholder={price ? String(Number(price) * 2) : "500"}
+                      className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
+                    />
+                  </div>
                 </div>
               </div>
 

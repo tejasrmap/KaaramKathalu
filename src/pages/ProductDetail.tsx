@@ -64,8 +64,12 @@ export default function ProductDetail() {
   const imagesList = product.images && product.images.length > 0 ? product.images : [product.image];
   const activeImage = imagesList[activeImageIndex] || product.image;
 
-  const weightMultiplier = selectedWeight === 250 ? 0.5 : selectedWeight === 1000 ? 2 : 1;
-  const computedUnitPrice = (product.price * weightMultiplier) + (isJar ? 100 : 0);
+  const customWeightPrice = (product as any).weightPrices?.[selectedWeight];
+  const baseUnitPrice = (customWeightPrice !== undefined && customWeightPrice !== null && !isNaN(Number(customWeightPrice)) && Number(customWeightPrice) > 0)
+    ? Number(customWeightPrice)
+    : (product.price * (selectedWeight === 250 ? 0.5 : selectedWeight === 1000 ? 2 : 1));
+
+  const computedUnitPrice = baseUnitPrice + (isJar ? 100 : 0);
 
   const handleAddToCart = () => {
     addToCart(product, quantity, selectedWeight, isJar);

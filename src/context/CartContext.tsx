@@ -124,8 +124,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     const weight = selectedWeight || product.weightGrams || 500;
     const isJar = !!selectedJar;
-    const weightMultiplier = weight === 250 ? 0.5 : weight === 1000 ? 2 : 1;
-    const computedUnitPrice = (product.price * weightMultiplier) + (isJar ? 100 : 0);
+    const customWeightPrice = (product as any).weightPrices?.[weight];
+    const baseUnitPrice = (customWeightPrice !== undefined && customWeightPrice !== null && !isNaN(Number(customWeightPrice)) && Number(customWeightPrice) > 0)
+      ? Number(customWeightPrice)
+      : (product.price * (weight === 250 ? 0.5 : weight === 1000 ? 2 : 1));
+
+    const computedUnitPrice = baseUnitPrice + (isJar ? 100 : 0);
     const cartItemId = `${product.id}-${weight}-${isJar ? 'jar' : 'pouch'}`;
 
     setCart(prev => {
