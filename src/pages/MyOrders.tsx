@@ -290,38 +290,35 @@ export default function MyOrders() {
                 {/* Main Card Columns */}
                 <div className="flex flex-col md:flex-row w-full">
                   {/* Status Column */}
-                  <div className="bg-warm-light/40 p-6 md:w-64 border-b md:border-b-0 md:border-r border-warm-accent/10 flex flex-row md:flex-col justify-between items-center md:items-start relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-warm-accent/[0.01] rounded-full blur-xl pointer-events-none" />
-                    <div>
-                      <p className="text-[10px] font-heading font-black tracking-widest text-warm-dark/40 uppercase mb-1">Order ID</p>
-                      <p className="font-bold text-warm-dark font-serif text-base">#{order.id.slice(0, 8).toUpperCase()}</p>
-                    </div>
-
-                    <div className="mt-0 md:mt-8 w-full flex flex-col gap-1">
-                      <p className="text-[10px] font-heading font-black tracking-widest text-warm-dark/40 uppercase mb-1.5 hidden md:block text-left">Status</p>
+                  <div className="bg-warm-light/40 p-5 md:p-6 md:w-72 border-b md:border-b-0 md:border-r border-warm-accent/10 flex flex-col gap-4 justify-between relative overflow-hidden text-left">
+                    <div className="flex items-center justify-between gap-2 w-full flex-wrap sm:flex-nowrap">
+                      <div>
+                        <p className="text-[10px] font-heading font-black tracking-widest text-warm-dark/40 uppercase mb-0.5">Order ID</p>
+                        <p className="font-bold text-warm-dark font-serif text-base">#{order.id.toUpperCase()}</p>
+                      </div>
                       <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-heading font-black uppercase tracking-wider border ${statusInfo.bg} w-fit`}>
                         {statusInfo.icon}
                         {statusInfo.label}
                       </div>
                     </div>
 
-                    <div className="mt-4 w-full">
+                    <div className="flex flex-col sm:flex-row md:flex-col gap-3 w-full pt-1">
                       <Link
                         to={`/my-orders/${order.id}`}
-                        className="inline-flex items-center justify-center bg-white hover:bg-warm-accent hover:text-white text-warm-dark px-3 py-2 rounded-xl text-[10px] font-black uppercase border border-warm-dark/10 cursor-pointer w-full transition-colors font-heading tracking-wider shadow-sm text-center"
+                        className="inline-flex items-center justify-center bg-white hover:bg-warm-accent hover:text-white text-warm-dark px-4 py-2.5 rounded-xl text-[10px] font-black uppercase border border-warm-dark/10 cursor-pointer flex-1 md:w-full transition-colors font-heading tracking-wider shadow-xs text-center"
                       >
                         View Details
                       </Link>
-                    </div>
 
-                    {order.waybill && (
-                      <div className="mt-4 md:mt-6 text-left w-full">
-                        <p className="text-[10px] font-heading font-black tracking-widest text-warm-dark/40 uppercase mb-1">Tracking AWB</p>
-                        <p className="font-mono text-xs font-bold text-warm-dark/80 mb-2 bg-warm-light/70 px-2.5 py-1 rounded w-fit tracking-wide">{order.waybill}</p>
-                        <div className="flex flex-col gap-1.5">
+                      {order.waybill && (
+                        <div className="flex-1 md:w-full space-y-2 pt-2 sm:pt-0 md:pt-2 border-t sm:border-t-0 md:border-t border-warm-dark/10">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-[10px] font-heading font-black tracking-widest text-warm-dark/40 uppercase">Tracking AWB</span>
+                            <span className="font-mono text-xs font-bold text-warm-dark/80 bg-warm-light/80 px-2.5 py-0.5 rounded tracking-wide">{order.waybill}</span>
+                          </div>
                           <button
                             onClick={() => fetchTracking(order.id, order.waybill)}
-                            className="inline-flex items-center justify-between gap-2 bg-green-50 hover:bg-green-100 text-green-700 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border border-green-200 cursor-pointer w-full transition-colors font-heading"
+                            className="inline-flex items-center justify-between gap-2 bg-green-50 hover:bg-green-100 text-green-700 px-3 py-2 rounded-xl text-[10px] font-black uppercase border border-green-200 cursor-pointer w-full transition-colors font-heading shadow-xs"
                           >
                             <span>{loadingTracking[order.id] ? 'Loading...' : activeTracking[order.id] ? 'Hide Live' : 'Track Live'}</span>
                             <ArrowRight className={`w-3.5 h-3.5 transition-transform ${activeTracking[order.id] ? 'rotate-90' : 'group-hover:translate-x-0.5'}`} />
@@ -335,8 +332,8 @@ export default function MyOrders() {
                             Direct Delhivery Link
                           </a>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
 
                   {/* Details Column */}

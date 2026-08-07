@@ -151,7 +151,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </button>
 
                   {user ? (
-                    <div className="flex items-center gap-2">
+                    <div className="hidden sm:flex items-center gap-2">
                       <Link
                         to="/profile"
                         className="p-2 text-warm-dark hover:text-warm-accent transition-colors"
@@ -168,7 +168,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       </Link>
                       <button
                         onClick={() => logout()}
-                        className="p-2 text-warm-dark hover:text-red-600 transition-colors hidden sm:inline-block"
+                        className="p-2 text-warm-dark hover:text-red-600 transition-colors"
                         title="Logout"
                       >
                         <LogOut className="w-5 h-5" />
@@ -177,7 +177,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   ) : (
                     <Link
                       to="/login"
-                      className="p-2 text-warm-dark hover:text-warm-accent transition-colors"
+                      className="hidden sm:inline-flex p-2 text-warm-dark hover:text-warm-accent transition-colors"
                       title="Login"
                     >
                       <UserIcon className="w-5 h-5" />
@@ -186,7 +186,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
                   <Link
                     to="/wishlist"
-                    className="relative p-2 text-warm-dark hover:text-warm-accent transition-colors"
+                    className="hidden sm:inline-flex relative p-2 text-warm-dark hover:text-warm-accent transition-colors"
                     title="My Wishlist"
                   >
                     <Heart className={`w-5 h-5 ${wishlistCount > 0 ? 'fill-warm-accent text-warm-accent' : ''}`} />
