@@ -275,7 +275,7 @@ export default function Profile() {
         <div className="lg:col-span-12 mb-4 mt-6">
           <span className="font-heading text-warm-accent text-xs font-bold uppercase tracking-[0.2em] block mb-2">My Account</span>
           <h1 className="text-4xl md:text-5xl font-heading font-black text-warm-dark uppercase tracking-tight">
-            My <span className="text-warm-accent italic font-light font-serif">Profile</span>
+            My <span className="text-warm-accent">Profile</span>
           </h1>
           <p className="text-warm-dark/60 font-serif italic text-sm mt-1">Manage your details for faster heritage deliveries.</p>
           <div className="w-16 h-1 bg-warm-accent/80 mt-4 rounded-full"></div>
