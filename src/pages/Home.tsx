@@ -272,10 +272,6 @@ export default function Home() {
                 >
                   <Heart className={`w-4 h-4 transition-colors ${isInWishlist(product.id) ? 'fill-warm-accent text-warm-accent' : 'text-warm-dark group-hover/heart:text-warm-accent'}`} />
                 </button>
-
-                <div className="absolute bottom-3 right-3 z-20 w-8 h-8 rounded-full bg-warm-accent text-white flex items-center justify-center shadow-md transition-transform duration-300 group-hover:scale-110">
-                  <span className="text-lg font-bold font-sans">+</span>
-                </div>
               </div>
               
               <div className="pt-2 flex flex-col text-left">
