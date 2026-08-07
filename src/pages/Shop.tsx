@@ -103,11 +103,11 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
 
   const getCategoryLabel = (type: string) => {
     switch (type) {
-      case 'pickle': return 'Pickle';
-      case 'podi': return 'Podi';
+      case 'pickle': return 'Pickles';
+      case 'podi': return 'Podis';
       case 'snacks': return 'Snacks';
       case 'fryums': return 'Fryums';
-      case 'bundle': return 'Bundle';
+      case 'bundle': return 'Bundles';
       default: return type;
     }
   };
