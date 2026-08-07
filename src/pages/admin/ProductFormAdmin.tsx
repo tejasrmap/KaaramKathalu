@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Save, Plus, Trash2, Image as ImageIcon, Loader2, Check, Flame, X, Package, Sparkles } from 'lucide-react';
 import { Product, ProductType } from '../../data/products';
 import { db } from '../../firebase';
-import { collection, query, where, getDocs, doc, addDoc, updateDoc, limit } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, addDoc, updateDoc, limit } from 'firebase/firestore';
 import { supabase } from '../../supabase';
 import { usePopups } from '../../context/PopupContext';
 import SEO from '../../components/SEO';
@@ -49,19 +49,30 @@ export default function ProductFormAdmin() {
     const fetchProduct = async () => {
       setIsLoading(true);
       try {
-        let q = query(collection(db, 'products'), where('id', '==', Number(id)), limit(1));
-        let snap = await getDocs(q);
+        let foundDocSnap: any = null;
 
-        if (snap.empty) {
-          // Try docId directly
-          const qDoc = query(collection(db, 'products'), where('__name__', '==', id), limit(1));
-          snap = await getDocs(qDoc);
+        // 1. Try finding by numeric id field
+        const numId = Number(id);
+        if (!isNaN(numId)) {
+          const q = query(collection(db, 'products'), where('id', '==', numId), limit(1));
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            foundDocSnap = snap.docs[0];
+          }
         }
 
-        if (!snap.empty) {
-          const docSnap = snap.docs[0];
-          const prod = docSnap.data() as Product;
-          setDocId(docSnap.id);
+        // 2. If not found by numeric id, try doc ref by Firestore docId
+        if (!foundDocSnap) {
+          const docRef = doc(db, 'products', id!);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            foundDocSnap = docSnap;
+          }
+        }
+
+        if (foundDocSnap) {
+          const prod = foundDocSnap.data() as Product;
+          setDocId(foundDocSnap.id);
           setProductId(prod.id || Date.now());
           setName(prod.name || '');
           setPrice(String(prod.price || ''));
@@ -140,8 +151,8 @@ export default function ProductFormAdmin() {
   };
 
   // Save product to Firestore
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
 
     if (!name.trim()) {
       showAlert("Please enter a product name.", "Validation Error");
