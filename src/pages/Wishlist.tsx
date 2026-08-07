@@ -19,22 +19,24 @@ export default function Wishlist() {
     <div className="pt-8 md:pt-12 pb-24 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto min-h-[70vh]">
       <SEO title="My Wishlist" description="Your favorite pickles and podis from Kaaram Kathalu." />
       
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
-        <div>
-          <Link to="/shop" className="inline-flex items-center gap-2 text-warm-dark font-bold uppercase tracking-widest text-xs mb-6 hover:text-warm-accent transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Shop
-          </Link>
-          <h1 className="text-5xl font-serif text-warm-dark italic">My Wishlist</h1>
-          <p className="text-warm-dark/60 font-serif mt-2 italic">A collection of your favorite spicy treasures.</p>
-        </div>
+      <Link to="/shop" className="inline-flex items-center gap-2 text-warm-dark font-bold uppercase tracking-widest text-xs mb-6 hover:text-warm-accent transition-colors">
+        <ArrowLeft className="w-4 h-4" /> Back to Shop
+      </Link>
+      
+      <div className="text-center mb-12 mt-2">
+        <span className="font-heading text-warm-accent text-xs font-bold uppercase tracking-[0.2em] block mb-2">Saved Items</span>
+        <h1 className="text-4xl md:text-5xl font-heading font-black text-warm-dark uppercase tracking-tight">
+          My <span className="text-warm-accent">Wishlist</span>
+        </h1>
+        <p className="text-warm-dark/60 font-serif italic text-sm mt-1">A collection of your favorite spicy treasures.</p>
       </div>
 
       {wishlist.length === 0 ? (
         <div className="bg-white border border-warm-dark/5 p-12 md:p-16 rounded-[24px] text-center shadow-md max-w-xl mx-auto">
           <Heart className="w-16 h-16 text-warm-dark/10 mx-auto mb-6" />
-          <h2 className="text-2xl font-serif text-warm-dark mb-3">Your wishlist is empty</h2>
-          <p className="text-warm-dark/60 mb-8 font-serif italic">Start exploring our collection and save your favorites!</p>
-          <Link to="/shop" className="px-8 py-3.5 bg-warm-accent hover:bg-warm-accent/90 text-white font-bold tracking-widest uppercase text-xs rounded-full transition-colors shadow-sm hover:shadow-md inline-block cursor-pointer">
+          <h2 className="text-2xl font-heading font-bold uppercase tracking-wide text-warm-dark mb-3">Your wishlist is empty</h2>
+          <p className="text-warm-dark/60 mb-8 font-serif italic text-sm">Start exploring our collection and save your favorites!</p>
+          <Link to="/shop" className="px-8 py-3.5 bg-warm-accent hover:bg-warm-accent/90 text-white font-heading font-bold tracking-widest uppercase text-xs rounded-full transition-colors shadow-sm hover:shadow-md inline-block cursor-pointer">
             Browse Shop
           </Link>
         </div>

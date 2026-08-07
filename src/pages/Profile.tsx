@@ -272,7 +272,7 @@ export default function Profile() {
         className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start"
       >
         {/* Title and Intro */}
-        <div className="lg:col-span-12 mb-4 mt-6">
+        <div className="lg:col-span-12 mb-4 mt-6 text-center">
           <span className="font-heading text-warm-accent text-xs font-bold uppercase tracking-[0.2em] block mb-2">My Account</span>
           <h1 className="text-4xl md:text-5xl font-heading font-black text-warm-dark uppercase tracking-tight">
             My <span className="text-warm-accent">Profile</span>
