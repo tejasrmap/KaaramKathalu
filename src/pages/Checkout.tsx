@@ -323,8 +323,15 @@ export default function Checkout() {
         return { ...item, resolvedDocId: docId };
       }));
 
-      // Generate custom Order ID starting with 'KK' followed by a random 6-digit number (e.g. KK839201)
-      const customOrderId = 'KK' + Math.floor(100000 + Math.random() * 900000);
+      // Generate custom Order ID in format KKYYYYMMDDXXX (e.g. KK20260807042)
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const dateStr = `${year}${month}${day}`;
+      const randomSeq = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+      const customOrderId = `KK${dateStr}${randomSeq}`;
+
       const orderRef = doc(db, 'orders', customOrderId);
       const orderId = orderRef.id;
 
