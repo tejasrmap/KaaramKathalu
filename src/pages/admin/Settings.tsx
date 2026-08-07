@@ -19,6 +19,10 @@ export default function Settings() {
     address: '002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu, Bangalore, Karnataka - 560043',
     announcementText: '🔥 New Season Avakaya Pickles Are Here! Free Shipping on Orders Above ₹999.',
     isMaintenanceMode: false,
+    heroTag: 'Handmade Traditions',
+    heroTitle: 'Savour the Heritage.',
+    heroDescription: 'Handcrafted Andhra pickles, Gongura, Avakaya, and aromatic spice podis made with pure ingredients, cold-pressed oils, and zero preservatives. Every bite tells a story.',
+    heroButtonText: 'Shop Pickles & Podis',
     heroBgImage1: '',
     heroBgImage2: '',
     heroBgImage3: '',
@@ -419,7 +423,56 @@ export default function Settings() {
                 <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">Homepage Hero Slideshow</h2>
               </div>
               <div className="p-6 space-y-8">
-                <div className="space-y-2">
+                {/* Hero Banner Sentences */}
+                <div className="space-y-4 pt-2">
+                  <h3 className="font-serif font-bold text-warm-dark text-base border-b border-warm-dark/5 pb-2">Hero Banner Copy & Sentences</h3>
+                  
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">Sub-Heading Tag</label>
+                    <input 
+                      type="text" 
+                      value={settings.heroTag || 'Handmade Traditions'}
+                      onChange={e => setSettings(prev => ({ ...prev, heroTag: e.target.value }))}
+                      placeholder="e.g. Handmade Traditions"
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">Main Banner Headline</label>
+                    <input 
+                      type="text" 
+                      value={settings.heroTitle || 'Savour the Heritage.'}
+                      onChange={e => setSettings(prev => ({ ...prev, heroTitle: e.target.value }))}
+                      placeholder="e.g. Savour the Heritage."
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif text-lg font-bold focus:border-warm-accent transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">Narrative Description Paragraph</label>
+                    <textarea 
+                      rows={3}
+                      value={settings.heroDescription || 'Handcrafted Andhra pickles, Gongura, Avakaya, and aromatic spice podis made with pure ingredients, cold-pressed oils, and zero preservatives. Every bite tells a story.'}
+                      onChange={e => setSettings(prev => ({ ...prev, heroDescription: e.target.value }))}
+                      placeholder="Handcrafted Andhra pickles, Gongura, Avakaya..."
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif text-sm focus:border-warm-accent transition-colors leading-relaxed"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">Button Call-To-Action Text</label>
+                    <input 
+                      type="text" 
+                      value={settings.heroButtonText || 'Shop Pickles & Podis'}
+                      onChange={e => setSettings(prev => ({ ...prev, heroButtonText: e.target.value }))}
+                      placeholder="e.g. Shop Pickles & Podis"
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors text-sm font-semibold"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2 pt-4 border-t border-warm-dark/5">
                   <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block">Dark Overlay Opacity ({settings.heroOverlayOpacity || '30'}%)</label>
                   <p className="text-[10px] text-warm-dark/50 font-serif">Adjust this to make text more readable against your background photos.</p>
                   <input 

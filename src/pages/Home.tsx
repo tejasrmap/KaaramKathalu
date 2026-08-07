@@ -139,10 +139,8 @@ export default function Home() {
     }
   ];
 
-
-
   return (
-    <>
+    <div className="min-h-screen bg-warm-bg">
       <SEO
         title="Kaaram Kathalu | Authentic Andhra Pickles & Podis"
         description="Kaaram Kathalu brings you handcrafted Andhra pickles, Gongura, Avakaya, and traditional spice podis made by local artisans. Zero preservatives. Free shipping on orders above ₹999."
@@ -201,16 +199,18 @@ export default function Home() {
         {/* Content */}
         <div className="max-w-7xl mx-auto px-6 sm:px-12 md:px-24 relative z-10 w-full">
           <div className="max-w-2xl flex flex-col gap-5">
-            <span className={`font-heading tracking-[0.2em] text-xs md:text-sm uppercase font-bold ${
-              heroImages.length > 0 ? 'text-warm-accent' : 'text-warm-accent'
-            }`}>Handmade Traditions</span>
-            <h1 className={`text-4xl sm:text-5xl md:text-6xl font-serif leading-tight ${
+            <span className="font-heading tracking-[0.2em] text-xs md:text-sm uppercase font-bold text-warm-accent">
+              {heroSettings.heroTag || 'Handmade Traditions'}
+            </span>
+            <h1 className={`text-4xl sm:text-5xl md:text-6xl font-serif leading-tight whitespace-pre-line ${
               heroImages.length > 0 ? 'text-white drop-shadow-lg' : 'text-warm-dark'
-            }`}>Savour the <br/>Heritage.</h1>
+            }`}>
+              {heroSettings.heroTitle || 'Savour the Heritage.'}
+            </h1>
             <p className={`font-serif italic text-sm md:text-base leading-relaxed max-w-md ${
               heroImages.length > 0 ? 'text-white/90 drop-shadow' : 'text-warm-dark/80'
             }`}>
-              Handcrafted Andhra pickles, Gongura, Avakaya, and aromatic spice podis made with pure ingredients, cold-pressed oils, and zero preservatives. Every bite tells a story.
+              {heroSettings.heroDescription || 'Handcrafted Andhra pickles, Gongura, Avakaya, and aromatic spice podis made with pure ingredients, cold-pressed oils, and zero preservatives. Every bite tells a story.'}
             </p>
             <Link 
               to="/shop" 
@@ -220,7 +220,7 @@ export default function Home() {
                   : 'bg-warm-accent text-white hover:bg-warm-dark shadow-[4px_4px_0px_var(--color-warm-dark)]'
               }`}
             >
-              Shop Pickles & Podis
+              {heroSettings.heroButtonText || 'Shop Pickles & Podis'}
             </Link>
           </div>
         </div>
@@ -351,6 +351,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-    </>
+    </div>
   );
 }
