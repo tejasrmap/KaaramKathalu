@@ -81,8 +81,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {/* TOP NAVIGATION WRAPPER */}
           <div className="fixed top-0 left-0 right-0 z-50">
             {/* Announcement Bar */}
-            <div className="bg-warm-dark text-warm-bg py-2 px-4 text-center text-[10px] uppercase font-bold tracking-[0.2em]">
-              {settings.announcementText}
+            <div className="bg-warm-dark text-warm-bg py-2 px-4 overflow-hidden relative w-full text-[10px] uppercase font-bold tracking-[0.2em] border-b border-warm-bg/10 select-none">
+              {/* Mobile Single-Lined Scrolling Ticker */}
+              <div className="md:hidden flex whitespace-nowrap overflow-hidden">
+                <div className="animate-marquee flex gap-8 whitespace-nowrap">
+                  <span>{settings.announcementText || 'HANDCRAFTED ANDHRA PICKLES & PODIS | MADE IN SMALL BATCHES | DELIVERY DONE AROUND THE WORLD ✈️'}</span>
+                  <span>•</span>
+                  <span>{settings.announcementText || 'HANDCRAFTED ANDHRA PICKLES & PODIS | MADE IN SMALL BATCHES | DELIVERY DONE AROUND THE WORLD ✈️'}</span>
+                  <span>•</span>
+                </div>
+                <div className="animate-marquee flex gap-8 whitespace-nowrap" aria-hidden="true">
+                  <span>{settings.announcementText || 'HANDCRAFTED ANDHRA PICKLES & PODIS | MADE IN SMALL BATCHES | DELIVERY DONE AROUND THE WORLD ✈️'}</span>
+                  <span>•</span>
+                  <span>{settings.announcementText || 'HANDCRAFTED ANDHRA PICKLES & PODIS | MADE IN SMALL BATCHES | DELIVERY DONE AROUND THE WORLD ✈️'}</span>
+                  <span>•</span>
+                </div>
+              </div>
+
+              {/* Desktop Single-Line Bar */}
+              <div className="hidden md:block text-center whitespace-nowrap overflow-hidden text-ellipsis max-w-7xl mx-auto">
+                {settings.announcementText || 'HANDCRAFTED ANDHRA PICKLES & PODIS | MADE IN SMALL BATCHES | DELIVERY DONE AROUND THE WORLD ✈️'}
+              </div>
             </div>
 
             {/* NAVBAR */}
