@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Flame, Plus, Minus, Info, Loader2, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Flame, Plus, Minus, Info, Loader2, Check, Heart } from 'lucide-react';
 import { Product } from '../data/products';
 import { RECIPES } from '../data/recipes';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import SEO from '../components/SEO';
@@ -17,6 +18,7 @@ export default function ProductDetail() {
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { addToCart, setIsCartOpen } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   
   useEffect(() => {
     const fetchProduct = async () => {
@@ -238,13 +240,35 @@ export default function ProductDetail() {
           </div>
 
           {/* Action Buttons */}
-          <button 
-            onClick={handleAddToCart}
-            disabled={product.stock <= 0}
-            className="w-full bg-white hover:bg-warm-light/40 text-warm-dark h-12 border border-warm-dark rounded-xl font-heading tracking-widest uppercase text-xs font-bold transition-all duration-200 cursor-pointer mb-3.5 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {product.stock <= 0 ? 'Out of Stock' : 'Add to cart'}
-          </button>
+          <div className="flex gap-3 mb-3.5">
+            <button 
+              onClick={handleAddToCart}
+              disabled={product.stock <= 0}
+              className="flex-1 bg-white hover:bg-warm-light/40 text-warm-dark h-12 border border-warm-dark rounded-xl font-heading tracking-widest uppercase text-xs font-bold transition-all duration-200 cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {product.stock <= 0 ? 'Out of Stock' : 'Add to cart'}
+            </button>
+
+            {product && (
+              <button 
+                type="button"
+                onClick={() => {
+                  isInWishlist(product.id) ? removeFromWishlist(product.id) : addToWishlist(product);
+                }}
+                className={`h-12 px-4 border rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm active:scale-95 ${
+                  isInWishlist(product.id)
+                    ? 'bg-warm-accent/10 border-warm-accent text-warm-accent font-bold'
+                    : 'bg-white border-warm-dark/20 text-warm-dark hover:border-warm-dark'
+                }`}
+                title={isInWishlist(product.id) ? "Remove from Wishlist" : "Save to Wishlist"}
+              >
+                <Heart className={`w-5 h-5 ${isInWishlist(product.id) ? 'fill-warm-accent text-warm-accent' : ''}`} />
+                <span className="text-xs font-heading uppercase font-bold tracking-wider hidden sm:inline">
+                  {isInWishlist(product.id) ? 'Saved' : 'Wishlist'}
+                </span>
+              </button>
+            )}
+          </div>
           
           <button 
             onClick={handleAddToCart}

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product } from '../data/products';
+import { usePopups } from './PopupContext';
 
 interface WishlistContextType {
   wishlist: Product[];
@@ -13,6 +14,7 @@ const WishlistContext = createContext<WishlistContextType | undefined>(undefined
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [wishlist, setWishlist] = useState<Product[]>([]);
+  const { showToast } = usePopups();
 
   // Load wishlist from localStorage on mount
   useEffect(() => {
@@ -36,10 +38,12 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       if (prev.find(p => p.id === product.id)) return prev;
       return [...prev, product];
     });
+    showToast(`Added ${product.name} to Wishlist! ❤️`, 'success');
   };
 
   const removeFromWishlist = (productId: number) => {
     setWishlist(prev => prev.filter(p => p.id !== productId));
+    showToast("Item removed from Wishlist", "info");
   };
 
   const isInWishlist = (productId: number) => {

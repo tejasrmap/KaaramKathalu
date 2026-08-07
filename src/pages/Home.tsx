@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, Flame, ChevronDown, Award, ShieldCheck, BadgeAlert } from 'lucide-react';
+import { ArrowRight, Flame, ChevronDown, Award, ShieldCheck, BadgeAlert, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { collection, query, limit, onSnapshot, where, doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import SEO from '../components/SEO';
+import { useWishlist } from '../context/WishlistContext';
 
 export default function Home() {
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [bestsellers, setBestsellers] = useState<any[]>(() => {
     try {
       const cached = localStorage.getItem('kk_bestsellers_cache');
@@ -258,6 +260,19 @@ export default function Home() {
                 <div className="absolute top-3 left-3 bg-warm-dark text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded">
                   Bestseller
                 </div>
+
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    isInWishlist(product.id) ? removeFromWishlist(product.id) : addToWishlist(product);
+                  }}
+                  className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/90 hover:bg-white text-warm-dark flex items-center justify-center shadow-sm transition-all cursor-pointer group/heart active:scale-90"
+                  aria-label="Wishlist"
+                >
+                  <Heart className={`w-4 h-4 transition-colors ${isInWishlist(product.id) ? 'fill-warm-accent text-warm-accent' : 'text-warm-dark group-hover/heart:text-warm-accent'}`} />
+                </button>
+
                 <div className="absolute bottom-3 right-3 z-20 w-8 h-8 rounded-full bg-warm-accent text-white flex items-center justify-center shadow-md transition-transform duration-300 group-hover:scale-110">
                   <span className="text-lg font-bold font-sans">+</span>
                 </div>
