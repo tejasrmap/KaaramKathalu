@@ -323,12 +323,39 @@ export default function Checkout() {
         return { ...item, resolvedDocId: docId };
       }));
 
-      // Generate custom Order ID in format KKYYMMXXX (e.g. KK2608042)
+      // Generate sequential Order ID in format KKYYMMXXX starting from 001 (e.g. KK2608001, KK2608002)
       const now = new Date();
       const year = String(now.getFullYear()).slice(-2);
       const month = String(now.getMonth() + 1).padStart(2, '0');
-      const randomSeq = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
-      const customOrderId = `KK${year}${month}${randomSeq}`;
+      const monthPrefix = `KK${year}${month}`;
+
+      let nextSeq = 1;
+      try {
+        const qOrders = query(
+          collection(db, 'orders'),
+          where('__name__', '>=', monthPrefix),
+          where('__name__', '<=', monthPrefix + '\uf8ff')
+        );
+        const orderSnap = await getDocs(qOrders);
+        let maxSeq = 0;
+        orderSnap.docs.forEach(docSnap => {
+          const idStr = docSnap.id;
+          if (idStr.startsWith(monthPrefix)) {
+            const seqStr = idStr.slice(monthPrefix.length);
+            const seqNum = parseInt(seqStr, 10);
+            if (!isNaN(seqNum) && seqNum > maxSeq) {
+              maxSeq = seqNum;
+            }
+          }
+        });
+        nextSeq = maxSeq + 1;
+      } catch (err) {
+        console.warn("Could not query existing order sequence, fallback:", err);
+        nextSeq = 1;
+      }
+
+      const seqFormatted = String(nextSeq).padStart(3, '0');
+      const customOrderId = `${monthPrefix}${seqFormatted}`;
 
       const orderRef = doc(db, 'orders', customOrderId);
       const orderId = orderRef.id;
