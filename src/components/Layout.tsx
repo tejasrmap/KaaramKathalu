@@ -15,13 +15,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [settings, setSettings] = useState({
-    companyName: 'Kaaram Kathalu',
-    supportEmail: 'kaaram.kathalu2025@gmail.com',
-    supportPhone: '+91 76766 44366',
-    address: '002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu, Bangalore, Karnataka - 560043',
-    announcementText: '',
-    isMaintenanceMode: false
+  const [settings, setSettings] = useState(() => {
+    try {
+      const cached = localStorage.getItem('kk_general_settings_cache');
+      return cached ? JSON.parse(cached) : {
+        companyName: 'Kaaram Kathalu',
+        supportEmail: 'kaaram.kathalu2025@gmail.com',
+        supportPhone: '+91 76766 44366',
+        address: '002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu, Bangalore, Karnataka - 560043',
+        announcementText: '',
+        isMaintenanceMode: false
+      };
+    } catch {
+      return {
+        companyName: 'Kaaram Kathalu',
+        supportEmail: 'kaaram.kathalu2025@gmail.com',
+        supportPhone: '+91 76766 44366',
+        address: '002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu, Bangalore, Karnataka - 560043',
+        announcementText: '',
+        isMaintenanceMode: false
+      };
+    }
   });
   const location = useLocation();
 
@@ -41,7 +55,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         const docRef = doc(db, 'settings', 'general');
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setSettings(prev => ({ ...prev, ...docSnap.data() }));
+          const data = docSnap.data();
+          setSettings(prev => {
+            const updated = { ...prev, ...data };
+            localStorage.setItem('kk_general_settings_cache', JSON.stringify(updated));
+            return updated;
+          });
         }
       } catch (error) {
         console.error("Error fetching general settings:", error);

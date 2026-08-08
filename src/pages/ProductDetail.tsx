@@ -14,11 +14,36 @@ export default function ProductDetail() {
   const [selectedWeight, setSelectedWeight] = useState<number>(500);
   const [isJar, setIsJar] = useState<boolean>(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [product, setProduct] = useState<Product | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [product, setProduct] = useState<Product | null>(() => {
+    try {
+      const cachedProducts = localStorage.getItem('kk_products_cache');
+      if (cachedProducts) {
+        const list = JSON.parse(cachedProducts);
+        const match = list.find((p: any) => Number(p.id) === Number(id));
+        if (match) return match as Product;
+      }
+      const cachedBestsellers = localStorage.getItem('kk_bestsellers_cache');
+      if (cachedBestsellers) {
+        const list = JSON.parse(cachedBestsellers);
+        const match = list.find((p: any) => Number(p.id) === Number(id));
+        if (match) return match as Product;
+      }
+    } catch (e) {
+      console.error("Cache parse error", e);
+    }
+    return null;
+  });
+  const [isLoading, setIsLoading] = useState<boolean>(() => !product);
   const { addToCart, setIsCartOpen } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   
+  useEffect(() => {
+    // Sync initial selected weight if product was populated from cache
+    if (product) {
+      setSelectedWeight(product.weightGrams || 500);
+    }
+  }, [product?.id]);
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -27,8 +52,10 @@ export default function ProductDetail() {
         if (!querySnapshot.empty) {
           const prod = querySnapshot.docs[0].data() as Product;
           setProduct(prod);
-          setSelectedWeight(prod.weightGrams || 500);
-          setActiveImageIndex(0);
+          if (!product) {
+            setSelectedWeight(prod.weightGrams || 500);
+            setActiveImageIndex(0);
+          }
         }
       } catch (error) {
         console.error("Error fetching product from firestore:", error);

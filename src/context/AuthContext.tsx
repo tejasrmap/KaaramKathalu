@@ -25,10 +25,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const checkIsAdmin = useCallback(async (email: string): Promise<boolean> => {
+    const key = `kk_admin_${email.toLowerCase()}`;
     try {
+      const cached = sessionStorage.getItem(key);
+      if (cached !== null) {
+        // Fire non-blocking background check
+        getDoc(doc(db, 'admins', email.toLowerCase())).then(adminSnap => {
+          const status = adminSnap.exists() && adminSnap.data()?.active !== false;
+          sessionStorage.setItem(key, String(status));
+          setIsAdmin(status);
+        }).catch(() => {});
+        return cached === 'true';
+      }
       const adminRef = doc(db, 'admins', email.toLowerCase());
       const adminSnap = await getDoc(adminRef);
-      return adminSnap.exists() && adminSnap.data()?.active !== false;
+      const status = adminSnap.exists() && adminSnap.data()?.active !== false;
+      sessionStorage.setItem(key, String(status));
+      return status;
     } catch (error) {
       console.error('Error checking admin status:', error);
       return false;
