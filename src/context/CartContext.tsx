@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Product } from '../data/products';
 import { useAuth } from './AuthContext';
 import { db } from '../firebase';
@@ -116,7 +116,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     return () => clearTimeout(timeout);
   }, [cart, user]);
 
-  const addToCart = (
+  const addToCart = useCallback((
     product: Product, 
     quantity: number = 1,
     selectedWeight?: number,
@@ -151,9 +151,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       }];
     });
     setIsCartOpen(true);
-  };
+  }, []);
 
-  const updateQuantity = (cartItemIdOrProductId: string | number, delta: number) => {
+  const updateQuantity = useCallback((cartItemIdOrProductId: string | number, delta: number) => {
     setCart(prev => {
       return prev.map(item => {
         const key = item.cartItemId || String(item.product.id);
@@ -164,9 +164,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         return item;
       }).filter(item => item.quantity > 0);
     });
-  };
+  }, []);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCart([]);
     localStorage.removeItem('kk_cart');
     if (user) {
@@ -175,21 +175,23 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         console.error("Error clearing cart in Firestore:", err);
       });
     }
-  };
+  }, [user]);
 
-  const cartTotal = cart.reduce((sum, item) => {
+  const cartTotal = useMemo(() => cart.reduce((sum, item) => {
     const itemWeight = item.selectedWeight || item.product.weightGrams || 500;
     const weightMultiplier = itemWeight === 250 ? 0.5 : itemWeight === 1000 ? 2 : 1;
     const price = item.unitPrice ?? ((item.product.price * weightMultiplier) + (item.selectedJar ? 100 : 0));
     return sum + (price * item.quantity);
-  }, 0);
+  }, 0), [cart]);
 
-  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const cartCount = useMemo(() => cart.reduce((sum, item) => sum + item.quantity, 0), [cart]);
+
+  const value = useMemo(() => ({
+    cart, isCartOpen, setIsCartOpen, addToCart, updateQuantity, cartTotal, cartCount, clearCart
+  }), [cart, isCartOpen, addToCart, updateQuantity, cartTotal, cartCount, clearCart]);
 
   return (
-    <CartContext.Provider value={{
-      cart, isCartOpen, setIsCartOpen, addToCart, updateQuantity, cartTotal, cartCount, clearCart
-    }}>
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );

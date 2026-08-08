@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { Product } from '../data/products';
 import { usePopups } from './PopupContext';
 
@@ -33,31 +33,33 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('kaaram_wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
 
-  const addToWishlist = (product: Product) => {
+  const addToWishlist = useCallback((product: Product) => {
     setWishlist(prev => {
       if (prev.find(p => p.id === product.id)) return prev;
       return [...prev, product];
     });
     showToast(`Added ${product.name} to Wishlist! ❤️`, 'success');
-  };
+  }, [showToast]);
 
-  const removeFromWishlist = (productId: number) => {
+  const removeFromWishlist = useCallback((productId: number) => {
     setWishlist(prev => prev.filter(p => p.id !== productId));
     showToast("Item removed from Wishlist", "info");
-  };
+  }, [showToast]);
 
-  const isInWishlist = (productId: number) => {
+  const isInWishlist = useCallback((productId: number) => {
     return wishlist.some(p => p.id === productId);
-  };
+  }, [wishlist]);
+
+  const value = useMemo(() => ({
+    wishlist, 
+    addToWishlist, 
+    removeFromWishlist, 
+    isInWishlist,
+    wishlistCount: wishlist.length 
+  }), [wishlist, addToWishlist, removeFromWishlist, isInWishlist]);
 
   return (
-    <WishlistContext.Provider value={{ 
-      wishlist, 
-      addToWishlist, 
-      removeFromWishlist, 
-      isInWishlist,
-      wishlistCount: wishlist.length 
-    }}>
+    <WishlistContext.Provider value={value}>
       {children}
     </WishlistContext.Provider>
   );

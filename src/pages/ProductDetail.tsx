@@ -92,6 +92,7 @@ export default function ProductDetail() {
             <img 
               src={activeImage} 
               alt={product.name} 
+              decoding="async"
               className="w-full h-full object-cover transition-all duration-300"
               referrerPolicy="no-referrer"
             />
@@ -114,6 +115,8 @@ export default function ProductDetail() {
                   <img 
                     src={imgUrl} 
                     alt={`${product.name} thumbnail ${idx + 1}`} 
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover" 
                     referrerPolicy="no-referrer"
                   />

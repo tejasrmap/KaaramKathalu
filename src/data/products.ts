@@ -15,6 +15,8 @@ export interface Product {
   availableWeights?: number[];
   hasJarOption?: boolean;
   stock: number;
+  isBestseller?: boolean;
+  weightPrices?: Record<number, number>;
 }
 
 export const PRODUCTS: Product[] = [

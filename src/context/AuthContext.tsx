@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo, useCallback } from 'react';
 import { 
   signInWithPopup, 
   signOut, 
@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const checkIsAdmin = async (email: string): Promise<boolean> => {
+  const checkIsAdmin = useCallback(async (email: string): Promise<boolean> => {
     try {
       const adminRef = doc(db, 'admins', email.toLowerCase());
       const adminSnap = await getDoc(adminRef);
@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Error checking admin status:', error);
       return false;
     }
-  };
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -47,9 +47,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     });
     return unsubscribe;
-  }, []);
+  }, [checkIsAdmin]);
 
-  const login = async (isAdminOnly: boolean = false) => {
+  const login = useCallback(async (isAdminOnly: boolean = false) => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const loggedInUser = result.user;
@@ -85,9 +85,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Error signing in with Google:', error);
       throw error;
     }
-  };
+  }, [checkIsAdmin]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await signOut(auth);
       setIsAdmin(false);
@@ -95,17 +95,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Error signing out:', error);
       throw error;
     }
-  };
+  }, []);
+
+  const value = useMemo(() => ({
+    user, 
+    isAuthenticated: !!user && isAdmin,
+    isAdmin,
+    isLoading,
+    login, 
+    logout 
+  }), [user, isAdmin, isLoading, login, logout]);
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      isAuthenticated: !!user && isAdmin,
-      isAdmin,
-      isLoading,
-      login, 
-      logout 
-    }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

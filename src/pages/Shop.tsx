@@ -148,8 +148,8 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
 
 
 
-      <motion.div layout className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
-        <AnimatePresence>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+        <AnimatePresence mode="popLayout">
           {isLoading ? (
             <div className="col-span-full flex flex-col items-center justify-center py-20 gap-4">
               <Loader2 className="w-12 h-12 text-warm-accent animate-spin" />
@@ -161,12 +161,11 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
             </div>
           ) : filteredProducts.map(product => (
             <motion.div
-              layout
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3 }}
-              key={product.docId}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              key={product.docId || product.id}
               className="group"
             >
               <Link to={`/product/${product.id}`} className="block h-full">
@@ -176,7 +175,9 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
                     <img 
                       src={product.image} 
                       alt={product.name} 
-                      className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${product.stock <= 0 ? 'opacity-50 grayscale' : ''}`}
+                      loading="lazy"
+                      decoding="async"
+                      className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${product.stock <= 0 ? 'opacity-50 grayscale' : ''}`}
                       referrerPolicy="no-referrer"
                     />
                     {product.stock <= 0 && (
@@ -224,7 +225,7 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
             </motion.div>
           ))}
         </AnimatePresence>
-      </motion.div>
+      </div>
     </div>
   );
 }

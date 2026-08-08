@@ -15,12 +15,14 @@
 }
 
 @layer base {
-  html, body {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
     @apply font-sans text-warm-dark bg-warm-bg antialiased selection:bg-warm-accent selection:text-white;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
-    background-attachment: fixed;
     -webkit-tap-highlight-color: transparent;
     overflow-x: hidden;
+    text-rendering: optimizeLegibility;
   }
   
   h1, h2, h3, h4, .font-heading {
@@ -106,5 +108,22 @@
 
   .animate-marquee:hover {
     animation-play-state: paused;
+  }
+
+  /* GPU Hardware Acceleration Utilities for 60fps Performance */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  /* Mobile Touch Target Helper */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
   }
 }

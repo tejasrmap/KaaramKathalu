@@ -30,8 +30,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, [location.pathname]);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(prev => prev !== mobile ? mobile : prev);
+    };
+    window.addEventListener('resize', handleResize, { passive: true });
 
     const fetchSettings = async () => {
       try {
@@ -46,15 +49,31 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     };
     fetchSettings();
 
+    let lastScrolled = false;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      const scrolled = window.scrollY > 20;
+      if (scrolled !== lastScrolled) {
+        lastScrolled = scrolled;
+        setIsScrolled(scrolled);
+      }
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    if (mobileMenuOpen || isCartOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen, isCartOpen]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -279,7 +298,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             )}
           </AnimatePresence>
 
-          <main className="flex-1 mt-24 md:mt-32 pb-12 overflow-x-hidden">
+          <main className="flex-1 mt-24 md:mt-32 pb-24 md:pb-12 overflow-x-hidden">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={location.pathname}

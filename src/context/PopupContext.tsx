@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2, AlertTriangle, Info, X } from 'lucide-react';
 
@@ -65,8 +65,10 @@ export const PopupProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
+  const value = useMemo(() => ({ showToast, showAlert, showConfirm }), [showToast, showAlert, showConfirm]);
+
   return (
-    <PopupContext.Provider value={{ showToast, showAlert, showConfirm }}>
+    <PopupContext.Provider value={value}>
       {children}
 
       {/* TOASTS CONTAINER */}
