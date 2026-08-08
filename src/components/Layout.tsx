@@ -153,11 +153,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <div className="flex justify-start">
                   <Link to="/" className="flex items-center">
                     <img
-                      src="/logo_icon.jpg"
+                      src="/logo_full.jpg"
                       alt="Kaaram Kathalu"
-                      className={`transition-all duration-300 object-contain rounded-full ${isScrolled || location.pathname !== '/'
-                        ? 'h-8 md:h-12'
-                        : 'h-10 md:h-16'
+                      className={`transition-all duration-300 object-contain ${isScrolled || location.pathname !== '/'
+                        ? 'h-9 md:h-12'
+                        : 'h-12 md:h-16'
                         }`}
                     />
                   </Link>
@@ -274,7 +274,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   className="fixed top-0 left-0 bottom-0 w-[80vw] max-w-xs bg-white z-50 flex flex-col h-full lg:hidden border-r border-warm-dark/10"
                 >
                   <div className="p-5 border-b border-warm-dark/10 flex justify-between items-center bg-warm-light">
-                    <img src="/logo_icon.jpg" alt="Kaaram Kathalu" className="h-12 object-contain rounded-full" />
+                    <img src="/logo_full.jpg" alt="Kaaram Kathalu" className="h-10 object-contain" />
                     <button
                       onClick={() => setMobileMenuOpen(false)}
                       className="p-2 border border-warm-dark/10 hover:border-warm-dark bg-white transition-colors"
