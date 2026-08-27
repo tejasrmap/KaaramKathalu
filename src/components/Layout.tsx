@@ -150,7 +150,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 }`}
             >
               <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex justify-between items-center w-full relative">
-                <div className="flex justify-start">
+                {/* Mobile Menu Toggle button (Left side on mobile) */}
+                <div className="lg:hidden flex items-center justify-start z-10">
+                  <button
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    className="p-2 text-warm-dark hover:text-warm-accent transition-colors"
+                    aria-label="Toggle Menu"
+                  >
+                    {mobileMenuOpen ? <X className="w-6 h-6" /> : (
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+
+                {/* Logo - Centered absolutely on mobile, left-aligned on desktop */}
+                <div className="absolute left-1/2 -translate-x-1/2 lg:static lg:left-auto lg:translate-x-0 flex justify-center lg:justify-start">
                   <Link to="/" className="flex items-center group">
                     <img
                       src="/logo_full.jpg"
@@ -172,24 +188,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <Link to="/about" className={`${location.pathname === '/about' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Our Story</Link>
                 </nav>
 
-                {/* Desktop & Mobile Actions */}
-                <div className="flex justify-end items-center gap-3 sm:gap-4">
-                  {/* Mobile Menu Toggle button */}
-                  <button
-                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    className="lg:hidden p-2 text-warm-dark hover:text-warm-accent transition-colors"
-                    aria-label="Toggle Menu"
-                  >
-                    {mobileMenuOpen ? <X className="w-6 h-6" /> : <ShoppingCart className="w-6 h-6 rotate-0 hidden" /* just reference */ />}
-                    {!mobileMenuOpen && (
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
-                      </svg>
-                    )}
-                  </button>
-
+                {/* Desktop & Mobile Actions (Right side) */}
+                <div className="flex justify-end items-center gap-2 sm:gap-4 z-10">
                   {user ? (
-                    <div className="hidden sm:flex items-center gap-2">
+                    <div className="hidden lg:flex items-center gap-2">
                       <Link
                         to="/profile"
                         className="p-2 text-warm-dark hover:text-warm-accent transition-colors"
@@ -215,7 +217,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   ) : (
                     <Link
                       to="/login"
-                      className="hidden sm:inline-flex p-2 text-warm-dark hover:text-warm-accent transition-colors"
+                      className="hidden lg:inline-flex p-2 text-warm-dark hover:text-warm-accent transition-colors"
                       title="Login"
                     >
                       <UserIcon className="w-5 h-5" />
@@ -224,7 +226,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
                   <Link
                     to="/wishlist"
-                    className="hidden sm:inline-flex relative p-2 text-warm-dark hover:text-warm-accent transition-colors"
+                    className="hidden lg:inline-flex relative p-2 text-warm-dark hover:text-warm-accent transition-colors"
                     title="My Wishlist"
                   >
                     <Heart className={`w-5 h-5 ${wishlistCount > 0 ? 'fill-warm-accent text-warm-accent' : ''}`} />
@@ -242,7 +244,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   >
                     <ShoppingCart className="w-5 h-5" />
                     {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-warm-dark text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                      <span className="absolute -top-1 -right-1 bg-warm-accent text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
                         {cartCount}
                       </span>
                     )}
