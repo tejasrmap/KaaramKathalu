@@ -31,12 +31,12 @@ export default function ProductFormAdmin() {
   const [isBestseller, setIsBestseller] = useState<boolean>(false);
   const [hasJarOption, setHasJarOption] = useState<boolean>(true);
   const [availableWeights, setAvailableWeights] = useState<number[]>([250, 500, 1000]);
-  const [price250, setPrice250] = useState<string>('');
-  const [price500, setPrice500] = useState<string>('');
-  const [price1000, setPrice1000] = useState<string>('');
-  const [stock250, setStock250] = useState<string>('50');
-  const [stock500, setStock500] = useState<string>('50');
-  const [stock1000, setStock1000] = useState<string>('50');
+  const [variantPrices, setVariantPrices] = useState<Record<number, string>>({});
+  const [variantStocks, setVariantStocks] = useState<Record<number, string>>({
+    250: '50',
+    500: '50',
+    1000: '50'
+  });
   
   const [description, setDescription] = useState<string>('');
   const [longDescription, setLongDescription] = useState<string>('');
@@ -90,28 +90,29 @@ export default function ProductFormAdmin() {
           setHasJarOption(prod.hasJarOption !== false);
           setAvailableWeights(prod.availableWeights || [250, 500, 1000]);
 
-          if ((prod as any).weightPrices) {
-            const wp = (prod as any).weightPrices;
-            if (wp[250] !== undefined) setPrice250(String(wp[250]));
-            if (wp[500] !== undefined) setPrice500(String(wp[500]));
-            if (wp[1000] !== undefined) setPrice1000(String(wp[1000]));
-          } else if (prod.price) {
-            const baseP = Number(prod.price);
-            setPrice250(String(Math.round(baseP * 0.5)));
-            setPrice500(String(baseP));
-            setPrice1000(String(baseP * 2));
-          }
+          const pricesMap: Record<number, string> = {};
+          const stocksMap: Record<number, string> = {};
+          const activeWeights = prod.availableWeights || (prod.weightGrams ? [Number(prod.weightGrams)] : [250, 500, 1000]);
 
-          if ((prod as any).weightStocks) {
-            const ws = (prod as any).weightStocks;
-            if (ws[250] !== undefined) setStock250(String(ws[250]));
-            if (ws[500] !== undefined) setStock500(String(ws[500]));
-            if (ws[1000] !== undefined) setStock1000(String(ws[1000]));
-          } else {
-            setStock250(String(prod.stock ?? 50));
-            setStock500(String(prod.stock ?? 50));
-            setStock1000(String(prod.stock ?? 50));
-          }
+          activeWeights.forEach((w: number) => {
+            if ((prod as any).weightPrices && (prod as any).weightPrices[w] !== undefined) {
+              pricesMap[w] = String((prod as any).weightPrices[w]);
+            } else if (prod.price && w === prod.weightGrams) {
+              pricesMap[w] = String(prod.price);
+            } else {
+              pricesMap[w] = '';
+            }
+
+            if ((prod as any).weightStocks && (prod as any).weightStocks[w] !== undefined) {
+              stocksMap[w] = String((prod as any).weightStocks[w]);
+            } else {
+              stocksMap[w] = String(prod.stock ?? 50);
+            }
+          });
+
+          setVariantPrices(pricesMap);
+          setVariantStocks(stocksMap);
+          setAvailableWeights(activeWeights);
 
           setDescription(prod.description || '');
           setLongDescription(prod.longDescription || '');
@@ -188,8 +189,8 @@ export default function ProductFormAdmin() {
       showAlert("Please enter a product name.", "Validation Error");
       return;
     }
-    if (!price || Number(price) <= 0) {
-      showAlert("Please enter a valid price.", "Validation Error");
+    if (availableWeights.length === 0) {
+      showAlert("Please select at least one available weight variant.", "Validation Error");
       return;
     }
 
@@ -199,33 +200,38 @@ export default function ProductFormAdmin() {
       const mainImage = imageList[0] || '';
       
       const weightPricesMap: Record<number, number> = {};
-      if (price250 && !isNaN(Number(price250))) weightPricesMap[250] = Number(price250);
-      if (price500 && !isNaN(Number(price500))) weightPricesMap[500] = Number(price500);
-      if (price1000 && !isNaN(Number(price1000))) weightPricesMap[1000] = Number(price1000);
-
       const weightStocksMap: Record<number, number> = {};
-      if (stock250 && !isNaN(Number(stock250))) weightStocksMap[250] = Number(stock250);
-      if (stock500 && !isNaN(Number(stock500))) weightStocksMap[500] = Number(stock500);
-      if (stock1000 && !isNaN(Number(stock1000))) weightStocksMap[1000] = Number(stock1000);
+
+      for (const w of availableWeights) {
+        const p = variantPrices[w];
+        if (p === undefined || p === null || p === '' || isNaN(Number(p)) || Number(p) <= 0) {
+          showAlert(`Please enter a valid rate for the ${w === 1000 ? '1kg' : w + 'g'} variant.`, "Validation Error");
+          setIsSubmitting(false);
+          return;
+        }
+        weightPricesMap[w] = Number(p);
+
+        const s = variantStocks[w];
+        weightStocksMap[w] = (s !== undefined && s !== null && s !== '' && !isNaN(Number(s))) ? Number(s) : 50;
+      }
+
+      // Determine starting weight and starting price
+      const startingWeight = availableWeights.length > 0 ? Math.min(...availableWeights) : 250;
+      const startingWeightPrice = weightPricesMap[startingWeight] || 0;
 
       let totalStock = 0;
-      let hasVariantStocks = false;
       availableWeights.forEach(w => {
-        if (weightStocksMap[w] !== undefined) {
-          totalStock += weightStocksMap[w];
-          hasVariantStocks = true;
-        }
+        totalStock += weightStocksMap[w] || 0;
       });
-      const finalStock = hasVariantStocks ? totalStock : (Number(stock) || 0);
 
       const productPayload = {
         id: productId,
         name: name.trim(),
-        price: Number(price),
+        price: Number(startingWeightPrice),
         weightPrices: weightPricesMap,
         weightStocks: weightStocksMap,
-        stock: finalStock,
-        weightGrams: Number(weightGrams) || 250,
+        stock: totalStock,
+        weightGrams: Number(startingWeight),
         availableWeights: availableWeights,
         hasJarOption: hasJarOption,
         type: type,
@@ -342,52 +348,8 @@ export default function ProductFormAdmin() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-warm-dark mb-2">
-                    Base Price (₹) <span className="text-warm-accent">*</span>
-                  </label>
-                  <input 
-                    type="number" 
-                    value={price}
-                    onChange={e => setPrice(e.target.value)}
-                    placeholder="475"
-                    min="1"
-                    className="w-full bg-warm-light/30 border border-warm-dark/15 rounded-xl p-3 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-warm-dark mb-2">
-                    Stock Level
-                  </label>
-                  <input 
-                    type="number" 
-                    value={stock}
-                    onChange={e => setStock(e.target.value)}
-                    placeholder="50"
-                    min="0"
-                    className="w-full bg-warm-light/30 border border-warm-dark/15 rounded-xl p-3 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-warm-dark mb-2">
-                    Base Weight (g)
-                  </label>
-                  <input 
-                    type="number" 
-                    value={weightGrams}
-                    onChange={e => setWeightGrams(e.target.value)}
-                    placeholder="250"
-                    className="w-full bg-warm-light/30 border border-warm-dark/15 rounded-xl p-3 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
-                  />
-                </div>
-              </div>
-
               {/* Rate & Stock Setting for Weight Options */}
-              <div className="bg-warm-light/40 border border-warm-dark/10 p-4.5 rounded-2xl space-y-4 mt-4">
+              <div className="bg-warm-light/40 border border-warm-dark/10 p-4.5 rounded-2xl space-y-4">
                 <div className="flex items-center justify-between border-b border-warm-dark/5 pb-2.5">
                   <label className="block text-xs font-bold uppercase tracking-wider text-warm-dark">
                     Variant Pricing & Stock Levels
@@ -396,80 +358,40 @@ export default function ProductFormAdmin() {
                 </div>
 
                 <div className="space-y-4">
-                  {/* 250g Variant */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center border-b border-warm-dark/5 pb-3">
-                    <span className="text-xs font-bold uppercase text-warm-dark font-sans">250g Variant</span>
-                    <div>
-                      <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Rate (₹)</label>
-                      <input
-                        type="number"
-                        value={price250}
-                        onChange={e => setPrice250(e.target.value)}
-                        placeholder={price ? String(Math.round(Number(price) * 0.5)) : "150"}
-                        className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Stock Level (Qty)</label>
-                      <input
-                        type="number"
-                        value={stock250}
-                        onChange={e => setStock250(e.target.value)}
-                        placeholder="50"
-                        className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  {/* 500g Variant */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center border-b border-warm-dark/5 pb-3">
-                    <span className="text-xs font-bold uppercase text-warm-dark font-sans">500g Variant</span>
-                    <div>
-                      <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Rate (₹)</label>
-                      <input
-                        type="number"
-                        value={price500}
-                        onChange={e => setPrice500(e.target.value)}
-                        placeholder={price || "275"}
-                        className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Stock Level (Qty)</label>
-                      <input
-                        type="number"
-                        value={stock500}
-                        onChange={e => setStock500(e.target.value)}
-                        placeholder="50"
-                        className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  {/* 1000g Variant */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
-                    <span className="text-xs font-bold uppercase text-warm-dark font-sans">1000g (1kg) Variant</span>
-                    <div>
-                      <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Rate (₹)</label>
-                      <input
-                        type="number"
-                        value={price1000}
-                        onChange={e => setPrice1000(e.target.value)}
-                        placeholder={price ? String(Number(price) * 2) : "500"}
-                        className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Stock Level (Qty)</label>
-                      <input
-                        type="number"
-                        value={stock1000}
-                        onChange={e => setStock1000(e.target.value)}
-                        placeholder="50"
-                        className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
-                      />
-                    </div>
-                  </div>
+                  {availableWeights.length === 0 ? (
+                    <p className="text-xs text-warm-dark/50 font-serif italic">
+                      Please select at least one weight variant on the right to configure pricing and stock.
+                    </p>
+                  ) : (
+                    availableWeights.map(weight => (
+                      <div key={weight} className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center border-b border-warm-dark/5 last:border-b-0 pb-3 last:pb-0">
+                        <span className="text-xs font-bold uppercase text-warm-dark font-sans">
+                          {weight === 1000 ? '1000g (1kg)' : `${weight}g`} Variant
+                        </span>
+                        <div>
+                          <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Rate (₹)</label>
+                          <input
+                            type="number"
+                            value={variantPrices[weight] || ''}
+                            onChange={e => setVariantPrices(prev => ({ ...prev, [weight]: e.target.value }))}
+                            placeholder="e.g. 250"
+                            className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Stock Level (Qty)</label>
+                          <input
+                            type="number"
+                            value={variantStocks[weight] || ''}
+                            onChange={e => setVariantStocks(prev => ({ ...prev, [weight]: e.target.value }))}
+                            placeholder="50"
+                            className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
+                          />
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -661,9 +583,17 @@ export default function ProductFormAdmin() {
                         if (isSelected) {
                           if (availableWeights.length > 1) {
                             setAvailableWeights(availableWeights.filter(w => w !== weight));
+                            const newPrices = { ...variantPrices };
+                            const newStocks = { ...variantStocks };
+                            delete newPrices[weight];
+                            delete newStocks[weight];
+                            setVariantPrices(newPrices);
+                            setVariantStocks(newStocks);
                           }
                         } else {
                           setAvailableWeights([...availableWeights, weight].sort((a,b) => a-b));
+                          setVariantPrices(prev => ({ ...prev, [weight]: variantPrices[weight] || '' }));
+                          setVariantStocks(prev => ({ ...prev, [weight]: variantStocks[weight] || '50' }));
                         }
                       }}
                       className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border flex items-center justify-center gap-1.5 cursor-pointer ${
