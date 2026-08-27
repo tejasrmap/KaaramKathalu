@@ -26,6 +26,9 @@ export default function Settings() {
     heroBgImage1: '',
     heroBgImage2: '',
     heroBgImage3: '',
+    heroMobileBgImage1: '',
+    heroMobileBgImage2: '',
+    heroMobileBgImage3: '',
     heroOverlayOpacity: '30',
     delhiveryWarehouseName: 'Kaaram Kathalu',
     activeCategories: {
@@ -48,6 +51,18 @@ export default function Settings() {
   const [hero3File, setHero3File] = useState<File | null>(null);
   const [hero3Preview, setHero3Preview] = useState<string | null>(null);
   const [hero3Tab, setHero3Tab] = useState<'upload' | 'url'>('upload');
+
+  const [heroMobile1File, setHeroMobile1File] = useState<File | null>(null);
+  const [heroMobile1Preview, setHeroMobile1Preview] = useState<string | null>(null);
+  const [heroMobile1Tab, setHeroMobile1Tab] = useState<'upload' | 'url'>('upload');
+
+  const [heroMobile2File, setHeroMobile2File] = useState<File | null>(null);
+  const [heroMobile2Preview, setHeroMobile2Preview] = useState<string | null>(null);
+  const [heroMobile2Tab, setHeroMobile2Tab] = useState<'upload' | 'url'>('upload');
+
+  const [heroMobile3File, setHeroMobile3File] = useState<File | null>(null);
+  const [heroMobile3Preview, setHeroMobile3Preview] = useState<string | null>(null);
+  const [heroMobile3Tab, setHeroMobile3Tab] = useState<'upload' | 'url'>('upload');
 
   const [storySettings, setStorySettings] = useState({
     title: 'Our Story',
@@ -139,7 +154,23 @@ export default function Settings() {
     if (settings.heroBgImage3) {
       setHero3Tab(settings.heroBgImage3.includes('supabase.co') ? 'upload' : 'url');
     }
-  }, [settings.heroBgImage1, settings.heroBgImage2, settings.heroBgImage3]);
+    if (settings.heroMobileBgImage1) {
+      setHeroMobile1Tab(settings.heroMobileBgImage1.includes('supabase.co') ? 'upload' : 'url');
+    }
+    if (settings.heroMobileBgImage2) {
+      setHeroMobile2Tab(settings.heroMobileBgImage2.includes('supabase.co') ? 'upload' : 'url');
+    }
+    if (settings.heroMobileBgImage3) {
+      setHeroMobile3Tab(settings.heroMobileBgImage3.includes('supabase.co') ? 'upload' : 'url');
+    }
+  }, [
+    settings.heroBgImage1, 
+    settings.heroBgImage2, 
+    settings.heroBgImage3, 
+    settings.heroMobileBgImage1, 
+    settings.heroMobileBgImage2, 
+    settings.heroMobileBgImage3
+  ]);
 
   const uploadImage = async (file: File, pathPrefix: string): Promise<string> => {
     const fileExt = file.name.split('.').pop();
@@ -181,6 +212,15 @@ export default function Settings() {
         if (hero3File && hero3Tab === 'upload') {
           updatedGeneral.heroBgImage3 = await uploadImage(hero3File, 'hero');
         }
+        if (heroMobile1File && heroMobile1Tab === 'upload') {
+          updatedGeneral.heroMobileBgImage1 = await uploadImage(heroMobile1File, 'hero');
+        }
+        if (heroMobile2File && heroMobile2Tab === 'upload') {
+          updatedGeneral.heroMobileBgImage2 = await uploadImage(heroMobile2File, 'hero');
+        }
+        if (heroMobile3File && heroMobile3Tab === 'upload') {
+          updatedGeneral.heroMobileBgImage3 = await uploadImage(heroMobile3File, 'hero');
+        }
 
         setIsUploading(false);
 
@@ -193,6 +233,9 @@ export default function Settings() {
         setHero1File(null);
         setHero2File(null);
         setHero3File(null);
+        setHeroMobile1File(null);
+        setHeroMobile2File(null);
+        setHeroMobile3File(null);
       } else {
         setIsUploading(true);
         let updatedStory = { ...storySettings };
@@ -685,6 +728,212 @@ export default function Settings() {
                       placeholder="https://..."
                     />
                   )}
+                </div>
+
+                {/* Mobile Cover Banners Section */}
+                <div className="pt-6 border-t-2 border-warm-dark/10 mt-6">
+                  <h3 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm mb-4">Mobile Cover Banners (Aspect Ratio ~ 3:4 / Portrait)</h3>
+                  
+                  {/* Mobile Background Image 1 */}
+                  <div className="space-y-3">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">Mobile Background Photo 1</label>
+                    <div className="flex border-b border-warm-dark/10 mb-4 gap-4">
+                      <button
+                        type="button"
+                        onClick={() => setHeroMobile1Tab('upload')}
+                        className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                          heroMobile1Tab === 'upload' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
+                        }`}
+                      >
+                        Upload File
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setHeroMobile1Tab('url')}
+                        className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                          heroMobile1Tab === 'url' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
+                        }`}
+                      >
+                        Paste URL
+                      </button>
+                    </div>
+                    {heroMobile1Tab === 'upload' ? (
+                      <div className="space-y-4">
+                        {heroMobile1Preview || (settings.heroMobileBgImage1 && !heroMobile1File && settings.heroMobileBgImage1 !== '') ? (
+                          <div className="relative w-44 aspect-[3/4] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                            <img src={heroMobile1Preview || settings.heroMobileBgImage1} alt="Hero Mobile 1 Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                            <button 
+                              type="button"
+                              onClick={() => { setHeroMobile1File(null); setHeroMobile1Preview(null); setSettings(prev => ({ ...prev, heroMobileBgImage1: '' })); }}
+                              className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div 
+                            onClick={() => document.getElementById('heromobile1-upload')?.click()}
+                            className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[120px]"
+                          >
+                            <ImageIcon className="w-6 h-6 text-warm-dark/30 mb-2" />
+                            <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Mobile Image 1</span>
+                            <input 
+                              id="heromobile1-upload"
+                              type="file" 
+                              accept="image/*" 
+                              className="hidden" 
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) { setHeroMobile1File(file); setHeroMobile1Preview(URL.createObjectURL(file)); }
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <input 
+                        type="text" 
+                        value={settings.heroMobileBgImage1}
+                        onChange={e => setSettings(prev => ({ ...prev, heroMobileBgImage1: e.target.value }))}
+                        className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
+                        placeholder="https://..."
+                      />
+                    )}
+                  </div>
+
+                  {/* Mobile Background Image 2 */}
+                  <div className="space-y-3 pt-6 border-t border-warm-dark/5 mt-6">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">Mobile Background Photo 2</label>
+                    <div className="flex border-b border-warm-dark/10 mb-4 gap-4">
+                      <button
+                        type="button"
+                        onClick={() => setHeroMobile2Tab('upload')}
+                        className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                          heroMobile2Tab === 'upload' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
+                        }`}
+                      >
+                        Upload File
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setHeroMobile2Tab('url')}
+                        className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                          heroMobile2Tab === 'url' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
+                        }`}
+                      >
+                        Paste URL
+                      </button>
+                    </div>
+                    {heroMobile2Tab === 'upload' ? (
+                      <div className="space-y-4">
+                        {heroMobile2Preview || (settings.heroMobileBgImage2 && !heroMobile2File && settings.heroMobileBgImage2 !== '') ? (
+                          <div className="relative w-44 aspect-[3/4] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                            <img src={heroMobile2Preview || settings.heroMobileBgImage2} alt="Hero Mobile 2 Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                            <button 
+                              type="button"
+                              onClick={() => { setHeroMobile2File(null); setHeroMobile2Preview(null); setSettings(prev => ({ ...prev, heroMobileBgImage2: '' })); }}
+                              className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div 
+                            onClick={() => document.getElementById('heromobile2-upload')?.click()}
+                            className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[120px]"
+                          >
+                            <ImageIcon className="w-6 h-6 text-warm-dark/30 mb-2" />
+                            <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Mobile Image 2</span>
+                            <input 
+                              id="heromobile2-upload"
+                              type="file" 
+                              accept="image/*" 
+                              className="hidden" 
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) { setHeroMobile2File(file); setHeroMobile2Preview(URL.createObjectURL(file)); }
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <input 
+                        type="text" 
+                        value={settings.heroMobileBgImage2}
+                        onChange={e => setSettings(prev => ({ ...prev, heroMobileBgImage2: e.target.value }))}
+                        className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
+                        placeholder="https://..."
+                      />
+                    )}
+                  </div>
+
+                  {/* Mobile Background Image 3 */}
+                  <div className="space-y-3 pt-6 border-t border-warm-dark/5 mt-6">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">Mobile Background Photo 3</label>
+                    <div className="flex border-b border-warm-dark/10 mb-4 gap-4">
+                      <button
+                        type="button"
+                        onClick={() => setHeroMobile3Tab('upload')}
+                        className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                          heroMobile3Tab === 'upload' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
+                        }`}
+                      >
+                        Upload File
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setHeroMobile3Tab('url')}
+                        className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                          heroMobile3Tab === 'url' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
+                        }`}
+                      >
+                        Paste URL
+                      </button>
+                    </div>
+                    {heroMobile3Tab === 'upload' ? (
+                      <div className="space-y-4">
+                        {heroMobile3Preview || (settings.heroMobileBgImage3 && !heroMobile3File && settings.heroMobileBgImage3 !== '') ? (
+                          <div className="relative w-44 aspect-[3/4] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                            <img src={heroMobile3Preview || settings.heroMobileBgImage3} alt="Hero Mobile 3 Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                            <button 
+                              type="button"
+                              onClick={() => { setHeroMobile3File(null); setHeroMobile3Preview(null); setSettings(prev => ({ ...prev, heroMobileBgImage3: '' })); }}
+                              className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div 
+                            onClick={() => document.getElementById('heromobile3-upload')?.click()}
+                            className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[120px]"
+                          >
+                            <ImageIcon className="w-6 h-6 text-warm-dark/30 mb-2" />
+                            <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Mobile Image 3</span>
+                            <input 
+                              id="heromobile3-upload"
+                              type="file" 
+                              accept="image/*" 
+                              className="hidden" 
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) { setHeroMobile3File(file); setHeroMobile3Preview(URL.createObjectURL(file)); }
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <input 
+                        type="text" 
+                        value={settings.heroMobileBgImage3}
+                        onChange={e => setSettings(prev => ({ ...prev, heroMobileBgImage3: e.target.value }))}
+                        className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
+                        placeholder="https://..."
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

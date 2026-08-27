@@ -34,6 +34,9 @@ export default function Home() {
         heroBgImage1: '',
         heroBgImage2: '',
         heroBgImage3: '',
+        heroMobileBgImage1: '',
+        heroMobileBgImage2: '',
+        heroMobileBgImage3: '',
         heroOverlayOpacity: '30'
       };
     } catch {
@@ -41,11 +44,24 @@ export default function Home() {
         heroBgImage1: '',
         heroBgImage2: '',
         heroBgImage3: '',
+        heroMobileBgImage1: '',
+        heroMobileBgImage2: '',
+        heroMobileBgImage3: '',
         heroOverlayOpacity: '30'
       };
     }
   });
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const q = query(collection(db, 'products'), where('isBestseller', '==', true), limit(4));
@@ -90,6 +106,9 @@ export default function Home() {
             heroBgImage1: data.heroBgImage1 || '',
             heroBgImage2: data.heroBgImage2 || '',
             heroBgImage3: data.heroBgImage3 || '',
+            heroMobileBgImage1: data.heroMobileBgImage1 || '',
+            heroMobileBgImage2: data.heroMobileBgImage2 || '',
+            heroMobileBgImage3: data.heroMobileBgImage3 || '',
             heroOverlayOpacity: data.heroOverlayOpacity || '30'
           };
           setHeroSettings(newSettings);
@@ -102,21 +121,35 @@ export default function Home() {
     fetchHeroSettings();
   }, []);
 
-  // Build array of active hero images
-  const heroImages = [
+  // Build active lists for desktop and mobile covers
+  const desktopImages = [
     heroSettings.heroBgImage1,
     heroSettings.heroBgImage2,
     heroSettings.heroBgImage3
   ].filter(Boolean);
 
+  const mobileImages = [
+    heroSettings.heroMobileBgImage1,
+    heroSettings.heroMobileBgImage2,
+    heroSettings.heroMobileBgImage3
+  ].filter(Boolean);
+
+  const hasCustomImages = isMobile
+    ? mobileImages.length > 0
+    : desktopImages.length > 0;
+
+  const activeHeroImages = isMobile
+    ? (mobileImages.length > 0 ? mobileImages : ['/hero_fallback.jpg'])
+    : (desktopImages.length > 0 ? desktopImages : ['/hero_fallback.jpg']);
+
   // Auto-cycle slides
   useEffect(() => {
-    if (heroImages.length <= 1) return;
+    if (activeHeroImages.length <= 1) return;
     const interval = setInterval(() => {
-      setCurrentHeroSlide(prev => (prev + 1) % heroImages.length);
+      setCurrentHeroSlide(prev => (prev + 1) % activeHeroImages.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [heroImages.length]);
+  }, [activeHeroImages.length]);
 
 
   const faqs = [
@@ -154,7 +187,7 @@ export default function Home() {
       <section className="relative w-full overflow-hidden py-16 md:py-24 border-b border-warm-dark/5 min-h-[50vh] sm:min-h-[60vh] flex items-center bg-warm-bg">
         
         {/* Background Slideshow / Fallback Image */}
-        {heroImages.length > 0 ? (
+        {hasCustomImages ? (
           <>
             <AnimatePresence mode="sync">
               <motion.div
@@ -166,7 +199,7 @@ export default function Home() {
                 className="absolute inset-0 z-0"
               >
                 <img
-                  src={heroImages[currentHeroSlide]}
+                  src={activeHeroImages[currentHeroSlide]}
                   alt="Hero Background"
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
@@ -178,9 +211,9 @@ export default function Home() {
               className="absolute inset-0 z-[1] bg-white/20"
             />
             {/* Slide Indicators */}
-            {heroImages.length > 1 && (
+            {activeHeroImages.length > 1 && (
               <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
-                {heroImages.map((_, idx) => (
+                {activeHeroImages.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => setCurrentHeroSlide(idx)}
