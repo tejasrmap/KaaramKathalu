@@ -151,9 +151,9 @@ export default function Home() {
       />
 
       {/* HERO BANNER SECTION */}
-      <section className="relative w-full overflow-hidden py-20 md:py-32 border-b border-warm-dark/5 min-h-[45vh] sm:min-h-[55vh] flex items-center">
+      <section className="relative w-full overflow-hidden py-16 md:py-24 border-b border-warm-dark/5 min-h-[50vh] sm:min-h-[60vh] flex items-center bg-warm-bg">
         
-        {/* Background Slideshow */}
+        {/* Background Slideshow / Fallback Image */}
         {heroImages.length > 0 ? (
           <>
             <AnimatePresence mode="sync">
@@ -173,10 +173,9 @@ export default function Home() {
                 />
               </motion.div>
             </AnimatePresence>
-            {/* Dark overlay */}
+            {/* Soft overlay */}
             <div 
-              className="absolute inset-0 z-[1] bg-warm-dark"
-              style={{ opacity: Number(heroSettings.heroOverlayOpacity) / 100 }}
+              className="absolute inset-0 z-[1] bg-white/20"
             />
             {/* Slide Indicators */}
             {heroImages.length > 1 && (
@@ -187,8 +186,8 @@ export default function Home() {
                     onClick={() => setCurrentHeroSlide(idx)}
                     className={`transition-all duration-300 rounded-full cursor-pointer ${
                       idx === currentHeroSlide
-                        ? 'w-6 h-2 bg-white'
-                        : 'w-2 h-2 bg-white/40 hover:bg-white/70'
+                        ? 'w-6 h-2 bg-warm-accent'
+                        : 'w-2 h-2 bg-warm-dark/20 hover:bg-warm-dark/40'
                     }`}
                   />
                 ))}
@@ -196,32 +195,39 @@ export default function Home() {
             )}
           </>
         ) : (
-          <div className="absolute inset-0 z-0 bg-warm-light" />
+          /* Handcrafted Andhra Pickle Fallback Layout matching the photo */
+          <div className="absolute inset-0 md:left-[45%] lg:left-[50%] z-0">
+            <img
+              src="/hero_fallback.jpg"
+              alt="Handcrafted Andhra Pickles"
+              className="w-full h-full object-cover object-center md:object-right opacity-90 md:opacity-100"
+            />
+            {/* Desktop soft transition overlay */}
+            <div className="hidden md:block absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-warm-bg to-transparent z-1" />
+            {/* Mobile soft overlay for text readability */}
+            <div className="md:hidden absolute inset-0 bg-white/30 backdrop-blur-[0.5px] z-1" />
+          </div>
         )}
 
         {/* Content */}
         <div className="max-w-7xl mx-auto px-6 sm:px-12 md:px-24 relative z-10 w-full">
-          <div className="max-w-2xl flex flex-col gap-5">
-            <span className="font-heading tracking-[0.2em] text-xs md:text-sm uppercase font-bold text-warm-accent">
+          <div className="max-w-xl flex flex-col gap-4 md:max-w-md lg:max-w-lg">
+            <span className="font-sans tracking-[0.2em] text-xs uppercase font-bold text-warm-accent">
               {heroSettings.heroTag || 'Handmade Traditions'}
             </span>
-            <h1 className={`text-4xl sm:text-5xl md:text-6xl font-serif leading-tight whitespace-pre-line ${
-              heroImages.length > 0 ? 'text-white drop-shadow-lg' : 'text-warm-dark'
-            }`}>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif leading-tight text-warm-dark">
               {heroSettings.heroTitle || 'Savour the Heritage.'}
             </h1>
-            <p className={`font-serif italic text-sm md:text-base leading-relaxed max-w-md ${
-              heroImages.length > 0 ? 'text-white/90 drop-shadow' : 'text-warm-dark/80'
-            }`}>
+            
+            {/* Heritage Divider Line below heading */}
+            <div className="heritage-divider text-warm-accent w-full max-w-[120px] !my-2 justify-start">✻</div>
+
+            <p className="font-serif italic text-sm sm:text-base leading-relaxed text-warm-dark/80">
               {heroSettings.heroDescription || 'Handcrafted Andhra pickles, Gongura, Avakaya, and aromatic spice podis made with pure ingredients, cold-pressed oils, and zero preservatives. Every bite tells a story.'}
             </p>
             <Link 
               to="/shop" 
-              className={`w-fit px-8 py-3.5 rounded-lg font-heading uppercase text-xs sm:text-sm tracking-wider transition-all mt-2 ${
-                heroImages.length > 0
-                  ? 'bg-warm-accent hover:bg-white hover:text-warm-dark text-white shadow-lg'
-                  : 'bg-warm-accent text-white hover:bg-warm-dark shadow-[4px_4px_0px_var(--color-warm-dark)]'
-              }`}
+              className="w-fit px-8 py-3.5 bg-warm-accent text-white hover:bg-warm-dark transition-all mt-4 font-sans uppercase text-xs tracking-wider font-bold rounded shadow-md hover:shadow-lg active:scale-98"
             >
               {heroSettings.heroButtonText || 'Shop Pickles & Podis'}
             </Link>
