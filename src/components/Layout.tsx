@@ -169,7 +169,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <div className="absolute left-1/2 -translate-x-1/2 lg:static lg:left-auto lg:translate-x-0 flex justify-center lg:justify-start">
                   <Link to="/" className="flex items-center group">
                     <img
-                      src="/logo_full.jpg"
+                      src="/logo_full.png"
                       alt="Kaaram Kathalu"
                       className={`transition-all duration-300 object-contain ${isScrolled || location.pathname !== '/'
                         ? 'h-10 sm:h-12 md:h-14'
@@ -276,7 +276,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   className="fixed top-0 left-0 bottom-0 w-[80vw] max-w-xs bg-warm-bg z-50 flex flex-col h-full lg:hidden border-r border-warm-dark/10"
                 >
                   <div className="p-5 border-b border-warm-dark/10 flex justify-between items-center bg-warm-light">
-                    <img src="/logo_full.jpg" alt="Kaaram Kathalu" className="h-12 object-contain" />
+                    <img src="/logo_full.png" alt="Kaaram Kathalu" className="h-12 object-contain" />
                     <button
                       onClick={() => setMobileMenuOpen(false)}
                       className="p-2 border border-warm-dark/10 hover:border-warm-dark bg-warm-bg transition-colors"
@@ -341,7 +341,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="flex flex-col gap-4">
                 <div className="bg-white p-2.5 inline-block rounded border border-warm-accent/20 w-fit max-w-[280px]">
                   <img
-                    src="/logo.jpg"
+                    src="/logo_full.png"
                     alt={settings.companyName}
                     className="h-16 md:h-20 object-contain"
                   />
