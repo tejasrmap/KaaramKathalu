@@ -229,29 +229,120 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Forest Green Heritage Banner */}
+      <section className="relative bg-forest-green text-white py-10 md:py-12 overflow-visible z-20">
+        {/* Torn Paper Top Edge */}
+        <div className="absolute top-0 left-0 right-0 -translate-y-[95%] z-20 pointer-events-none h-6">
+          <svg 
+            className="w-full h-full fill-forest-green" 
+            viewBox="0 0 1440 24" 
+            preserveAspectRatio="none" 
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M0 24h1440V12c-30-2-60-8-90-5s-60 8-90 4-60-10-90-5-60 9-90 5-60-8-90-4-60 10-90 5-60-9-90-5-60 8-90 4-60-10-90-5-60 9-90 5-60-8-90-4-60 10-90 5-60-9-90-5-60 8-90 4-60-10-90-5-60 9-90 5V24z"/>
+          </svg>
+        </div>
+
+        {/* Content Container */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12">
+          <div className="flex overflow-x-auto no-scrollbar md:grid md:grid-cols-5 items-start text-center gap-4 md:gap-0 py-2">
+            
+            {/* Item 1 */}
+            <div className="flex flex-col items-center justify-start flex-shrink-0 w-[120px] sm:w-[140px] md:w-auto md:px-4 md:border-r border-white/10 last:border-none">
+              {/* Mixing Bowl SVG */}
+              <div className="w-10 h-10 mb-3.5 flex items-center justify-center text-white/95">
+                <svg className="w-7 h-7 stroke-current" fill="none" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v4M6 5.5l2.5 2.5M18 5.5l-2.5 2.5" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18c0 4.5-3 8-9 8s-9-3.5-9-8z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7 10c0 3 2 5 5 5s5-2 5-5" />
+                </svg>
+              </div>
+              <span className="font-heading text-[10px] tracking-[0.15em] uppercase font-semibold leading-normal whitespace-pre-wrap">Handmade<br/>In Small Batches</span>
+            </div>
+
+            {/* Item 2 */}
+            <div className="flex flex-col items-center justify-start flex-shrink-0 w-[120px] sm:w-[140px] md:w-auto md:px-4 md:border-r border-white/10 last:border-none">
+              {/* Leaf SVG */}
+              <div className="w-10 h-10 mb-3.5 flex items-center justify-center text-white/95">
+                <svg className="w-7 h-7 stroke-current" fill="none" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 0 0 9-9c0-5-4-9-9-9s-9 4-9 9a9 9 0 0 0 9 9z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c1.5 4 4.5 7.5 9 9" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 12c4.5-1.5 7.5-4.5 9-9" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21V12" />
+                </svg>
+              </div>
+              <span className="font-heading text-[10px] tracking-[0.15em] uppercase font-semibold leading-normal whitespace-pre-wrap">100% Natural<br/>Ingredients</span>
+            </div>
+
+            {/* Item 3 */}
+            <div className="flex flex-col items-center justify-start flex-shrink-0 w-[120px] sm:w-[140px] md:w-auto md:px-4 md:border-r border-white/10 last:border-none">
+              {/* Cruet/Oil Bottle SVG */}
+              <div className="w-10 h-10 mb-3.5 flex items-center justify-center text-white/95">
+                <svg className="w-7 h-7 stroke-current" fill="none" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 8h4l1 3h-6zM9 11h6c1 0 2 1.5 2 3.5s-1 4.5-5 4.5s-5-2.5-5-4.5s1-3.5 2-3.5z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v5M10 3h4" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 14c0 1.5.5 3 2 3" />
+                </svg>
+              </div>
+              <span className="font-heading text-[10px] tracking-[0.15em] uppercase font-semibold leading-normal whitespace-pre-wrap">Cold Pressed<br/>Oils</span>
+            </div>
+
+            {/* Item 4 */}
+            <div className="flex flex-col items-center justify-start flex-shrink-0 w-[120px] sm:w-[140px] md:w-auto md:px-4 md:border-r border-white/10 last:border-none">
+              {/* Flask with slash SVG */}
+              <div className="w-10 h-10 mb-3.5 flex items-center justify-center text-white/95">
+                <svg className="w-7 h-7 stroke-current" fill="none" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 3h6M10 3v6M14 3v6M6 21h12c1.5 0 2-1 1-2.5L15 11V9H9v2L5 18.5c-1 1.5-.5 2.5 1 2.5z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 3l18 18" />
+                </svg>
+              </div>
+              <span className="font-heading text-[10px] tracking-[0.15em] uppercase font-semibold leading-normal whitespace-pre-wrap">Zero<br/>Preservatives</span>
+            </div>
+
+            {/* Item 5 */}
+            <div className="flex flex-col items-center justify-start flex-shrink-0 w-[120px] sm:w-[140px] md:w-auto md:px-4 md:border-r border-white/10 last:border-none">
+              {/* Heart/Hand SVG */}
+              <div className="w-10 h-10 mb-3.5 flex items-center justify-center text-white/95">
+                <svg className="w-7 h-7 stroke-current" fill="none" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 12c.5 1.5 2 2.5 4 2.5s3.5-1 4-2.5" />
+                </svg>
+              </div>
+              <span className="font-heading text-[10px] tracking-[0.15em] uppercase font-semibold leading-normal whitespace-pre-wrap">Made<br/>With Love</span>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Traditional repeating pattern border at the bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-repeat-x opacity-35 bg-[radial-gradient(circle_at_center,var(--color-olive)_1px,transparent_1.5px)] bg-[size:8px_8px]" />
+      </section>
 
       {/* BESTSELLERS SECTION */}
       <section className="py-20 md:py-28 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
-        <div className="text-center mb-16 max-w-2xl mx-auto">
-          <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">Curated Favorites</span>
-          <h2 className="text-3xl sm:text-5xl font-heading font-bold text-warm-dark mt-2 mb-4 uppercase">Our Bestsellers</h2>
-          <p className="font-serif italic text-warm-dark/70 text-base md:text-lg">
-            Introducing several creations with bold flavors and fresh traditions! Our bestsellers and loved products change every month!
+        <div className="text-center mb-16 max-w-2xl mx-auto flex flex-col items-center">
+          <span className="font-sans text-warm-accent text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
+            <span>🌿</span> Curated Favorites <span>🌿</span>
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-serif text-warm-dark mt-3 mb-4">Our Bestsellers</h2>
+          <p className="font-serif italic text-warm-dark/70 text-sm md:text-base max-w-lg leading-relaxed">
+            Bold flavors. Time-honored recipes. Made with love, enjoyed by all.
           </p>
+          <div className="heritage-divider text-warm-accent w-full max-w-[200px] mt-2">✻</div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
           {isLoading ? (
             [1, 2, 3, 4].map(i => (
-              <div key={i} className="h-[400px] bg-warm-dark/5 animate-pulse rounded-lg border border-warm-dark/10"></div>
+              <div key={i} className="h-[360px] bg-warm-dark/5 animate-pulse rounded-lg border border-warm-dark/10"></div>
             ))
           ) : bestsellers.map((product) => (
             <Link 
               key={product.docId}
               to={`/product/${product.id}`}
-              className="group flex flex-col transition-transform duration-300 hover:-translate-y-1"
+              className="group flex flex-col items-center transition-transform duration-300 hover:-translate-y-1 text-center"
             >
-              <div className="relative aspect-square overflow-hidden bg-warm-light border border-warm-dark/5 rounded-xl mb-4">
+              <div className="relative aspect-square w-full overflow-hidden bg-transparent mb-4">
                 <img 
                   src={product.image} 
                   alt={product.name} 
@@ -260,10 +351,7 @@ export default function Home() {
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   referrerPolicy="no-referrer"
                 />
-                <div className="absolute top-3 left-3 bg-warm-dark text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded">
-                  Bestseller
-                </div>
-
+                
                 <button 
                   onClick={(e) => {
                     e.preventDefault();
@@ -277,10 +365,11 @@ export default function Home() {
                 </button>
               </div>
               
-              <div className="pt-2 flex flex-col text-left">
-                <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-warm-accent mb-1">Traditional Recipe</span>
-                <h3 className="font-heading font-bold text-sm sm:text-base text-warm-dark group-hover:text-warm-accent transition-colors leading-tight mb-1">{product.name}</h3>
-                <span className="font-serif text-sm text-warm-dark/60">From ₹{getProductStartingPrice(product)}.00</span>
+              <div className="pt-2 flex flex-col items-center w-full px-2">
+                <h3 className="font-serif text-sm sm:text-base text-warm-dark group-hover:text-warm-accent transition-colors leading-snug mb-3 min-h-[2.5rem] flex items-center justify-center font-medium">{product.name}</h3>
+                <div className="w-full max-w-[120px] py-1.5 border border-warm-accent/80 text-warm-accent font-sans text-[10px] tracking-widest uppercase transition-all duration-300 group-hover:bg-warm-accent group-hover:text-white rounded font-bold">
+                  Shop Now
+                </div>
               </div>
             </Link>
           ))}

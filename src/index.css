@@ -1,17 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Abel&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-serif: "Merriweather", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-heading: "Abel", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Playfair Display", "Merriweather", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-heading: "Playfair Display", "Merriweather", serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   
   /* Kaaram Kathalu Color Palette */
-  --color-warm-bg: #FFFFFF;      /* White background */
-  --color-warm-light: #FAF2F0;   /* Softer terracotta off-white background */
-  --color-warm-dark: #2A1B19;    /* Rich deep terracotta-charcoal */
-  --color-warm-accent: #B83A20;  /* Traditional terracotta red */
-  --color-olive: #D27E6A;        /* Lighter terracotta accent */
+  --color-warm-bg: #FAF5EC;      /* Warm premium cream background */
+  --color-warm-light: #F3EAD8;   /* Softer warm beige for cards/hover states */
+  --color-warm-dark: #2C1E18;    /* Deep heritage charcoal-brown */
+  --color-warm-accent: #9C3A1A;  /* Traditional deep terracotta red/brown */
+  --color-forest-green: #26402A; /* Deep forest green for icons banner */
+  --color-olive: #8F6E4E;        /* Muted gold/olive for traditional borders */
 }
 
 @layer base {
@@ -125,5 +126,33 @@
   .touch-target {
     min-height: 44px;
     min-width: 44px;
+  }
+
+  /* Heritage Divider Styles */
+  .heritage-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .heritage-divider::before,
+  .heritage-divider::after {
+    content: "";
+    height: 1px;
+    background: linear-gradient(to var(--direction, right), rgba(156, 58, 26, 0.4), transparent);
+    width: 80px;
+    display: block;
+  }
+  .heritage-divider::before {
+    --direction: left;
+  }
+  .heritage-divider::after {
+    --direction: right;
+  }
+
+  /* Jagged Paper Border Effect */
+  .torn-edge {
+    filter: drop-shadow(0 -2px 2px rgba(0,0,0,0.05));
   }
 }

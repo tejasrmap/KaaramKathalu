@@ -119,7 +119,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {/* TOP NAVIGATION WRAPPER */}
           <div className="fixed top-0 left-0 right-0 z-50">
             {/* Announcement Bar */}
-            <div className="bg-warm-dark text-warm-bg py-2 px-4 overflow-hidden relative w-full text-[10px] uppercase font-bold tracking-[0.2em] border-b border-warm-bg/10 select-none">
+            <div className="bg-warm-accent text-warm-bg py-2 px-4 overflow-hidden relative w-full text-[10px] uppercase font-bold tracking-[0.2em] border-b border-warm-bg/10 select-none">
               {/* Mobile Single-Lined Scrolling Ticker */}
               <div className="md:hidden flex whitespace-nowrap overflow-hidden">
                 <div className="animate-marquee flex gap-8 whitespace-nowrap">
@@ -271,13 +271,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   animate={{ x: 0 }}
                   exit={{ x: '-100%' }}
                   transition={{ type: "spring", damping: 30, stiffness: 300, mass: 0.8 }}
-                  className="fixed top-0 left-0 bottom-0 w-[80vw] max-w-xs bg-white z-50 flex flex-col h-full lg:hidden border-r border-warm-dark/10"
+                  className="fixed top-0 left-0 bottom-0 w-[80vw] max-w-xs bg-warm-bg z-50 flex flex-col h-full lg:hidden border-r border-warm-dark/10"
                 >
                   <div className="p-5 border-b border-warm-dark/10 flex justify-between items-center bg-warm-light">
                     <img src="/logo_full.jpg" alt="Kaaram Kathalu" className="h-12 object-contain" />
                     <button
                       onClick={() => setMobileMenuOpen(false)}
-                      className="p-2 border border-warm-dark/10 hover:border-warm-dark bg-white transition-colors"
+                      className="p-2 border border-warm-dark/10 hover:border-warm-dark bg-warm-bg transition-colors"
                     >
                       <X className="w-4 h-4 text-warm-dark" />
                     </button>
@@ -517,7 +517,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {!location.pathname.startsWith('/admin') && !settings.isMaintenanceMode && (
             <nav 
               aria-label="Mobile Navigation Bar" 
-              className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-warm-dark/10 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] px-2 py-1.5 flex items-center justify-around"
+              className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-warm-bg/95 backdrop-blur-md border-t border-warm-dark/10 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] px-2 py-1.5 flex items-center justify-around"
             >
               {/* Home Tab */}
               <Link
