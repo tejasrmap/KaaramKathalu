@@ -138,11 +138,21 @@ export default function ProductsAdmin() {
                         const newStock = isOutOfStock ? 50 : 0;
                         
                         const updates: any = { stock: newStock };
-                        if (product.weightStocks && typeof product.weightStocks === 'object') {
-                          const newWeightStocks: Record<string, number> = {};
-                          Object.keys(product.weightStocks).forEach(w => {
-                            newWeightStocks[w] = newStock;
-                          });
+                        
+                        // Ensure both existing weight variant stocks and base weight stock are updated
+                        const newWeightStocks: Record<string, number> = product.weightStocks && typeof product.weightStocks === 'object'
+                          ? { ...product.weightStocks }
+                          : {};
+
+                        Object.keys(newWeightStocks).forEach(w => {
+                          newWeightStocks[w] = newStock;
+                        });
+
+                        if (product.weightGrams) {
+                          newWeightStocks[String(product.weightGrams)] = newStock;
+                        }
+
+                        if (Object.keys(newWeightStocks).length > 0) {
                           updates.weightStocks = newWeightStocks;
                         }
 
