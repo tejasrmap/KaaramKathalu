@@ -8,7 +8,7 @@ import { collection, onSnapshot, query, doc, getDoc } from 'firebase/firestore';
 import SEO from '../components/SEO';
 import { useWishlist } from '../context/WishlistContext';
 import { Heart } from 'lucide-react';
-import { getProductStartingPrice } from '../utils/price';
+import { getProductStartingPrice, getProductStock } from '../utils/price';
 
 export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 'snacks' }) {
   const [products, setProducts] = useState<any[]>(() => {
@@ -178,10 +178,10 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
                       alt={product.name} 
                       loading="lazy"
                       decoding="async"
-                      className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${product.stock <= 0 ? 'opacity-50 grayscale' : ''}`}
+                       className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${getProductStock(product) <= 0 ? 'opacity-50 grayscale' : ''}`}
                       referrerPolicy="no-referrer"
                     />
-                    {product.stock <= 0 && (
+                    {getProductStock(product) <= 0 && (
                       <div className="absolute inset-0 bg-warm-dark/20 backdrop-blur-[2px] flex items-center justify-center pointer-events-none">
                         <span className="font-serif font-bold text-white text-xl border-2 border-white px-3 py-1.5">OUT OF STOCK</span>
                       </div>
@@ -191,7 +191,7 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
                       <span className="bg-warm-dark text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded">
                         {getCategoryLabel(product.type)}
                       </span>
-                      {product.stock <= 0 && (
+                      {getProductStock(product) <= 0 && (
                         <span className="bg-red-600 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded animate-pulse">
                           Sold Out
                         </span>

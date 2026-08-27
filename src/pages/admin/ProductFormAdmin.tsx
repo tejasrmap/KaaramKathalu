@@ -34,6 +34,9 @@ export default function ProductFormAdmin() {
   const [price250, setPrice250] = useState<string>('');
   const [price500, setPrice500] = useState<string>('');
   const [price1000, setPrice1000] = useState<string>('');
+  const [stock250, setStock250] = useState<string>('50');
+  const [stock500, setStock500] = useState<string>('50');
+  const [stock1000, setStock1000] = useState<string>('50');
   
   const [description, setDescription] = useState<string>('');
   const [longDescription, setLongDescription] = useState<string>('');
@@ -97,6 +100,17 @@ export default function ProductFormAdmin() {
             setPrice250(String(Math.round(baseP * 0.5)));
             setPrice500(String(baseP));
             setPrice1000(String(baseP * 2));
+          }
+
+          if ((prod as any).weightStocks) {
+            const ws = (prod as any).weightStocks;
+            if (ws[250] !== undefined) setStock250(String(ws[250]));
+            if (ws[500] !== undefined) setStock500(String(ws[500]));
+            if (ws[1000] !== undefined) setStock1000(String(ws[1000]));
+          } else {
+            setStock250(String(prod.stock ?? 50));
+            setStock500(String(prod.stock ?? 50));
+            setStock1000(String(prod.stock ?? 50));
           }
 
           setDescription(prod.description || '');
@@ -189,12 +203,28 @@ export default function ProductFormAdmin() {
       if (price500 && !isNaN(Number(price500))) weightPricesMap[500] = Number(price500);
       if (price1000 && !isNaN(Number(price1000))) weightPricesMap[1000] = Number(price1000);
 
+      const weightStocksMap: Record<number, number> = {};
+      if (stock250 && !isNaN(Number(stock250))) weightStocksMap[250] = Number(stock250);
+      if (stock500 && !isNaN(Number(stock500))) weightStocksMap[500] = Number(stock500);
+      if (stock1000 && !isNaN(Number(stock1000))) weightStocksMap[1000] = Number(stock1000);
+
+      let totalStock = 0;
+      let hasVariantStocks = false;
+      availableWeights.forEach(w => {
+        if (weightStocksMap[w] !== undefined) {
+          totalStock += weightStocksMap[w];
+          hasVariantStocks = true;
+        }
+      });
+      const finalStock = hasVariantStocks ? totalStock : (Number(stock) || 0);
+
       const productPayload = {
         id: productId,
         name: name.trim(),
         price: Number(price),
         weightPrices: weightPricesMap,
-        stock: Number(stock) || 0,
+        weightStocks: weightStocksMap,
+        stock: finalStock,
         weightGrams: Number(weightGrams) || 250,
         availableWeights: availableWeights,
         hasJarOption: hasJarOption,
@@ -315,20 +345,6 @@ export default function ProductFormAdmin() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-warm-dark mb-2">
-                    Stock Level
-                  </label>
-                  <input 
-                    type="number" 
-                    value={stock}
-                    onChange={e => setStock(e.target.value)}
-                    placeholder="50"
-                    min="0"
-                    className="w-full bg-warm-light/30 border border-warm-dark/15 rounded-xl p-3 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-warm-dark mb-2">
                     Base Price (₹) <span className="text-warm-accent">*</span>
                   </label>
                   <input 
@@ -339,6 +355,20 @@ export default function ProductFormAdmin() {
                     min="1"
                     className="w-full bg-warm-light/30 border border-warm-dark/15 rounded-xl p-3 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
                     required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-warm-dark mb-2">
+                    Stock Level
+                  </label>
+                  <input 
+                    type="number" 
+                    value={stock}
+                    onChange={e => setStock(e.target.value)}
+                    placeholder="50"
+                    min="0"
+                    className="w-full bg-warm-light/30 border border-warm-dark/15 rounded-xl p-3 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
                   />
                 </div>
 
@@ -356,53 +386,89 @@ export default function ProductFormAdmin() {
                 </div>
               </div>
 
-              {/* Rate Setting for Weight Options */}
-              <div className="bg-warm-light/40 border border-warm-dark/10 p-4.5 rounded-2xl space-y-3 mt-4">
-                <div className="flex items-center justify-between">
+              {/* Rate & Stock Setting for Weight Options */}
+              <div className="bg-warm-light/40 border border-warm-dark/10 p-4.5 rounded-2xl space-y-4 mt-4">
+                <div className="flex items-center justify-between border-b border-warm-dark/5 pb-2.5">
                   <label className="block text-xs font-bold uppercase tracking-wider text-warm-dark">
-                    Custom Rates per Weight Option (₹)
+                    Variant Pricing & Stock Levels
                   </label>
-                  <span className="text-[11px] text-warm-dark/60 font-serif italic">Set exact rates for each weight</span>
+                  <span className="text-[11px] text-warm-dark/60 font-serif italic">Set exact rates and quantities for each weight</span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-warm-dark/60 mb-1">
-                      250g Rate (₹)
-                    </label>
-                    <input
-                      type="number"
-                      value={price250}
-                      onChange={e => setPrice250(e.target.value)}
-                      placeholder={price ? String(Math.round(Number(price) * 0.5)) : "150"}
-                      className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
-                    />
+                <div className="space-y-4">
+                  {/* 250g Variant */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center border-b border-warm-dark/5 pb-3">
+                    <span className="text-xs font-bold uppercase text-warm-dark font-sans">250g Variant</span>
+                    <div>
+                      <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Rate (₹)</label>
+                      <input
+                        type="number"
+                        value={price250}
+                        onChange={e => setPrice250(e.target.value)}
+                        placeholder={price ? String(Math.round(Number(price) * 0.5)) : "150"}
+                        className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Stock Level (Qty)</label>
+                      <input
+                        type="number"
+                        value={stock250}
+                        onChange={e => setStock250(e.target.value)}
+                        placeholder="50"
+                        className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
+                      />
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-warm-dark/60 mb-1">
-                      500g Rate (₹)
-                    </label>
-                    <input
-                      type="number"
-                      value={price500}
-                      onChange={e => setPrice500(e.target.value)}
-                      placeholder={price || "275"}
-                      className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
-                    />
+                  {/* 500g Variant */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center border-b border-warm-dark/5 pb-3">
+                    <span className="text-xs font-bold uppercase text-warm-dark font-sans">500g Variant</span>
+                    <div>
+                      <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Rate (₹)</label>
+                      <input
+                        type="number"
+                        value={price500}
+                        onChange={e => setPrice500(e.target.value)}
+                        placeholder={price || "275"}
+                        className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Stock Level (Qty)</label>
+                      <input
+                        type="number"
+                        value={stock500}
+                        onChange={e => setStock500(e.target.value)}
+                        placeholder="50"
+                        className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
+                      />
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-warm-dark/60 mb-1">
-                      1000g (1kg) Rate (₹)
-                    </label>
-                    <input
-                      type="number"
-                      value={price1000}
-                      onChange={e => setPrice1000(e.target.value)}
-                      placeholder={price ? String(Number(price) * 2) : "500"}
-                      className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
-                    />
+                  {/* 1000g Variant */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+                    <span className="text-xs font-bold uppercase text-warm-dark font-sans">1000g (1kg) Variant</span>
+                    <div>
+                      <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Rate (₹)</label>
+                      <input
+                        type="number"
+                        value={price1000}
+                        onChange={e => setPrice1000(e.target.value)}
+                        placeholder={price ? String(Number(price) * 2) : "500"}
+                        className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Stock Level (Qty)</label>
+                      <input
+                        type="number"
+                        value={stock1000}
+                        onChange={e => setStock1000(e.target.value)}
+                        placeholder="50"
+                        className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

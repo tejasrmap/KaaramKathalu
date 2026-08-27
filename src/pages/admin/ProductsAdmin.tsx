@@ -6,6 +6,7 @@ import { db } from '../../firebase';
 import { collection, onSnapshot, query, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { usePopups } from '../../context/PopupContext';
 import SEO from '../../components/SEO';
+import { getProductStock } from '../../utils/price';
 
 export default function ProductsAdmin() {
   const { showAlert, showToast, showConfirm } = usePopups();
@@ -132,22 +133,33 @@ export default function ProductsAdmin() {
                   <div className="mt-5 pt-4 border-t border-warm-dark/5 flex justify-between items-center gap-2">
                     <button
                       onClick={async () => {
-                        const isOutOfStock = (product.stock ?? 0) <= 0;
+                        const currentStock = getProductStock(product);
+                        const isOutOfStock = currentStock <= 0;
                         const newStock = isOutOfStock ? 50 : 0;
+                        
+                        const updates: any = { stock: newStock };
+                        if (product.weightStocks && typeof product.weightStocks === 'object') {
+                          const newWeightStocks: Record<string, number> = {};
+                          Object.keys(product.weightStocks).forEach(w => {
+                            newWeightStocks[w] = newStock;
+                          });
+                          updates.weightStocks = newWeightStocks;
+                        }
+
                         try {
-                          await updateDoc(doc(db, 'products', product.docId), { stock: newStock });
+                          await updateDoc(doc(db, 'products', product.docId), updates);
                           showToast(`Updated stock status for ${product.name}`, 'info');
                         } catch (err) {
                           console.error("Error toggling stock status:", err);
                         }
                       }}
                       className={`px-3 py-2 rounded-xl border flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                        (product.stock ?? 0) <= 0
+                        getProductStock(product) <= 0
                           ? 'bg-green-50 text-green-600 border-green-200/60 hover:bg-green-100 hover:border-green-300'
                           : 'bg-red-50/50 text-red-600 border-red-200/45 hover:bg-red-50 hover:border-red-300'
                       }`}
                     >
-                      {(product.stock ?? 0) <= 0 ? '✓ Mark In Stock' : '✕ Out of Stock'}
+                      {getProductStock(product) <= 0 ? '✓ Mark In Stock' : '✕ Out of Stock'}
                     </button>
                     <div className="flex gap-2">
                       <Link 

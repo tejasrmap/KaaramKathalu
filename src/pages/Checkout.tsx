@@ -361,7 +361,7 @@ export default function Checkout() {
       const orderId = orderRef.id;
 
       await runTransaction(db, async (transaction) => {
-        // 1. Verify all items are in stock
+        // 1. Verify all items are in stock and calculate new stocks
         const stockChecks = await Promise.all(resolvedCartItems.map(async (item) => {
           const productRef = doc(db, 'products', item.resolvedDocId);
           const productSnap = await transaction.get(productRef);
@@ -370,12 +370,53 @@ export default function Checkout() {
             throw new Error(`Product ${item.product.name} no longer exists.`);
           }
           
-          const currentStock = productSnap.data().stock || 0;
-          if (currentStock < item.quantity) {
-            throw new Error(`Insufficient stock for ${item.product.name}. Only ${currentStock} left.`);
+          const productData = productSnap.data();
+          const itemWeight = item.selectedWeight || item.product.weightGrams || 500;
+          
+          let updatedFields: any = {};
+          
+          if (productData.weightStocks && typeof productData.weightStocks === 'object') {
+            const variantStock = productData.weightStocks[itemWeight];
+            if (variantStock !== undefined && variantStock !== null) {
+              if (Number(variantStock) < item.quantity) {
+                throw new Error(`Insufficient stock for ${item.product.name} (${itemWeight}g). Only ${variantStock} left.`);
+              }
+              
+              // Prepare updated weightStocks map
+              const updatedWeightStocks = { ...productData.weightStocks };
+              updatedWeightStocks[itemWeight] = Number(variantStock) - item.quantity;
+              updatedFields.weightStocks = updatedWeightStocks;
+              
+              // Recalculate overall total stock
+              const weights = productData.availableWeights || [250, 500, 1000];
+              let totalStock = 0;
+              let hasVariantStocks = false;
+              for (const w of weights) {
+                const s = updatedWeightStocks[w];
+                if (s !== undefined && s !== null) {
+                  totalStock += Number(s);
+                  hasVariantStocks = true;
+                }
+              }
+              updatedFields.stock = hasVariantStocks ? totalStock : Math.max(0, (productData.stock || 0) - item.quantity);
+            } else {
+              // Fallback if specific weight option is not explicitly mapped in weightStocks
+              const currentStock = Number(productData.stock) || 0;
+              if (currentStock < item.quantity) {
+                throw new Error(`Insufficient stock for ${item.product.name}. Only ${currentStock} left.`);
+              }
+              updatedFields.stock = currentStock - item.quantity;
+            }
+          } else {
+            // Fallback for single-weight products without weightStocks
+            const currentStock = Number(productData.stock) || 0;
+            if (currentStock < item.quantity) {
+              throw new Error(`Insufficient stock for ${item.product.name}. Only ${currentStock} left.`);
+            }
+            updatedFields.stock = currentStock - item.quantity;
           }
           
-          return { ref: productRef, newStock: currentStock - item.quantity };
+          return { ref: productRef, updates: updatedFields };
         }));
 
         // 2. Prepare Order Data
@@ -407,7 +448,7 @@ export default function Checkout() {
         transaction.set(orderRef, orderData);
         
         stockChecks.forEach(check => {
-          transaction.update(check.ref, { stock: check.newStock });
+          transaction.update(check.ref, check.updates);
         });
       });
 

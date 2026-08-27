@@ -3,6 +3,8 @@ export interface SimpleProduct {
   weightGrams?: number;
   availableWeights?: number[];
   weightPrices?: Record<string | number, number>;
+  weightStocks?: Record<string | number, number>;
+  stock?: number;
   [key: string]: any;
 }
 
@@ -54,3 +56,37 @@ export function getProductStartingPrice(product: SimpleProduct): number {
   const prices = weights.map(w => getProductUnitPrice(product, w, false));
   return prices.length > 0 ? Math.min(...prices) : (Number(product.price) || 0);
 }
+
+/**
+ * Calculates total stock of all active weight variants.
+ */
+export function getProductStock(product: SimpleProduct): number {
+  if (product.weightStocks && typeof product.weightStocks === 'object') {
+    const weights = getAvailableWeights(product);
+    let totalStock = 0;
+    let hasVariantStocks = false;
+    for (const w of weights) {
+      const s = product.weightStocks[w];
+      if (s !== undefined && s !== null && !isNaN(Number(s))) {
+        totalStock += Number(s);
+        hasVariantStocks = true;
+      }
+    }
+    if (hasVariantStocks) return totalStock;
+  }
+  return Number(product.stock) || 0;
+}
+
+/**
+ * Checks if a specific weight variant is in stock.
+ */
+export function isWeightInStock(product: SimpleProduct, weight: number): boolean {
+  if (product.weightStocks && typeof product.weightStocks === 'object') {
+    const s = product.weightStocks[weight];
+    if (s !== undefined && s !== null && !isNaN(Number(s))) {
+      return Number(s) > 0;
+    }
+  }
+  return (Number(product.stock) || 0) > 0;
+}
+

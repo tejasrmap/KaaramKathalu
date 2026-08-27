@@ -7,7 +7,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import SEO from '../components/SEO';
-import { getAvailableWeights, getProductUnitPrice } from '../utils/price';
+import { getAvailableWeights, getProductUnitPrice, isWeightInStock } from '../utils/price';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -94,6 +94,7 @@ export default function ProductDetail() {
   const activeImage = imagesList[activeImageIndex] || product.image;
 
   const computedUnitPrice = getProductUnitPrice(product, selectedWeight, isJar);
+  const selectedWeightInStock = isWeightInStock(product, selectedWeight);
 
   const handleAddToCart = () => {
     addToCart(product, quantity, selectedWeight, isJar);
@@ -192,21 +193,25 @@ export default function ProductDetail() {
           {/* Weight Options Selector */}
           <div className="mb-6">
             <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-2.5">Select Weight</label>
-            <div className="flex gap-3">
-              {getAvailableWeights(product).map(weight => (
-                <button
-                  key={weight}
-                  type="button"
-                  onClick={() => setSelectedWeight(weight)}
-                  className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border shadow-sm cursor-pointer ${
-                    selectedWeight === weight
-                      ? 'bg-warm-dark text-white border-warm-dark font-extrabold'
-                      : 'bg-white text-warm-dark/70 border-warm-dark/15 hover:bg-warm-light'
-                  }`}
-                >
-                  {weight === 1000 ? '1000g (1kg)' : `${weight}g`}
-                </button>
-              ))}
+            <div className="flex flex-wrap gap-3">
+              {getAvailableWeights(product).map(weight => {
+                const inStock = isWeightInStock(product, weight);
+                return (
+                  <button
+                    key={weight}
+                    type="button"
+                    onClick={() => setSelectedWeight(weight)}
+                    className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border shadow-sm cursor-pointer ${
+                      selectedWeight === weight
+                        ? 'bg-warm-dark text-white border-warm-dark font-extrabold'
+                        : 'bg-white text-warm-dark/70 border-warm-dark/15 hover:bg-warm-light'
+                    } ${!inStock ? 'opacity-60 line-through' : ''}`}
+                  >
+                    {weight === 1000 ? '1000g (1kg)' : `${weight}g`}
+                    {!inStock && ' (Out of Stock)'}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -268,10 +273,10 @@ export default function ProductDetail() {
           <div className="flex gap-3 mb-3.5">
             <button 
               onClick={handleAddToCart}
-              disabled={product.stock <= 0}
+              disabled={!selectedWeightInStock}
               className="flex-1 bg-white hover:bg-warm-light/40 text-warm-dark h-12 border border-warm-dark rounded-xl font-heading tracking-widest uppercase text-xs font-bold transition-all duration-200 cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {product.stock <= 0 ? 'Out of Stock' : 'Add to cart'}
+              {!selectedWeightInStock ? 'Out of Stock' : 'Add to cart'}
             </button>
 
             {product && (
@@ -297,10 +302,10 @@ export default function ProductDetail() {
           
           <button 
             onClick={handleAddToCart}
-            disabled={product.stock <= 0}
+            disabled={!selectedWeightInStock}
             className="w-full bg-warm-dark hover:bg-warm-dark/95 text-white h-12 rounded-xl font-heading tracking-widest uppercase text-xs font-bold transition-all duration-200 cursor-pointer mb-8 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {product.stock <= 0 ? 'Sold Out' : 'Buy it now'}
+            {!selectedWeightInStock ? 'Sold Out' : 'Buy it now'}
           </button>
 
           {/* Value Badges */}
