@@ -364,7 +364,7 @@ export default function ProductFormAdmin() {
                     </p>
                   ) : (
                     availableWeights.map(weight => (
-                      <div key={weight} className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center border-b border-warm-dark/5 last:border-b-0 pb-3 last:pb-0">
+                      <div key={weight} className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-center border-b border-warm-dark/5 last:border-b-0 pb-3 last:pb-0">
                         <span className="text-xs font-bold uppercase text-warm-dark font-sans">
                           {weight === 1000 ? '1000g (1kg)' : `${weight}g`} Variant
                         </span>
@@ -386,8 +386,32 @@ export default function ProductFormAdmin() {
                             value={variantStocks[weight] || ''}
                             onChange={e => setVariantStocks(prev => ({ ...prev, [weight]: e.target.value }))}
                             placeholder="50"
-                            className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
+                            disabled={Number(variantStocks[weight] || 0) <= 0}
+                            className={`w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none transition-all ${
+                              Number(variantStocks[weight] || 0) <= 0 ? 'opacity-40 select-none bg-warm-light/20' : ''
+                            }`}
                           />
+                        </div>
+                        <div className="flex flex-col items-center sm:items-end justify-center pt-3 sm:pt-0">
+                          <span className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1 text-center sm:text-right">Stock Status</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const inStock = Number(variantStocks[weight] || 0) > 0;
+                              setVariantStocks(prev => ({
+                                ...prev,
+                                [weight]: inStock ? '0' : '50'
+                              }));
+                            }}
+                            className="flex items-center gap-2 cursor-pointer focus:outline-none"
+                          >
+                            <span className={`text-[10px] font-bold uppercase tracking-wider ${Number(variantStocks[weight] || 0) > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                              {Number(variantStocks[weight] || 0) > 0 ? 'In Stock' : 'Out of Stock'}
+                            </span>
+                            <div className={`w-9 h-5 rounded-full transition-colors relative ${Number(variantStocks[weight] || 0) > 0 ? 'bg-green-500' : 'bg-warm-dark/20'}`}>
+                              <div className={`w-4 h-4 bg-white rounded-full absolute top-0.5 transition-transform ${Number(variantStocks[weight] || 0) > 0 ? 'left-[18px]' : 'left-0.5'}`} />
+                            </div>
+                          </button>
                         </div>
                       </div>
                     ))
