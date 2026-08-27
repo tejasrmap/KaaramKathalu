@@ -315,6 +315,20 @@ export default function ProductFormAdmin() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-warm-dark mb-2">
+                    Stock Level
+                  </label>
+                  <input 
+                    type="number" 
+                    value={stock}
+                    onChange={e => setStock(e.target.value)}
+                    placeholder="50"
+                    min="0"
+                    className="w-full bg-warm-light/30 border border-warm-dark/15 rounded-xl p-3 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-warm-dark mb-2">
                     Base Price (₹) <span className="text-warm-accent">*</span>
                   </label>
                   <input 
@@ -325,20 +339,6 @@ export default function ProductFormAdmin() {
                     min="1"
                     className="w-full bg-warm-light/30 border border-warm-dark/15 rounded-xl p-3 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
                     required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-warm-dark mb-2">
-                    Stock Level
-                  </label>
-                  <input 
-                    type="number" 
-                    value={stock}
-                    onChange={e => setStock(e.target.value)}
-                    placeholder="50"
-                    min="0"
-                    className="w-full bg-warm-light/30 border border-warm-dark/15 rounded-xl p-3 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
                   />
                 </div>
 
