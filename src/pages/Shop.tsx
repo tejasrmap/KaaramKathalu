@@ -8,6 +8,7 @@ import { collection, onSnapshot, query, doc, getDoc } from 'firebase/firestore';
 import SEO from '../components/SEO';
 import { useWishlist } from '../context/WishlistContext';
 import { Heart } from 'lucide-react';
+import { getProductStartingPrice } from '../utils/price';
 
 export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 'snacks' }) {
   const [products, setProducts] = useState<any[]>(() => {
@@ -214,7 +215,7 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
                     <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-warm-accent mb-1">{product.type}</span>
                     <h3 className="font-heading font-bold text-sm sm:text-base text-warm-dark group-hover:text-warm-accent transition-colors leading-tight mb-1">{product.name}</h3>
                     <div className="flex justify-between items-center mt-1">
-                      <span className="font-serif text-sm text-warm-dark/60">From ₹{product.price}.00</span>
+                      <span className="font-serif text-sm text-warm-dark/60">From ₹{getProductStartingPrice(product)}.00</span>
                       <span className="text-[10px] bg-warm-light/80 border border-warm-dark/5 px-2 py-0.5 rounded text-warm-dark/65 font-medium font-sans">
                         {product.weightGrams || 500}g
                       </span>

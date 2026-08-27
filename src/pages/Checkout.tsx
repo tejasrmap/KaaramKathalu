@@ -58,7 +58,7 @@ export default function Checkout() {
   const [isCalculating, setIsCalculating] = useState<boolean>(false);
   const [pincodeError, setPincodeError] = useState<string | null>(null);
 
-  const totalWeightGrams = cart.reduce((acc, item) => acc + (item.quantity * (item.product.weightGrams || 500)), 0);
+  const totalWeightGrams = cart.reduce((acc, item) => acc + (item.quantity * (item.selectedWeight || item.product.weightGrams || 500)), 0);
 
   React.useEffect(() => {
     let active = true;

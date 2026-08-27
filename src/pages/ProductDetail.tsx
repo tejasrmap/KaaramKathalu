@@ -7,6 +7,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import SEO from '../components/SEO';
+import { getAvailableWeights, getProductUnitPrice } from '../utils/price';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -40,7 +41,8 @@ export default function ProductDetail() {
   useEffect(() => {
     // Sync initial selected weight if product was populated from cache
     if (product) {
-      setSelectedWeight(product.weightGrams || 500);
+      const weights = getAvailableWeights(product);
+      setSelectedWeight(product.weightGrams || weights[0] || 500);
     }
   }, [product?.id]);
 
@@ -53,7 +55,8 @@ export default function ProductDetail() {
           const prod = querySnapshot.docs[0].data() as Product;
           setProduct(prod);
           if (!product) {
-            setSelectedWeight(prod.weightGrams || 500);
+            const weights = getAvailableWeights(prod);
+            setSelectedWeight(prod.weightGrams || weights[0] || 500);
             setActiveImageIndex(0);
           }
         }
@@ -90,12 +93,7 @@ export default function ProductDetail() {
   const imagesList = product.images && product.images.length > 0 ? product.images : [product.image];
   const activeImage = imagesList[activeImageIndex] || product.image;
 
-  const customWeightPrice = (product as any).weightPrices?.[selectedWeight];
-  const baseUnitPrice = (customWeightPrice !== undefined && customWeightPrice !== null && !isNaN(Number(customWeightPrice)) && Number(customWeightPrice) > 0)
-    ? Number(customWeightPrice)
-    : (product.price * (selectedWeight === 250 ? 0.5 : selectedWeight === 1000 ? 2 : 1));
-
-  const computedUnitPrice = baseUnitPrice + (isJar ? 100 : 0);
+  const computedUnitPrice = getProductUnitPrice(product, selectedWeight, isJar);
 
   const handleAddToCart = () => {
     addToCart(product, quantity, selectedWeight, isJar);
@@ -195,7 +193,7 @@ export default function ProductDetail() {
           <div className="mb-6">
             <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-2.5">Select Weight</label>
             <div className="flex gap-3">
-              {(product.availableWeights || [250, 500, 1000]).map(weight => (
+              {getAvailableWeights(product).map(weight => (
                 <button
                   key={weight}
                   type="button"

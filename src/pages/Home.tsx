@@ -6,6 +6,7 @@ import { collection, query, limit, onSnapshot, where, doc, getDoc } from 'fireba
 import { db } from '../firebase';
 import SEO from '../components/SEO';
 import { useWishlist } from '../context/WishlistContext';
+import { getProductStartingPrice } from '../utils/price';
 
 export default function Home() {
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
@@ -279,7 +280,7 @@ export default function Home() {
               <div className="pt-2 flex flex-col text-left">
                 <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-warm-accent mb-1">Traditional Recipe</span>
                 <h3 className="font-heading font-bold text-sm sm:text-base text-warm-dark group-hover:text-warm-accent transition-colors leading-tight mb-1">{product.name}</h3>
-                <span className="font-serif text-sm text-warm-dark/60">From ₹{product.price}.00</span>
+                <span className="font-serif text-sm text-warm-dark/60">From ₹{getProductStartingPrice(product)}.00</span>
               </div>
             </Link>
           ))}
