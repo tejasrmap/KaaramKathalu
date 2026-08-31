@@ -31,6 +31,10 @@ export default function Home() {
     try {
       const cached = localStorage.getItem('kk_hero_settings_cache');
       return cached ? JSON.parse(cached) : {
+        heroTag: 'Handmade Traditions',
+        heroTitle: 'Savour the Heritage.',
+        heroDescription: 'Handcrafted Andhra pickles, Gongura, Avakaya, and aromatic spice podis made with pure ingredients, cold-pressed oils, and zero preservatives. Every bite tells a story.',
+        heroButtonText: 'Shop Pickles & Podis',
         heroBgImage1: '',
         heroBgImage2: '',
         heroBgImage3: '',
@@ -41,6 +45,10 @@ export default function Home() {
       };
     } catch {
       return {
+        heroTag: 'Handmade Traditions',
+        heroTitle: 'Savour the Heritage.',
+        heroDescription: 'Handcrafted Andhra pickles, Gongura, Avakaya, and aromatic spice podis made with pure ingredients, cold-pressed oils, and zero preservatives. Every bite tells a story.',
+        heroButtonText: 'Shop Pickles & Podis',
         heroBgImage1: '',
         heroBgImage2: '',
         heroBgImage3: '',
@@ -94,31 +102,33 @@ export default function Home() {
     return unsubscribe;
   }, []);
 
-  // Fetch hero background settings
+  // Fetch hero background & copy settings in real-time
   useEffect(() => {
-    const fetchHeroSettings = async () => {
-      try {
-        const docRef = doc(db, 'settings', 'general');
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          const newSettings = {
-            heroBgImage1: data.heroBgImage1 || '',
-            heroBgImage2: data.heroBgImage2 || '',
-            heroBgImage3: data.heroBgImage3 || '',
-            heroMobileBgImage1: data.heroMobileBgImage1 || '',
-            heroMobileBgImage2: data.heroMobileBgImage2 || '',
-            heroMobileBgImage3: data.heroMobileBgImage3 || '',
-            heroOverlayOpacity: data.heroOverlayOpacity || '30'
-          };
-          setHeroSettings(newSettings);
-          localStorage.setItem('kk_hero_settings_cache', JSON.stringify(newSettings));
-        }
-      } catch (error) {
-        console.error('Error fetching hero settings:', error);
+    const docRef = doc(db, 'settings', 'general');
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        const newSettings = {
+          heroTag: data.heroTag || '',
+          heroTitle: data.heroTitle || '',
+          heroDescription: data.heroDescription || '',
+          heroButtonText: data.heroButtonText || '',
+          heroBgImage1: data.heroBgImage1 || '',
+          heroBgImage2: data.heroBgImage2 || '',
+          heroBgImage3: data.heroBgImage3 || '',
+          heroMobileBgImage1: data.heroMobileBgImage1 || '',
+          heroMobileBgImage2: data.heroMobileBgImage2 || '',
+          heroMobileBgImage3: data.heroMobileBgImage3 || '',
+          heroOverlayOpacity: data.heroOverlayOpacity || '30'
+        };
+        setHeroSettings(newSettings);
+        localStorage.setItem('kk_hero_settings_cache', JSON.stringify(newSettings));
       }
-    };
-    fetchHeroSettings();
+    }, (error) => {
+      console.error('Error listening to hero settings:', error);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   // Build active lists for desktop and mobile covers
@@ -248,14 +258,14 @@ export default function Home() {
             <span className="font-sans tracking-[0.2em] text-xs uppercase font-bold text-warm-accent">
               {heroSettings.heroTag || 'Handmade Traditions'}
             </span>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif leading-tight text-warm-dark">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif leading-tight text-warm-dark whitespace-pre-line">
               {heroSettings.heroTitle || 'Savour the Heritage.'}
             </h1>
             
             {/* Heritage Divider Line below heading */}
             <div className="heritage-divider text-warm-accent w-full max-w-[120px] !my-2 justify-start">✻</div>
 
-            <p className="font-serif italic text-sm sm:text-base leading-relaxed text-warm-dark/80">
+            <p className="font-serif italic text-sm sm:text-base leading-relaxed text-warm-dark/80 whitespace-pre-line">
               {heroSettings.heroDescription || 'Handcrafted Andhra pickles, Gongura, Avakaya, and aromatic spice podis made with pure ingredients, cold-pressed oils, and zero preservatives. Every bite tells a story.'}
             </p>
             <Link 
