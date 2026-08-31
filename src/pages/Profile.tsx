@@ -73,12 +73,37 @@ export default function Profile() {
 
     try {
       const userRef = doc(db, 'users', user.uid);
+      
+      // Update or create default address in addresses array
+      let updatedAddresses = [...addresses];
+      const defaultIndex = updatedAddresses.findIndex(a => a.isDefault);
+      const defaultAddrObj = {
+        id: defaultIndex >= 0 ? updatedAddresses[defaultIndex].id : Math.random().toString(36).substring(2, 11),
+        name: profileData.name,
+        phone: profileData.phone,
+        address: profileData.address,
+        city: profileData.city,
+        pincode: profileData.pincode,
+        isDefault: true
+      };
+
+      if (defaultIndex >= 0) {
+        updatedAddresses[defaultIndex] = defaultAddrObj;
+      } else if (profileData.address || profileData.city || profileData.pincode) {
+        updatedAddresses.push(defaultAddrObj);
+      }
+      setAddresses(updatedAddresses);
+
       await setDoc(userRef, {
         ...profileData,
+        addresses: updatedAddresses,
         email: user.email,
         updatedAt: serverTimestamp()
       }, { merge: true });
-      showToast("Profile saved successfully!", "success");
+
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+      showToast("Profile updated successfully!", "success");
     } catch (error) {
       console.error("Error saving profile:", error);
       showAlert("Failed to save profile.", "Error");
@@ -262,7 +287,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="pt-8 md:pt-12 pb-24 px-4 sm:px-6 md:px-12 w-full max-w-5xl mx-auto min-h-screen bg-warm-bg/30">
+    <div className="pt-12 md:pt-16 pb-24 px-4 sm:px-6 md:px-12 w-full max-w-5xl mx-auto min-h-screen bg-warm-bg/30">
       <SEO title="My Profile - Kaaram Kathalu" />
 
       <motion.div
@@ -440,20 +465,20 @@ export default function Profile() {
               <button 
                 type="submit"
                 disabled={isSaving}
-                className={`w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-heading font-black uppercase text-xs sm:text-sm tracking-wider transition-all duration-300 ${
+                className={`w-full sm:w-auto flex items-center justify-center gap-2.5 px-9 py-4 rounded-2xl font-heading font-black uppercase text-xs sm:text-sm tracking-wider transition-all duration-300 shadow-md cursor-pointer ${
                   saveSuccess 
-                    ? 'bg-green-600 text-white shadow-md' 
-                    : 'bg-warm-accent hover:bg-warm-dark text-white shadow-md hover:-translate-y-0.5'
+                    ? 'bg-green-600 text-white shadow-green-600/20' 
+                    : 'bg-warm-accent hover:bg-warm-dark text-white hover:shadow-lg active:scale-98'
                 }`}
               >
                 {isSaving ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
                 ) : saveSuccess ? (
-                  <CheckCircle2 className="w-4 h-4" />
+                  <CheckCircle2 className="w-4 h-4 text-white" />
                 ) : (
-                  <Save className="w-4 h-4" />
+                  <Save className="w-4 h-4 text-white" />
                 )}
-                {isSaving ? 'Saving...' : saveSuccess ? 'Details Saved' : 'Update Profile'}
+                <span>{isSaving ? 'Updating...' : saveSuccess ? 'Profile Updated' : 'Update Profile'}</span>
               </button>
             </div>
           </form>

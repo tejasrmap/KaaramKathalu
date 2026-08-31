@@ -312,7 +312,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             )}
           </AnimatePresence>
 
-          <main className="flex-1 mt-16 md:mt-24 pb-24 md:pb-12 overflow-x-hidden">
+          <main className="flex-1 mt-24 md:mt-28 pb-24 md:pb-12 overflow-x-hidden">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={location.pathname}
