@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingCart, ShoppingBag, Home, X, Plus, Minus, MapPin, Phone, Mail, User as UserIcon, LogOut, Heart } from 'lucide-react';
+import { ShoppingCart, ShoppingBag, Home, X, Plus, Minus, MapPin, Phone, Mail, User as UserIcon, Heart, Instagram, Facebook, Globe, MessageCircle } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -330,28 +330,64 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <footer className="bg-warm-dark text-warm-bg py-16 px-6 md:px-12 mt-auto border-t-4 border-warm-accent relative w-full overflow-hidden">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-16 relative z-10 w-full">
 
-              {/* Logo / Brand Info */}
+              {/* Brand Info (No Logo Box) */}
               <div className="flex flex-col gap-4">
-                <div className="bg-white p-2.5 inline-block rounded border border-warm-accent/20 w-fit max-w-[280px]">
-                  <img
-                    src="/logo_full.png"
-                    alt={settings.companyName}
-                    className="h-16 md:h-20 object-contain"
-                  />
-                </div>
+                <h3 className="font-heading text-2xl font-black text-white uppercase tracking-wider">
+                  {settings.companyName || 'Kaaram Kathalu'}
+                </h3>
                 <p className="text-warm-bg/70 leading-relaxed font-serif text-sm">
                   Welcome to {settings.companyName}. We specialize in authentic, handmade, small-batch traditional Andhra packaged foods and heritage recipes made with pure ingredients and zero preservatives.
                 </p>
               </div>
 
-              {/* Quick Shop */}
+              {/* Social & Connect Channels (Replaces Quick Shop) */}
               <div>
-                <h4 className="font-heading text-lg tracking-wider text-white uppercase mb-6 font-bold pb-1 border-b border-warm-accent/30 inline-block">Quick Shop</h4>
+                <h4 className="font-heading text-lg tracking-wider text-white uppercase mb-6 font-bold pb-1 border-b border-warm-accent/30 inline-block">Connect With Us</h4>
                 <ul className="space-y-3 text-warm-bg/70 text-sm font-serif">
-                  <li><Link to="/shop" className="hover:text-white transition-colors">Shop All</Link></li>
-                  <li><Link to="/shop?category=pickle" className="hover:text-white transition-colors">Pickles</Link></li>
-                  <li><Link to="/shop?category=podi" className="hover:text-white transition-colors">Podis</Link></li>
-                  <li><Link to="/about" className="hover:text-white transition-colors">Our Story</Link></li>
+                  <li>
+                    <a 
+                      href="https://www.instagram.com/kaaramkathalu" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="hover:text-white transition-colors inline-flex items-center gap-2"
+                    >
+                      <Instagram className="w-4 h-4 text-warm-accent" />
+                      <span>Instagram</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a 
+                      href={`https://wa.me/${(settings.supportPhone || '917676644366').replace(/[^0-9]/g, '')}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="hover:text-white transition-colors inline-flex items-center gap-2"
+                    >
+                      <MessageCircle className="w-4 h-4 text-warm-accent" />
+                      <span>WhatsApp</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a 
+                      href="https://www.kaaramkathalu.in" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="hover:text-white transition-colors inline-flex items-center gap-2"
+                    >
+                      <Globe className="w-4 h-4 text-warm-accent" />
+                      <span>Website</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a 
+                      href="https://www.facebook.com/kaaramkathalu" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="hover:text-white transition-colors inline-flex items-center gap-2"
+                    >
+                      <Facebook className="w-4 h-4 text-warm-accent" />
+                      <span>Facebook</span>
+                    </a>
+                  </li>
                 </ul>
               </div>
 
