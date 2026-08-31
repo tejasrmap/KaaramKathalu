@@ -33,6 +33,7 @@ export default function Home() {
       return cached ? JSON.parse(cached) : {
         heroTag: 'Handmade Traditions',
         heroTitle: 'Savour the Heritage.',
+        heroTitleFontSize: 48,
         heroDescription: 'Handcrafted Andhra pickles, Gongura, Avakaya, and aromatic spice podis made with pure ingredients, cold-pressed oils, and zero preservatives. Every bite tells a story.',
         heroButtonText: 'Shop Pickles & Podis',
         heroBgImage1: '',
@@ -47,6 +48,7 @@ export default function Home() {
       return {
         heroTag: 'Handmade Traditions',
         heroTitle: 'Savour the Heritage.',
+        heroTitleFontSize: 48,
         heroDescription: 'Handcrafted Andhra pickles, Gongura, Avakaya, and aromatic spice podis made with pure ingredients, cold-pressed oils, and zero preservatives. Every bite tells a story.',
         heroButtonText: 'Shop Pickles & Podis',
         heroBgImage1: '',
@@ -111,6 +113,7 @@ export default function Home() {
         const newSettings = {
           heroTag: data.heroTag || '',
           heroTitle: data.heroTitle || '',
+          heroTitleFontSize: data.heroTitleFontSize ? Number(data.heroTitleFontSize) : 48,
           heroDescription: data.heroDescription || '',
           heroButtonText: data.heroButtonText || '',
           heroBgImage1: data.heroBgImage1 || '',
@@ -258,7 +261,14 @@ export default function Home() {
             <span className="font-sans tracking-[0.2em] text-xs uppercase font-bold text-warm-accent">
               {heroSettings.heroTag || 'Handmade Traditions'}
             </span>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif leading-tight text-warm-dark whitespace-pre-line">
+            <h1 
+              className="font-serif leading-[1.15] text-warm-dark whitespace-pre-line"
+              style={{
+                fontSize: heroSettings.heroTitleFontSize 
+                  ? `clamp(26px, 4.5vw, ${heroSettings.heroTitleFontSize}px)` 
+                  : 'clamp(28px, 4.5vw, 48px)'
+              }}
+            >
               {heroSettings.heroTitle || 'Savour the Heritage.'}
             </h1>
             

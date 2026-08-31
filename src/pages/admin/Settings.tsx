@@ -21,6 +21,7 @@ export default function Settings() {
     isMaintenanceMode: false,
     heroTag: 'Handmade Traditions',
     heroTitle: 'Savour the Heritage.',
+    heroTitleFontSize: 48,
     heroDescription: 'Handcrafted Andhra pickles, Gongura, Avakaya, and aromatic spice podis made with pure ingredients, cold-pressed oils, and zero preservatives. Every bite tells a story.',
     heroButtonText: 'Shop Pickles & Podis',
     heroBgImage1: '',
@@ -490,6 +491,38 @@ export default function Settings() {
                       placeholder="e.g. Savour the Heritage."
                       className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif text-lg font-bold focus:border-warm-accent transition-colors"
                     />
+                  </div>
+
+                  {/* Hero Headline Font Size Slider */}
+                  <div className="bg-warm-light/40 p-4 rounded-2xl border border-warm-dark/5 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70">Headline Font Size</label>
+                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2.5 py-1 rounded-md">
+                        {settings.heroTitleFontSize || 48}px
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[11px] font-mono text-warm-dark/40">24px</span>
+                      <input 
+                        type="range"
+                        min="24"
+                        max="72"
+                        step="2"
+                        value={settings.heroTitleFontSize || 48}
+                        onChange={e => setSettings(prev => ({ ...prev, heroTitleFontSize: Number(e.target.value) }))}
+                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                      />
+                      <span className="text-[11px] font-mono text-warm-dark/40">72px</span>
+                    </div>
+                    <div className="pt-2 text-[11px] font-serif italic text-warm-dark/60">
+                      Live preview of headline scale:
+                      <div 
+                        className="font-serif font-bold text-warm-dark leading-tight mt-1 truncate"
+                        style={{ fontSize: `${Math.min(Math.max(Number(settings.heroTitleFontSize || 48) * 0.65, 18), 38)}px` }}
+                      >
+                        {settings.heroTitle || 'Savour the Heritage.'}
+                      </div>
+                    </div>
                   </div>
 
                   <div>

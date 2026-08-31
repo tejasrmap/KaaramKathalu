@@ -145,11 +145,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* NAVBAR */}
             <header
               className={`transition-all duration-300 border-b bg-warm-bg/95 backdrop-blur-sm border-warm-dark/10 shadow-sm ${isScrolled || location.pathname !== '/'
-                ? 'py-3 md:py-4'
-                : 'py-5 md:py-6'
+                ? 'py-2.5 md:py-3'
+                : 'py-3.5 md:py-4'
                 }`}
             >
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex justify-between items-center w-full relative">
+              <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-16 flex justify-between items-center w-full relative">
                 {/* Mobile Menu Toggle button (Left side on mobile) */}
                 <div className="lg:hidden flex items-center justify-start z-10">
                   <button
@@ -172,15 +172,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       src="/logo_full.png"
                       alt="Kaaram Kathalu"
                       className={`transition-all duration-300 object-contain ${isScrolled || location.pathname !== '/'
-                        ? 'h-10 sm:h-12 md:h-14'
-                        : 'h-12 sm:h-14 md:h-20'
+                        ? 'h-9 sm:h-10 md:h-11'
+                        : 'h-10 sm:h-12 md:h-14'
                         }`}
                     />
                   </Link>
                 </div>
 
                 {/* Desktop Nav Links - Absolutely Centered */}
-                <nav className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 hidden lg:flex gap-8 items-center font-heading text-base tracking-wider uppercase text-warm-dark font-medium whitespace-nowrap">
+                <nav className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 hidden lg:flex gap-7 xl:gap-10 items-center font-heading text-sm xl:text-base tracking-widest uppercase text-warm-dark font-medium whitespace-nowrap">
                   <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Home</Link>
                   <Link to="/shop" className={`${location.pathname === '/shop' && !location.search ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Shop All</Link>
                   <Link to="/shop?category=pickle" className={`${location.pathname === '/shop' && location.search.includes('category=pickle') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Pickles</Link>
@@ -206,13 +206,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       >
                         <ShoppingBag className="w-5 h-5" />
                       </Link>
-                      <button
-                        onClick={() => logout()}
-                        className="p-2 text-warm-dark hover:text-red-600 transition-colors"
-                        title="Logout"
-                      >
-                        <LogOut className="w-5 h-5" />
-                      </button>
                     </div>
                   ) : (
                     <Link
@@ -319,7 +312,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             )}
           </AnimatePresence>
 
-          <main className="flex-1 mt-24 md:mt-32 pb-24 md:pb-12 overflow-x-hidden">
+          <main className="flex-1 mt-16 md:mt-24 pb-24 md:pb-12 overflow-x-hidden">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={location.pathname}

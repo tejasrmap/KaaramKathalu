@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { User, MapPin, Phone, Mail, Save, Loader2, CheckCircle2, ShieldCheck, Compass, Plus, Trash2, Edit3, Star, Home } from 'lucide-react';
+import { User, MapPin, Phone, Mail, Save, Loader2, CheckCircle2, ShieldCheck, Compass, Plus, Trash2, Edit3, Star, Home, LogOut } from 'lucide-react';
 import SEO from '../components/SEO';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { usePopups } from '../context/PopupContext';
 
 export default function Profile() {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, logout } = useAuth();
   const { showAlert, showToast, showConfirm } = usePopups();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -316,6 +316,29 @@ export default function Profile() {
               <p className="text-xs font-serif text-warm-dark/65 leading-relaxed">
                 Thank you for supporting small-batch, preservative-free traditional kitchens.
               </p>
+            </div>
+
+            <div className="pt-2 flex flex-col gap-2.5">
+              <Link
+                to="/my-orders"
+                className="w-full flex items-center justify-between px-4 py-3 rounded-2xl border border-warm-dark/10 bg-warm-light/20 hover:bg-white hover:border-warm-accent/40 text-warm-dark font-heading text-xs font-bold uppercase tracking-wider transition-all"
+              >
+                <span>My Orders</span>
+                <span className="text-warm-accent text-sm">→</span>
+              </Link>
+              <button
+                type="button"
+                onClick={async () => {
+                  const confirmed = await showConfirm("Are you sure you want to log out of your account?", "Log Out");
+                  if (confirmed) {
+                    await logout();
+                  }
+                }}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl border border-red-200 bg-red-50/60 hover:bg-red-600 hover:text-white text-red-700 font-heading text-xs font-bold uppercase tracking-wider transition-all shadow-sm cursor-pointer group"
+              >
+                <LogOut className="w-4 h-4 text-red-500 group-hover:text-white transition-colors" />
+                <span>Log Out</span>
+              </button>
             </div>
           </div>
         </div>
