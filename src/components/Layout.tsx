@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingCart, ShoppingBag, Home, X, Plus, Minus, MapPin, Phone, Mail, User as UserIcon, Heart, Instagram, Facebook, Globe, MessageCircle } from 'lucide-react';
+import { ShoppingCart, ShoppingBag, Home, X, Plus, Minus, MapPin, Phone, Mail, User as UserIcon, Heart, Instagram, Facebook, Globe, MessageCircle, Youtube } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -340,15 +340,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </p>
               </div>
 
-              {/* Social & Connect Channels (Replaces Quick Shop) */}
+              {/* Social & Connect Channels */}
               <div>
                 <h4 className="font-heading text-lg tracking-wider text-white uppercase mb-6 font-bold pb-1 border-b border-warm-accent/30 inline-block">Connect With Us</h4>
                 <ul className="space-y-3 text-warm-bg/70 text-sm font-serif">
                   <li>
-                    <a 
-                      href="https://www.instagram.com/kaaramkathalu" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <a
+                      href="https://www.instagram.com/kaaram.kathalu"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="hover:text-white transition-colors inline-flex items-center gap-2"
                     >
                       <Instagram className="w-4 h-4 text-warm-accent" />
@@ -356,10 +356,32 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </a>
                   </li>
                   <li>
-                    <a 
-                      href={`https://wa.me/${(settings.supportPhone || '917676644366').replace(/[^0-9]/g, '')}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <a
+                      href="https://www.youtube.com/@Kaaram.kathalu"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-white transition-colors inline-flex items-center gap-2"
+                    >
+                      <Youtube className="w-4 h-4 text-warm-accent" />
+                      <span>YouTube</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://www.facebook.com/kaaramkathalu/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-white transition-colors inline-flex items-center gap-2"
+                    >
+                      <Facebook className="w-4 h-4 text-warm-accent" />
+                      <span>Facebook</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href={`https://wa.me/${(settings.supportPhone || '917676644366').replace(/[^0-9]/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="hover:text-white transition-colors inline-flex items-center gap-2"
                     >
                       <MessageCircle className="w-4 h-4 text-warm-accent" />
@@ -367,25 +389,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </a>
                   </li>
                   <li>
-                    <a 
-                      href="https://www.kaaramkathalu.in" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <a
+                      href="https://www.kaaramkathalu.in"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="hover:text-white transition-colors inline-flex items-center gap-2"
                     >
                       <Globe className="w-4 h-4 text-warm-accent" />
                       <span>Website</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a 
-                      href="https://www.facebook.com/kaaramkathalu" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="hover:text-white transition-colors inline-flex items-center gap-2"
-                    >
-                      <Facebook className="w-4 h-4 text-warm-accent" />
-                      <span>Facebook</span>
                     </a>
                   </li>
                 </ul>
@@ -546,18 +557,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           {/* MOBILE BOTTOM DOWNBAR NAVIGATION */}
           {!location.pathname.startsWith('/admin') && !settings.isMaintenanceMode && (
-            <nav 
-              aria-label="Mobile Navigation Bar" 
+            <nav
+              aria-label="Mobile Navigation Bar"
               className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-warm-bg/95 backdrop-blur-md border-t border-warm-dark/10 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] px-2 py-1.5 flex items-center justify-around"
             >
               {/* Home Tab */}
               <Link
                 to="/"
-                className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all cursor-pointer active:scale-95 ${
-                  location.pathname === '/' 
-                    ? 'text-warm-accent font-bold' 
+                className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all cursor-pointer active:scale-95 ${location.pathname === '/'
+                    ? 'text-warm-accent font-bold'
                     : 'text-warm-dark/60 hover:text-warm-dark'
-                }`}
+                  }`}
               >
                 <Home className="w-5 h-5 mb-0.5" />
                 <span className="text-[10px] font-heading tracking-wider uppercase">Home</span>
@@ -566,11 +576,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               {/* Shop Tab */}
               <Link
                 to="/shop"
-                className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all cursor-pointer active:scale-95 ${
-                  location.pathname === '/shop' 
-                    ? 'text-warm-accent font-bold' 
+                className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all cursor-pointer active:scale-95 ${location.pathname === '/shop'
+                    ? 'text-warm-accent font-bold'
                     : 'text-warm-dark/60 hover:text-warm-dark'
-                }`}
+                  }`}
               >
                 <ShoppingBag className="w-5 h-5 mb-0.5" />
                 <span className="text-[10px] font-heading tracking-wider uppercase">Shop</span>
@@ -579,11 +588,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               {/* Wishlist Tab with Badge */}
               <Link
                 to="/wishlist"
-                className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all cursor-pointer relative active:scale-95 ${
-                  location.pathname === '/wishlist' 
-                    ? 'text-warm-accent font-bold' 
+                className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all cursor-pointer relative active:scale-95 ${location.pathname === '/wishlist'
+                    ? 'text-warm-accent font-bold'
                     : 'text-warm-dark/60 hover:text-warm-dark'
-                }`}
+                  }`}
               >
                 <div className="relative">
                   <Heart className="w-5 h-5 mb-0.5" />
@@ -616,11 +624,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               {/* Account Tab */}
               <Link
                 to={user ? '/profile' : '/login'}
-                className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all cursor-pointer active:scale-95 ${
-                  location.pathname === '/profile' || location.pathname === '/login' 
-                    ? 'text-warm-accent font-bold' 
+                className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all cursor-pointer active:scale-95 ${location.pathname === '/profile' || location.pathname === '/login'
+                    ? 'text-warm-accent font-bold'
                     : 'text-warm-dark/60 hover:text-warm-dark'
-                }`}
+                  }`}
               >
                 <UserIcon className="w-5 h-5 mb-0.5" />
                 <span className="text-[10px] font-heading tracking-wider uppercase">{user ? 'Account' : 'Login'}</span>
