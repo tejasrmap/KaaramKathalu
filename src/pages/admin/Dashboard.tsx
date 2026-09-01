@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { ArrowUpRight, TrendingUp, Users, ShoppingBag, CreditCard } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { ArrowUpRight, TrendingUp, Users, ShoppingBag, CreditCard, Package } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { db } from '../../firebase';
 import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 
@@ -11,7 +12,7 @@ export default function Dashboard() {
     activePacking: 0,
     customerCount: 0
   });
-  const [revenueData, setRevenueData] = useState<any[]>([]);
+  const [ordersData, setOrdersData] = useState<any[]>([]);
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -23,8 +24,8 @@ export default function Dashboard() {
       
       // Calculate Stats
       const revenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
-      const active = orders.filter(o => ['pending', 'processing'].includes(o.status.toLowerCase())).length;
-      const uniqueCustomers = new Set(orders.map(o => o.customer?.email)).size;
+      const active = orders.filter(o => ['pending', 'processing'].includes(o.status?.toLowerCase())).length;
+      const uniqueCustomers = new Set(orders.map(o => o.customer?.email).filter(Boolean)).size;
 
       setStats({
         totalRevenue: revenue,
@@ -33,21 +34,38 @@ export default function Dashboard() {
         customerCount: uniqueCustomers
       });
 
-      // Calculate Revenue Chart Data
-      const monthlyData: { [key: string]: number } = {};
+      // Calculate Orders Bar Graph Data (Monthly)
+      const monthlyData: { [key: string]: { count: number; revenue: number } } = {};
       orders.forEach(o => {
         if (o.createdAt) {
-          const date = o.createdAt.toDate();
-          const month = date.toLocaleString('default', { month: 'short' });
-          monthlyData[month] = (monthlyData[month] || 0) + (o.total || 0);
+          try {
+            const date = typeof o.createdAt.toDate === 'function' ? o.createdAt.toDate() : new Date(o.createdAt);
+            const month = date.toLocaleString('default', { month: 'short' });
+            if (!monthlyData[month]) {
+              monthlyData[month] = { count: 0, revenue: 0 };
+            }
+            monthlyData[month].count += 1;
+            monthlyData[month].revenue += (o.total || 0);
+          } catch (e) {
+            console.error('Error parsing order date:', e);
+          }
         }
       });
 
-      const chartData = Object.keys(monthlyData).map(month => ({
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const currentMonthIdx = new Date().getMonth();
+      const recentMonths: string[] = [];
+      for (let i = 5; i >= 0; i--) {
+        const mIdx = (currentMonthIdx - i + 12) % 12;
+        recentMonths.push(monthNames[mIdx]);
+      }
+
+      const chartData = recentMonths.map(month => ({
         name: month,
-        total: monthlyData[month]
+        orders: monthlyData[month]?.count || 0,
+        revenue: monthlyData[month]?.revenue || 0
       }));
-      setRevenueData(chartData);
+      setOrdersData(chartData);
     });
 
     // Listen to recent orders
@@ -56,7 +74,7 @@ export default function Dashboard() {
       const recent = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
-        date: doc.data().createdAt?.toDate().toLocaleDateString() || 'Recent'
+        date: doc.data().createdAt?.toDate ? doc.data().createdAt.toDate().toLocaleDateString() : 'Recent'
       }));
       setRecentOrders(recent);
       setIsLoading(false);
@@ -67,6 +85,7 @@ export default function Dashboard() {
       unsubscribeRecent();
     };
   }, []);
+
   const StatCard = ({ title, value, trend, icon: Icon }: any) => (
     <div className="bg-warm-light p-5 md:p-6 rounded-2xl flex items-start justify-between relative overflow-hidden border border-warm-dark/5 shadow-sm hover:shadow-md transition-shadow">
       <div className="w-full">
@@ -85,9 +104,15 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8 max-w-[100vw] overflow-x-hidden md:max-w-none">
-      <div className="bg-warm-light p-6 rounded-2xl border border-warm-dark/5 shadow-sm mb-6">
-        <h2 className="text-2xl font-serif font-bold text-warm-dark">Welcome back, Admin</h2>
-        <p className="text-sm text-warm-dark/60 mt-1 font-serif">Here is a summary of what's happening in your store today.</p>
+      <div className="bg-warm-light p-6 rounded-2xl border border-warm-dark/5 shadow-sm mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-serif font-bold text-warm-dark">Welcome back, Admin</h2>
+          <p className="text-sm text-warm-dark/60 mt-1 font-serif">Here is a summary of what's happening in your store today.</p>
+        </div>
+        <div className="flex items-center gap-2 bg-warm-accent/10 px-4 py-2 rounded-xl text-warm-accent font-mono text-xs font-bold w-fit">
+          <Package className="w-4 h-4" />
+          <span>{stats.orderCount} Total Orders</span>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full max-w-[95vw] md:max-w-none mx-auto">
@@ -98,49 +123,100 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Orders Bar Graph */}
         <div className="lg:col-span-2 bg-warm-light p-6 rounded-2xl border border-warm-dark/5 shadow-sm relative z-10">
-          <h3 className="text-xl font-bold text-warm-dark font-serif mb-6 border-b border-dashed border-warm-dark/10 pb-4">Revenue Over Time</h3>
+          <div className="flex items-center justify-between mb-6 border-b border-dashed border-warm-dark/10 pb-4">
+            <div>
+              <h3 className="text-xl font-bold text-warm-dark font-serif">Orders Over Time</h3>
+              <p className="text-xs font-serif italic text-warm-dark/50">Monthly volume of customer orders placed.</p>
+            </div>
+            <span className="font-mono text-xs font-bold bg-white text-warm-accent px-3 py-1 rounded-full border border-warm-dark/10 shadow-sm">
+              Bar Graph
+            </span>
+          </div>
+
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <BarChart data={ordersData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#B83A20" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="#B83A20" stopOpacity={0}/>
-                   </linearGradient>
+                  <linearGradient id="orderBarGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#B83A20" stopOpacity={0.95}/>
+                    <stop offset="100%" stopColor="#8A2510" stopOpacity={0.75}/>
+                  </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#2A1B19" strokeOpacity={0.05} />
-                <XAxis dataKey="name" axisLine={{ stroke: '#2A1B19', strokeOpacity: 0.1, strokeWidth: 1 }} tickLine={false} tick={{ fill: '#2A1B19', fontSize: 10, fontWeight: 'medium' }} dy={10} />
-                <YAxis axisLine={{ stroke: '#2A1B19', strokeOpacity: 0.1, strokeWidth: 1 }} tickLine={false} tick={{ fill: '#2A1B19', fontSize: 10, fontWeight: 'medium' }} tickFormatter={(value) => `₹${value/1000}k`} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#fff', border: '1px solid rgba(42,27,25,0.08)', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', fontWeight: 'medium', fontFamily: 'sans-serif' }}
-                  itemStyle={{ color: '#B83A20' }}
-                  formatter={(value: number) => [`₹${value}`, 'Revenue']}
+                <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#2A1B19" strokeOpacity={0.06} />
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={{ stroke: '#2A1B19', strokeOpacity: 0.1, strokeWidth: 1 }} 
+                  tickLine={false} 
+                  tick={{ fill: '#2A1B19', fontSize: 11, fontWeight: '600' }} 
+                  dy={10} 
                 />
-                <Area type="monotone" dataKey="total" stroke="#B83A20" strokeWidth={2.5} fillOpacity={1} fill="url(#colorTotal)" />
-              </AreaChart>
+                <YAxis 
+                  allowDecimals={false}
+                  axisLine={{ stroke: '#2A1B19', strokeOpacity: 0.1, strokeWidth: 1 }} 
+                  tickLine={false} 
+                  tick={{ fill: '#2A1B19', fontSize: 11, fontWeight: '600' }} 
+                  tickFormatter={(value) => `${value}`}
+                />
+                <Tooltip 
+                  cursor={{ fill: 'rgba(184, 58, 32, 0.06)' }}
+                  contentStyle={{ 
+                    backgroundColor: '#fff', 
+                    border: '1px solid rgba(42,27,25,0.1)', 
+                    borderRadius: '12px', 
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)', 
+                    fontFamily: 'sans-serif' 
+                  }}
+                  formatter={(value: number, name: string) => [
+                    `${value} Orders`, 
+                    'Orders'
+                  ]}
+                  labelStyle={{ fontWeight: 'bold', color: '#2A1B19' }}
+                />
+                <Bar 
+                  dataKey="orders" 
+                  fill="url(#orderBarGrad)" 
+                  radius={[8, 8, 0, 0]} 
+                  maxBarSize={48}
+                >
+                  {ordersData.map((entry, index) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      className="transition-opacity duration-200 hover:opacity-80" 
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
+        {/* Recent Parcels Section */}
         <div className="bg-white p-6 rounded-2xl border border-warm-dark/5 shadow-sm relative z-10">
           <div className="flex justify-between items-center mb-6 border-b border-warm-dark/10 pb-4">
             <h3 className="text-xl font-bold text-warm-dark font-serif">Recent Parcels</h3>
-            <button className="text-[10px] uppercase font-bold tracking-widest text-warm-accent underline underline-offset-4 decoration-2 hover:text-warm-dark transition-colors">View All</button>
+            <Link 
+              to="/admin/orders" 
+              className="text-[10px] uppercase font-bold tracking-widest text-warm-accent underline underline-offset-4 decoration-2 hover:text-warm-dark transition-colors"
+            >
+              View All
+            </Link>
           </div>
           
           <div className="space-y-4">
             {recentOrders.map((order) => (
               <div key={order.id} className="flex items-center justify-between pb-4 border-b border-dashed border-warm-dark/10 last:border-0 last:pb-0">
                 <div>
-                  <p className="font-bold text-warm-dark font-serif">{order.customer?.name}</p>
-                  <p className="text-[10px] text-warm-dark/50 uppercase tracking-widest font-semibold mt-1">{order.id.slice(0,8)}... • {order.date}</p>
+                  <p className="font-bold text-warm-dark font-serif">{order.customer?.name || 'Customer'}</p>
+                  <p className="text-[10px] text-warm-dark/50 uppercase tracking-widest font-semibold mt-1">
+                    {(order.id || '').slice(0, 8)}... • {order.date}
+                  </p>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-warm-dark font-serif text-lg">₹{order.total}</p>
-                  <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider mt-1 bg-warm-accent/10 text-warm-accent`}
-                  >
-                    {order.status}
+                  <p className="font-bold text-warm-dark font-serif text-lg">₹{order.total || 0}</p>
+                  <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider mt-1 bg-warm-accent/10 text-warm-accent">
+                    {order.status || 'Pending'}
                   </span>
                 </div>
               </div>
