@@ -630,7 +630,7 @@ export default function Home() {
                         "{current.quote}"
                       </p>
 
-                      {/* Author, Location, and Product Badge */}
+                      {/* Author and Location */}
                       <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
                         <span className="font-serif font-bold text-warm-dark text-base sm:text-lg">
                           {current.author}
@@ -640,14 +640,6 @@ export default function Home() {
                             <span className="hidden sm:inline text-warm-dark/30">•</span>
                             <span className="text-xs font-sans uppercase tracking-widest text-warm-dark/50">
                               {current.location}
-                            </span>
-                          </>
-                        )}
-                        {current.product && (
-                          <>
-                            <span className="hidden sm:inline text-warm-dark/30">•</span>
-                            <span className="text-[11px] font-mono font-bold bg-warm-accent/10 text-warm-accent px-3 py-0.5 rounded-full">
-                              {current.product}
                             </span>
                           </>
                         )}
