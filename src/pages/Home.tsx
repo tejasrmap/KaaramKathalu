@@ -383,25 +383,50 @@ export default function Home() {
       {(() => {
         const activeProps = valueProps.filter(p => p.enabled !== false);
         if (activeProps.length === 0) return null;
+
+        const firstThree = activeProps.slice(0, 3);
+        const remaining = activeProps.slice(3);
+
         return (
           <>
-            <section className={`pt-6 pb-10 px-4 sm:px-6 md:px-12 mx-auto grid gap-8 md:gap-12 ${
-              activeProps.length === 1 ? 'grid-cols-1 max-w-xl' :
-              activeProps.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl' :
-              activeProps.length === 3 ? 'grid-cols-1 md:grid-cols-3 max-w-7xl' :
-              activeProps.length === 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl' :
-              'grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 max-w-[1500px]'
-            }`}>
-              {activeProps.map((prop) => (
-                <div key={prop.id} className="flex flex-col items-center text-center px-4">
-                  <h3 className="font-heading text-lg sm:text-xl font-bold uppercase tracking-wider text-warm-accent mb-3">
-                    {prop.title}
-                  </h3>
-                  <p className="font-serif italic text-warm-dark/70 text-sm md:text-base leading-relaxed whitespace-pre-line">
-                    {prop.description}
-                  </p>
+            <section className="pt-6 pb-10 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto space-y-8 md:space-y-12">
+              {/* First Row (Up to 3 items) */}
+              <div className={`grid gap-8 md:gap-12 ${
+                firstThree.length === 1 ? 'grid-cols-1 max-w-xl mx-auto' :
+                firstThree.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
+                'grid-cols-1 md:grid-cols-3'
+              }`}>
+                {firstThree.map((prop) => (
+                  <div key={prop.id} className="flex flex-col items-center text-center px-4">
+                    <h3 className="font-heading text-lg sm:text-xl font-bold uppercase tracking-wider text-warm-accent mb-3">
+                      {prop.title}
+                    </h3>
+                    <p className="font-serif italic text-warm-dark/70 text-sm md:text-base leading-relaxed whitespace-pre-line">
+                      {prop.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Second Row (4th & 5th items placed below the first 3) */}
+              {remaining.length > 0 && (
+                <div className={`grid gap-8 md:gap-12 pt-2 md:pt-4 ${
+                  remaining.length === 1 
+                    ? 'grid-cols-1 max-w-xl mx-auto' 
+                    : 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto'
+                }`}>
+                  {remaining.map((prop) => (
+                    <div key={prop.id} className="flex flex-col items-center text-center px-4">
+                      <h3 className="font-heading text-lg sm:text-xl font-bold uppercase tracking-wider text-warm-accent mb-3">
+                        {prop.title}
+                      </h3>
+                      <p className="font-serif italic text-warm-dark/70 text-sm md:text-base leading-relaxed whitespace-pre-line">
+                        {prop.description}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </section>
 
             {/* Heritage Flower Divider after Value Propositions Section */}
