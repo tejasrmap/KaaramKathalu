@@ -172,7 +172,7 @@ export default function Home() {
       />
 
       {/* HERO BANNER SECTION */}
-      <section className="relative w-full overflow-hidden py-10 md:py-14 border-b border-warm-dark/5 min-h-[40vh] sm:min-h-[48vh] flex items-center bg-warm-bg">
+      <section className="relative w-full overflow-hidden py-16 md:py-24 border-b border-warm-dark/5 min-h-[50vh] sm:min-h-[60vh] flex items-center bg-warm-bg">
         
         {/* Background Slideshow / Fallback Image */}
         {hasCustomImages ? (
@@ -232,7 +232,7 @@ export default function Home() {
 
         {/* Content */}
         <div className="max-w-7xl mx-auto px-6 sm:px-12 md:px-24 relative z-10 w-full">
-          <div className="max-w-xl flex flex-col md:max-w-md lg:max-w-lg">
+          <div className="max-w-xl flex flex-col items-center text-center md:items-start md:text-left md:max-w-md lg:max-w-lg mx-auto md:mx-0">
             <span className="font-sans tracking-[0.2em] text-xs uppercase font-bold text-warm-accent mb-2">
               {heroSettings.heroTag || 'Handmade Traditions'}
             </span>
@@ -248,14 +248,14 @@ export default function Home() {
             </h1>
             
             {/* Heritage Divider Line below heading */}
-            <div className="heritage-divider text-warm-accent w-full max-w-[120px] !my-0.5 justify-start">✻</div>
+            <div className="heritage-divider text-warm-accent w-full max-w-[120px] !my-0.5 mx-auto md:mx-0 justify-center md:justify-start">✻</div>
 
             <p className="font-serif italic text-sm sm:text-base leading-relaxed text-warm-dark/80 whitespace-pre-line mt-1 mb-4">
               {heroSettings.heroDescription || 'Handcrafted Andhra pickles, Gongura, Avakaya, and aromatic spice podis made with pure ingredients, cold-pressed oils, and zero preservatives. Every bite tells a story.'}
             </p>
             <Link 
               to="/shop" 
-              className="w-fit px-8 py-3 bg-warm-accent text-white hover:bg-warm-dark transition-all font-sans uppercase text-xs tracking-wider font-bold rounded shadow-md hover:shadow-lg active:scale-98"
+              className="w-fit px-8 py-3 bg-warm-accent text-white hover:bg-warm-dark transition-all font-sans uppercase text-xs tracking-wider font-bold rounded shadow-md hover:shadow-lg active:scale-98 mx-auto md:mx-0"
             >
               {heroSettings.heroButtonText || 'Shop Pickles & Podis'}
             </Link>
