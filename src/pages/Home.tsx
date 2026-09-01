@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, Flame, Award, ShieldCheck, BadgeAlert, Heart } from 'lucide-react';
+import { ArrowRight, Flame, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { collection, query, limit, onSnapshot, where, doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -323,33 +323,24 @@ export default function Home() {
 
 
       {/* VALUE PROPOSITIONS */}
-      <section className="pt-4 pb-14 md:pt-6 md:pb-20 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-        <div className="flex flex-col items-center text-center p-6 bg-white border border-warm-dark/5 rounded-2xl shadow-sm">
-          <div className="w-12 h-12 bg-warm-accent/10 rounded-full flex items-center justify-center text-warm-accent mb-4">
-            <Award className="w-6 h-6" />
-          </div>
-          <h3 className="font-heading text-lg font-bold uppercase tracking-wider text-warm-accent mb-2">Farm-Fresh Flavors</h3>
-          <p className="font-serif italic text-warm-dark/70 text-sm leading-relaxed">
+      <section className="pt-6 pb-16 md:pt-8 md:pb-24 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+        <div className="flex flex-col items-center text-center px-4">
+          <h3 className="font-heading text-lg sm:text-xl font-bold uppercase tracking-wider text-warm-accent mb-3">Farm-Fresh Flavors</h3>
+          <p className="font-serif italic text-warm-dark/70 text-sm md:text-base leading-relaxed">
             We are dedicated to making products bursting with authentic, rich flavours. Our commitment to using fresh, natural ingredients from local farmers guarantees a truly delicious taste in every bite.
           </p>
         </div>
 
-        <div className="flex flex-col items-center text-center p-6 bg-white border border-warm-dark/5 rounded-2xl shadow-sm">
-          <div className="w-12 h-12 bg-warm-accent/10 rounded-full flex items-center justify-center text-warm-accent mb-4">
-            <ShieldCheck className="w-6 h-6" />
-          </div>
-          <h3 className="font-heading text-lg font-bold uppercase tracking-wider text-warm-accent mb-2">Quality You Can Taste</h3>
-          <p className="font-serif italic text-warm-dark/70 text-sm leading-relaxed">
+        <div className="flex flex-col items-center text-center px-4">
+          <h3 className="font-heading text-lg sm:text-xl font-bold uppercase tracking-wider text-warm-accent mb-3">Quality You Can Taste</h3>
+          <p className="font-serif italic text-warm-dark/70 text-sm md:text-base leading-relaxed">
             We don't compromise on quality. Every bite reflects our commitment to using the finest ingredients. We source fresh seasonal offerings, ensuring peak flavor and support local farmers. We sample before we use ingredients.
           </p>
         </div>
 
-        <div className="flex flex-col items-center text-center p-6 bg-white border border-warm-dark/5 rounded-2xl shadow-sm">
-          <div className="w-12 h-12 bg-warm-accent/10 rounded-full flex items-center justify-center text-warm-accent mb-4">
-            <BadgeAlert className="w-6 h-6" />
-          </div>
-          <h3 className="font-heading text-lg font-bold uppercase tracking-wider text-warm-accent mb-2">Seasonal Availability</h3>
-          <p className="font-serif italic text-warm-dark/70 text-sm leading-relaxed">
+        <div className="flex flex-col items-center text-center px-4">
+          <h3 className="font-heading text-lg sm:text-xl font-bold uppercase tracking-wider text-warm-accent mb-3">Seasonal Availability</h3>
+          <p className="font-serif italic text-warm-dark/70 text-sm md:text-base leading-relaxed">
             The journey of the fresh ingredients, from the farm directly into your product, highlights the connection to quality, traditional preservation and the authentic, seasonal taste without chemicals.
           </p>
         </div>
