@@ -38,7 +38,39 @@ export default function Settings() {
       snacks: true,
       fryums: true,
       bundle: true
-    }
+    },
+    valueProps: [
+      {
+        id: '1',
+        title: 'Farm-Fresh Flavors',
+        description: 'We are dedicated to making products bursting with authentic, rich flavours. Our commitment to using fresh, natural ingredients from local farmers guarantees a truly delicious taste in every bite.',
+        enabled: true
+      },
+      {
+        id: '2',
+        title: 'Quality You Can Taste',
+        description: "We don't compromise on quality. Every bite reflects our commitment to using the finest ingredients. We source fresh seasonal offerings, ensuring peak flavor and support local farmers. We sample before we use ingredients.",
+        enabled: true
+      },
+      {
+        id: '3',
+        title: 'Seasonal Availability',
+        description: 'The journey of the fresh ingredients, from the farm directly into your product, highlights the connection to quality, traditional preservation and the authentic, seasonal taste without chemicals.',
+        enabled: true
+      },
+      {
+        id: '4',
+        title: 'Traditional Stoneware Ground',
+        description: 'Prepared using age-old stoneware methods to preserve authentic coastal Andhra textures, distinct crunch, and rich aromatic oils.',
+        enabled: false
+      },
+      {
+        id: '5',
+        title: 'Zero Preservatives & Additives',
+        description: '100% pure natural ingredients without artificial chemical preservatives, synthetic food colours, or artificial taste enhancers.',
+        enabled: false
+      }
+    ]
   });
 
   const [hero1File, setHero1File] = useState<File | null>(null);
@@ -109,9 +141,52 @@ export default function Settings() {
         const generalSnap = await getDoc(generalRef);
         if (generalSnap.exists()) {
           const data = generalSnap.data();
+          
+          const defaultProps = [
+            {
+              id: '1',
+              title: 'Farm-Fresh Flavors',
+              description: 'We are dedicated to making products bursting with authentic, rich flavours. Our commitment to using fresh, natural ingredients from local farmers guarantees a truly delicious taste in every bite.',
+              enabled: true
+            },
+            {
+              id: '2',
+              title: 'Quality You Can Taste',
+              description: "We don't compromise on quality. Every bite reflects our commitment to using the finest ingredients. We source fresh seasonal offerings, ensuring peak flavor and support local farmers. We sample before we use ingredients.",
+              enabled: true
+            },
+            {
+              id: '3',
+              title: 'Seasonal Availability',
+              description: 'The journey of the fresh ingredients, from the farm directly into your product, highlights the connection to quality, traditional preservation and the authentic, seasonal taste without chemicals.',
+              enabled: true
+            },
+            {
+              id: '4',
+              title: 'Traditional Stoneware Ground',
+              description: 'Prepared using age-old stoneware methods to preserve authentic coastal Andhra textures, distinct crunch, and rich aromatic oils.',
+              enabled: false
+            },
+            {
+              id: '5',
+              title: 'Zero Preservatives & Additives',
+              description: '100% pure natural ingredients without artificial chemical preservatives, synthetic food colours, or artificial taste enhancers.',
+              enabled: false
+            }
+          ];
+
+          let mergedValueProps = defaultProps;
+          if (Array.isArray(data?.valueProps) && data.valueProps.length > 0) {
+            mergedValueProps = defaultProps.map((defItem, idx) => {
+              const existing = data.valueProps.find((p: any) => p.id === defItem.id || p.id === String(idx + 1)) || data.valueProps[idx];
+              return existing ? { ...defItem, ...existing } : defItem;
+            });
+          }
+
           setSettings(prev => ({
             ...prev,
             ...data,
+            valueProps: mergedValueProps,
             activeCategories: {
               ...prev.activeCategories,
               ...(data?.activeCategories || {})
@@ -968,6 +1043,87 @@ export default function Settings() {
                     )}
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Homepage Value Propositions / Feature Columns */}
+            <div className="bg-white border border-warm-dark/5 rounded-[24px] overflow-hidden shadow-sm">
+              <div className="bg-warm-light/60 p-4 border-b border-warm-dark/5 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">🌿</span>
+                  <div>
+                    <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">Homepage Feature Columns (Value Propositions)</h2>
+                    <p className="text-[11px] font-serif italic text-warm-dark/50">Edit text matter and toggle up to 5 feature columns on/off.</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6 space-y-6">
+                {(settings.valueProps || []).map((prop, idx) => (
+                  <div key={prop.id || idx} className="p-5 bg-warm-light/40 rounded-2xl border border-warm-dark/10 space-y-4">
+                    <div className="flex items-center justify-between border-b border-warm-dark/10 pb-3">
+                      <div className="flex items-center gap-3">
+                        <span className="w-7 h-7 rounded-full bg-warm-accent/10 text-warm-accent font-mono font-bold flex items-center justify-center text-xs">
+                          {idx + 1}
+                        </span>
+                        <span className="font-serif font-bold text-warm-dark text-sm">
+                          Feature Column #{idx + 1}
+                        </span>
+                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase ${
+                          prop.enabled ? 'bg-green-100 text-green-700' : 'bg-warm-dark/10 text-warm-dark/50'
+                        }`}>
+                          {prop.enabled ? 'Active on Storefront' : 'Disabled'}
+                        </span>
+                      </div>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          const updated = [...(settings.valueProps || [])];
+                          updated[idx] = { ...updated[idx], enabled: !updated[idx].enabled };
+                          setSettings(prev => ({ ...prev, valueProps: updated }));
+                        }}
+                        className={`w-12 h-6 rounded-full relative transition-colors cursor-pointer ${prop.enabled ? 'bg-warm-accent' : 'bg-warm-dark/20'}`}
+                      >
+                        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${prop.enabled ? 'right-1' : 'left-1'}`} />
+                      </button>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">
+                          Column Heading / Title
+                        </label>
+                        <input 
+                          type="text"
+                          value={prop.title || ''}
+                          onChange={(e) => {
+                            const updated = [...(settings.valueProps || [])];
+                            updated[idx] = { ...updated[idx], title: e.target.value };
+                            setSettings(prev => ({ ...prev, valueProps: updated }));
+                          }}
+                          placeholder="e.g. Farm-Fresh Flavors"
+                          className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-white focus:bg-white outline-none font-serif text-sm font-bold text-warm-accent focus:border-warm-accent transition-colors"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">
+                          Description Matter
+                        </label>
+                        <textarea 
+                          rows={3}
+                          value={prop.description || ''}
+                          onChange={(e) => {
+                            const updated = [...(settings.valueProps || [])];
+                            updated[idx] = { ...updated[idx], description: e.target.value };
+                            setSettings(prev => ({ ...prev, valueProps: updated }));
+                          }}
+                          placeholder="Enter description text..."
+                          className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-white focus:bg-white outline-none font-serif text-sm focus:border-warm-accent transition-colors leading-relaxed"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </>

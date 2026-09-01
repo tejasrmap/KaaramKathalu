@@ -8,6 +8,46 @@ import SEO from '../components/SEO';
 import { useWishlist } from '../context/WishlistContext';
 import { getProductStartingPrice } from '../utils/price';
 
+interface ValueProposition {
+  id: string;
+  title: string;
+  description: string;
+  enabled: boolean;
+}
+
+const DEFAULT_VALUE_PROPS: ValueProposition[] = [
+  {
+    id: '1',
+    title: 'Farm-Fresh Flavors',
+    description: 'We are dedicated to making products bursting with authentic, rich flavours. Our commitment to using fresh, natural ingredients from local farmers guarantees a truly delicious taste in every bite.',
+    enabled: true
+  },
+  {
+    id: '2',
+    title: 'Quality You Can Taste',
+    description: "We don't compromise on quality. Every bite reflects our commitment to using the finest ingredients. We source fresh seasonal offerings, ensuring peak flavor and support local farmers. We sample before we use ingredients.",
+    enabled: true
+  },
+  {
+    id: '3',
+    title: 'Seasonal Availability',
+    description: 'The journey of the fresh ingredients, from the farm directly into your product, highlights the connection to quality, traditional preservation and the authentic, seasonal taste without chemicals.',
+    enabled: true
+  },
+  {
+    id: '4',
+    title: 'Traditional Stoneware Ground',
+    description: 'Prepared using age-old stoneware methods to preserve authentic coastal Andhra textures, distinct crunch, and rich aromatic oils.',
+    enabled: false
+  },
+  {
+    id: '5',
+    title: 'Zero Preservatives & Additives',
+    description: '100% pure natural ingredients without artificial chemical preservatives, synthetic food colours, or artificial taste enhancers.',
+    enabled: false
+  }
+];
+
 export default function Home() {
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [bestsellers, setBestsellers] = useState<any[]>(() => {
@@ -24,6 +64,14 @@ export default function Home() {
       return !cached || JSON.parse(cached).length === 0;
     } catch {
       return true;
+    }
+  });
+  const [valueProps, setValueProps] = useState<ValueProposition[]>(() => {
+    try {
+      const cached = localStorage.getItem('kk_value_props_cache');
+      return cached ? JSON.parse(cached) : DEFAULT_VALUE_PROPS;
+    } catch {
+      return DEFAULT_VALUE_PROPS;
     }
   });
   const [heroSettings, setHeroSettings] = useState(() => {
@@ -125,6 +173,15 @@ export default function Home() {
         };
         setHeroSettings(newSettings);
         localStorage.setItem('kk_hero_settings_cache', JSON.stringify(newSettings));
+
+        if (Array.isArray(data.valueProps) && data.valueProps.length > 0) {
+          const merged = DEFAULT_VALUE_PROPS.map((defItem, idx) => {
+            const existing = data.valueProps.find((p: any) => p.id === defItem.id || p.id === String(idx + 1)) || data.valueProps[idx];
+            return existing ? { ...defItem, ...existing } : defItem;
+          });
+          setValueProps(merged);
+          localStorage.setItem('kk_value_props_cache', JSON.stringify(merged));
+        }
       }
     }, (error) => {
       console.error('Error listening to hero settings:', error);
@@ -323,28 +380,35 @@ export default function Home() {
 
 
       {/* VALUE PROPOSITIONS */}
-      <section className="pt-6 pb-16 md:pt-8 md:pb-24 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-        <div className="flex flex-col items-center text-center px-4">
-          <h3 className="font-heading text-lg sm:text-xl font-bold uppercase tracking-wider text-warm-accent mb-3">Farm-Fresh Flavors</h3>
-          <p className="font-serif italic text-warm-dark/70 text-sm md:text-base leading-relaxed">
-            We are dedicated to making products bursting with authentic, rich flavours. Our commitment to using fresh, natural ingredients from local farmers guarantees a truly delicious taste in every bite.
-          </p>
-        </div>
+      {(() => {
+        const activeProps = valueProps.filter(p => p.enabled !== false);
+        if (activeProps.length === 0) return null;
+        return (
+          <>
+            <section className={`pt-6 pb-10 px-4 sm:px-6 md:px-12 mx-auto grid gap-8 md:gap-12 ${
+              activeProps.length === 1 ? 'grid-cols-1 max-w-xl' :
+              activeProps.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl' :
+              activeProps.length === 3 ? 'grid-cols-1 md:grid-cols-3 max-w-7xl' :
+              activeProps.length === 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl' :
+              'grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 max-w-[1500px]'
+            }`}>
+              {activeProps.map((prop) => (
+                <div key={prop.id} className="flex flex-col items-center text-center px-4">
+                  <h3 className="font-heading text-lg sm:text-xl font-bold uppercase tracking-wider text-warm-accent mb-3">
+                    {prop.title}
+                  </h3>
+                  <p className="font-serif italic text-warm-dark/70 text-sm md:text-base leading-relaxed whitespace-pre-line">
+                    {prop.description}
+                  </p>
+                </div>
+              ))}
+            </section>
 
-        <div className="flex flex-col items-center text-center px-4">
-          <h3 className="font-heading text-lg sm:text-xl font-bold uppercase tracking-wider text-warm-accent mb-3">Quality You Can Taste</h3>
-          <p className="font-serif italic text-warm-dark/70 text-sm md:text-base leading-relaxed">
-            We don't compromise on quality. Every bite reflects our commitment to using the finest ingredients. We source fresh seasonal offerings, ensuring peak flavor and support local farmers. We sample before we use ingredients.
-          </p>
-        </div>
-
-        <div className="flex flex-col items-center text-center px-4">
-          <h3 className="font-heading text-lg sm:text-xl font-bold uppercase tracking-wider text-warm-accent mb-3">Seasonal Availability</h3>
-          <p className="font-serif italic text-warm-dark/70 text-sm md:text-base leading-relaxed">
-            The journey of the fresh ingredients, from the farm directly into your product, highlights the connection to quality, traditional preservation and the authentic, seasonal taste without chemicals.
-          </p>
-        </div>
-      </section>
+            {/* Heritage Flower Divider after Value Propositions Section */}
+            <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto !mt-2 !mb-14">✻</div>
+          </>
+        );
+      })()}
     </div>
   );
 }
