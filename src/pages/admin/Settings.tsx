@@ -1522,25 +1522,76 @@ export default function Settings() {
               <div className="p-6 space-y-6">
                 {/* Brand Word & Telugu Native Script */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Brand Word Title (English)</label>
-                    <input 
-                      type="text" 
-                      value={storySettings.dictWord || 'Kaaram Kathalu'}
-                      onChange={e => setStorySettings(prev => ({ ...prev, dictWord: e.target.value }))}
-                      placeholder="e.g. Kaaram Kathalu"
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif text-lg font-bold focus:border-warm-accent transition-colors"
-                    />
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">Brand Word Title (English)</label>
+                      <input 
+                        type="text" 
+                        value={storySettings.dictWord || 'Kaaram Kathalu'}
+                        onChange={e => setStorySettings(prev => ({ ...prev, dictWord: e.target.value }))}
+                        placeholder="e.g. Kaaram Kathalu"
+                        className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif text-lg font-bold focus:border-warm-accent transition-colors"
+                      />
+                    </div>
+
+                    {/* Brand Word Font Size Slider */}
+                    <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">English Heading Font Size</label>
+                        <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                          {storySettings.dictWordFontSize || 48}px
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-mono text-warm-dark/40">24px</span>
+                        <input 
+                          type="range"
+                          min="24"
+                          max="72"
+                          step="2"
+                          value={storySettings.dictWordFontSize || 48}
+                          onChange={e => setStorySettings(prev => ({ ...prev, dictWordFontSize: Number(e.target.value) }))}
+                          className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                        />
+                        <span className="text-[10px] font-mono text-warm-dark/40">72px</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Native Script Subtitle (Telugu)</label>
-                    <input 
-                      type="text" 
-                      value={storySettings.dictNativeScript || 'కారం కథలు'}
-                      onChange={e => setStorySettings(prev => ({ ...prev, dictNativeScript: e.target.value }))}
-                      placeholder="e.g. కారం కథలు"
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif text-lg font-bold text-warm-dark/90 focus:border-warm-accent transition-colors"
-                    />
+
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">Native Script Subtitle (Telugu)</label>
+                      <input 
+                        type="text" 
+                        value={storySettings.dictNativeScript || 'కారం కథలు'}
+                        onChange={e => setStorySettings(prev => ({ ...prev, dictNativeScript: e.target.value }))}
+                        placeholder="e.g. కారం కథలు"
+                        className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif text-lg font-bold text-warm-dark/90 focus:border-warm-accent transition-colors"
+                      />
+                    </div>
+
+                    {/* Telugu Subtitle Font Size Slider */}
+                    <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Telugu Script Font Size</label>
+                        <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                          {storySettings.dictNativeScriptFontSize || 30}px
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-mono text-warm-dark/40">18px</span>
+                        <input 
+                          type="range"
+                          min="18"
+                          max="56"
+                          step="2"
+                          value={storySettings.dictNativeScriptFontSize || 30}
+                          onChange={e => setStorySettings(prev => ({ ...prev, dictNativeScriptFontSize: Number(e.target.value) }))}
+                          className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                        />
+                        <span className="text-[10px] font-mono text-warm-dark/40">56px</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -1616,15 +1667,40 @@ export default function Settings() {
 
                 {/* Story Title & Intro Paragraphs */}
                 <div className="space-y-4 pt-4 border-t border-warm-dark/10">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Story Heading Title</label>
-                    <input 
-                      type="text" 
-                      value={storySettings.title || 'Our Story'}
-                      onChange={e => setStorySettings(prev => ({ ...prev, title: e.target.value }))}
-                      placeholder="e.g. Our Story"
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif font-bold text-warm-accent focus:border-warm-accent transition-colors"
-                    />
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">Story Heading Title</label>
+                      <input 
+                        type="text" 
+                        value={storySettings.title || 'Our Story'}
+                        onChange={e => setStorySettings(prev => ({ ...prev, title: e.target.value }))}
+                        placeholder="e.g. Our Story"
+                        className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif font-bold text-warm-accent focus:border-warm-accent transition-colors"
+                      />
+                    </div>
+
+                    {/* Story Heading Font Size Slider */}
+                    <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Story Heading Font Size</label>
+                        <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                          {storySettings.storyTitleFontSize || 32}px
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-mono text-warm-dark/40">18px</span>
+                        <input 
+                          type="range"
+                          min="18"
+                          max="60"
+                          step="2"
+                          value={storySettings.storyTitleFontSize || 32}
+                          onChange={e => setStorySettings(prev => ({ ...prev, storyTitleFontSize: Number(e.target.value) }))}
+                          className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                        />
+                        <span className="text-[10px] font-mono text-warm-dark/40">60px</span>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="space-y-2">

@@ -106,11 +106,25 @@ export default function About() {
         <div className="text-center max-w-2xl mx-auto pt-6 pb-12 md:pt-10 md:pb-16 px-4 space-y-4 md:space-y-6">
           {/* Main Brand Word in English & Native Script */}
           <div className="space-y-1">
-            <h1 className="text-3xl md:text-5xl font-heading font-bold text-warm-accent uppercase tracking-wider">
+            <h1 
+              className="font-heading font-bold text-warm-accent uppercase tracking-wider"
+              style={{
+                fontSize: storySettings.dictWordFontSize 
+                  ? `clamp(24px, 4.5vw, ${storySettings.dictWordFontSize}px)` 
+                  : 'clamp(28px, 4.5vw, 48px)'
+              }}
+            >
               {storySettings.dictWord || 'Kaaram Kathalu'}
             </h1>
             {(storySettings.dictNativeScript || storySettings.dictNativeScript !== '') && (
-              <p className="text-2xl sm:text-3xl font-serif font-bold text-warm-dark/90 tracking-normal pt-1">
+              <p 
+                className="font-serif font-bold text-warm-dark/90 tracking-normal pt-1"
+                style={{
+                  fontSize: storySettings.dictNativeScriptFontSize 
+                    ? `clamp(20px, 3.5vw, ${storySettings.dictNativeScriptFontSize}px)` 
+                    : 'clamp(22px, 3.5vw, 30px)'
+                }}
+              >
                 {storySettings.dictNativeScript || 'కారం కథలు'}
               </p>
             )}
@@ -154,7 +168,14 @@ export default function About() {
 
           {/* Our Story Intro Narrative */}
           <div className="space-y-4 pt-2 max-w-2xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-heading font-bold text-warm-accent uppercase tracking-wider">
+            <h2 
+              className="font-heading font-bold text-warm-accent uppercase tracking-wider"
+              style={{
+                fontSize: storySettings.storyTitleFontSize 
+                  ? `clamp(20px, 3.5vw, ${storySettings.storyTitleFontSize}px)` 
+                  : 'clamp(24px, 3.5vw, 32px)'
+              }}
+            >
               {storySettings.title || 'Our Story'}
             </h2>
             {storySettings.introParagraph1 && (
