@@ -98,10 +98,18 @@ export default function Settings() {
   const [heroMobile3Tab, setHeroMobile3Tab] = useState<'upload' | 'url'>('upload');
 
   const [storySettings, setStorySettings] = useState({
+    dictWord: 'Kaaram Kathalu',
+    dictPhonetic: '[kaa:ram ka:tha:lu]',
+    dictPart1: 'noun',
+    dictDef1: 'Spicy, fiery piquancy (కారము) derived from sun-dried red chillies and heirloom Andhra spices.',
+    dictPart2: 'noun',
+    dictDef2: 'Stories, tales, and lore (కథలు) passed down across generations and ancestral dining tables.',
     title: 'Our Story',
+    introParagraph1: "At Kaaram Kathalu, we are more than just a brand. We are storytellers preserving the vibrant tapestry of Andhra's rich history, architectural marvels, and culinary traditions.",
+    introParagraph2: "Our roots return to the lush fields of coastal Andhra Pradesh, and our palates still crave those hearty meals at ancestral homes. What began in sun-kissed courtyards with hand-ground spices continues today with pure ingredients, cold-pressed oils, and zero preservatives.",
     subtitle: 'Storytellers preserving the vibrant tapestry of Andhra\'s rich history, architectural marvels, and culinary traditions.',
     legacyTitle: 'Our Heritage',
-    bannerImage: 'https://themanduvaproject.in/cdn/shop/files/58a7s9w56qhc1.jpg?v=1753097183&width=3200',
+    bannerImage: '',
     
     section1Title: 'Allure of South Indian Heritage',
     section1Quote: '"At Kaaram Kathalu, we are more than just a brand. We are storytellers, preserving the vibrant tapestry of Andhra\'s rich history, culture, and traditions."',
@@ -1129,108 +1137,134 @@ export default function Settings() {
           </>
         ) : (
           <>
-            {/* Story Header */}
+            {/* Story Header & Dictionary Noun Definition Section */}
             <div className="bg-white border border-warm-dark/5 rounded-[24px] overflow-hidden shadow-sm">
-              <div className="bg-warm-light/60 p-4 border-b border-warm-dark/5 flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-warm-dark" />
-                <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">Header Section</h2>
+              <div className="bg-warm-light/60 p-4 border-b border-warm-dark/5 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-warm-dark" />
+                  <div>
+                    <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">Brand Dictionary Definition & Story Header</h2>
+                    <p className="text-[11px] font-serif italic text-warm-dark/50">Configure the editorial dictionary noun layout and story intro.</p>
+                  </div>
+                </div>
               </div>
               <div className="p-6 space-y-6">
+                {/* Dictionary Word and Pronunciation */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Legacy Subtitle Tag</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Brand Word Title</label>
                     <input 
                       type="text" 
-                      value={storySettings.legacyTitle}
-                      onChange={e => setStorySettings(prev => ({ ...prev, legacyTitle: e.target.value }))}
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
+                      value={storySettings.dictWord || 'Kaaram Kathalu'}
+                      onChange={e => setStorySettings(prev => ({ ...prev, dictWord: e.target.value }))}
+                      placeholder="e.g. Kaaram Kathalu"
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif text-lg font-bold focus:border-warm-accent transition-colors"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Story Title</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Phonetic Pronunciation</label>
                     <input 
                       type="text" 
-                      value={storySettings.title}
-                      onChange={e => setStorySettings(prev => ({ ...prev, title: e.target.value }))}
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
+                      value={storySettings.dictPhonetic || '[kaa:ram ka:tha:lu]'}
+                      onChange={e => setStorySettings(prev => ({ ...prev, dictPhonetic: e.target.value }))}
+                      placeholder="e.g. [kaa:ram ka:tha:lu]"
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-mono text-sm focus:border-warm-accent transition-colors"
                     />
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Story Subheading</label>
-                  <textarea 
-                    rows={2}
-                    value={storySettings.subtitle}
-                    onChange={e => setStorySettings(prev => ({ ...prev, subtitle: e.target.value }))}
-                    className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif resize-none focus:border-warm-accent transition-colors"
-                  />
                 </div>
 
-                {/* Banner Image */}
-                <div className="space-y-3 pt-4 border-t border-warm-dark/5">
-                  <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">Hero Banner Image</label>
-                  <div className="flex border-b border-warm-dark/10 mb-4 gap-4">
-                    <button
-                      type="button"
-                      onClick={() => setBannerTab('upload')}
-                      className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
-                        bannerTab === 'upload' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
-                      }`}
-                    >
-                      Upload File
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setBannerTab('url')}
-                      className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
-                        bannerTab === 'url' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
-                      }`}
-                    >
-                      Paste URL
-                    </button>
+                {/* Definition 1 */}
+                <div className="p-4 bg-warm-light/40 rounded-2xl border border-warm-dark/10 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-widest text-warm-dark/70">Definition #1</span>
                   </div>
-                  {bannerTab === 'upload' ? (
-                    <div className="space-y-4">
-                      {bannerPreview || (storySettings.bannerImage && !bannerFile && storySettings.bannerImage !== '') ? (
-                        <div className="relative w-full aspect-[21/9] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
-                          <img src={bannerPreview || storySettings.bannerImage} alt="Banner Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                          <button 
-                            type="button"
-                            onClick={() => { setBannerFile(null); setBannerPreview(null); setStorySettings(prev => ({ ...prev, bannerImage: '' })); }}
-                            className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
-                          >
-                            <Trash2 className="w-4.5 h-4.5" />
-                          </button>
-                        </div>
-                      ) : (
-                        <div 
-                          onClick={() => document.getElementById('banner-upload')?.click()}
-                          className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
-                        >
-                          <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
-                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Banner File</span>
-                          <input 
-                            id="banner-upload"
-                            type="file" 
-                            accept="image/*" 
-                            className="hidden" 
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) { setBannerFile(file); setBannerPreview(URL.createObjectURL(file)); }
-                            }}
-                          />
-                        </div>
-                      )}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="md:col-span-1 space-y-1">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/50">Part of Speech</label>
+                      <input 
+                        type="text"
+                        value={storySettings.dictPart1 || 'noun'}
+                        onChange={e => setStorySettings(prev => ({ ...prev, dictPart1: e.target.value }))}
+                        placeholder="noun"
+                        className="w-full px-3 py-2 rounded-xl border border-warm-dark/10 bg-white font-serif italic text-sm outline-none focus:border-warm-accent"
+                      />
                     </div>
-                  ) : (
+                    <div className="md:col-span-3 space-y-1">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/50">Meaning / Definition Text</label>
+                      <input 
+                        type="text"
+                        value={storySettings.dictDef1 || ''}
+                        onChange={e => setStorySettings(prev => ({ ...prev, dictDef1: e.target.value }))}
+                        placeholder="e.g. Spicy, fiery piquancy (కారము)..."
+                        className="w-full px-3 py-2 rounded-xl border border-warm-dark/10 bg-white font-serif text-sm outline-none focus:border-warm-accent"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Definition 2 */}
+                <div className="p-4 bg-warm-light/40 rounded-2xl border border-warm-dark/10 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-widest text-warm-dark/70">Definition #2</span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="md:col-span-1 space-y-1">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/50">Part of Speech</label>
+                      <input 
+                        type="text"
+                        value={storySettings.dictPart2 || 'noun'}
+                        onChange={e => setStorySettings(prev => ({ ...prev, dictPart2: e.target.value }))}
+                        placeholder="noun"
+                        className="w-full px-3 py-2 rounded-xl border border-warm-dark/10 bg-white font-serif italic text-sm outline-none focus:border-warm-accent"
+                      />
+                    </div>
+                    <div className="md:col-span-3 space-y-1">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/50">Meaning / Definition Text</label>
+                      <input 
+                        type="text"
+                        value={storySettings.dictDef2 || ''}
+                        onChange={e => setStorySettings(prev => ({ ...prev, dictDef2: e.target.value }))}
+                        placeholder="e.g. Stories, tales, and lore (కథలు)..."
+                        className="w-full px-3 py-2 rounded-xl border border-warm-dark/10 bg-white font-serif text-sm outline-none focus:border-warm-accent"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Story Title & Intro Paragraphs */}
+                <div className="space-y-4 pt-4 border-t border-warm-dark/10">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Story Heading Title</label>
                     <input 
                       type="text" 
-                      value={storySettings.bannerImage}
-                      onChange={e => setStorySettings(prev => ({ ...prev, bannerImage: e.target.value }))}
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                      placeholder="https://..."
+                      value={storySettings.title || 'Our Story'}
+                      onChange={e => setStorySettings(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="e.g. Our Story"
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif font-bold text-warm-accent focus:border-warm-accent transition-colors"
                     />
-                  )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Introductory Paragraph 1</label>
+                    <textarea 
+                      rows={3}
+                      value={storySettings.introParagraph1 || ''}
+                      onChange={e => setStorySettings(prev => ({ ...prev, introParagraph1: e.target.value }))}
+                      placeholder="At Kaaram Kathalu, we are more than just a brand..."
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif text-sm focus:border-warm-accent transition-colors leading-relaxed"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Introductory Paragraph 2 (Optional)</label>
+                    <textarea 
+                      rows={3}
+                      value={storySettings.introParagraph2 || ''}
+                      onChange={e => setStorySettings(prev => ({ ...prev, introParagraph2: e.target.value }))}
+                      placeholder="What began in sun-kissed courtyards..."
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif text-sm focus:border-warm-accent transition-colors leading-relaxed"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

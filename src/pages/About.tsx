@@ -9,7 +9,15 @@ export default function About() {
     try {
       const cached = localStorage.getItem('kk_story_settings_cache');
       return cached ? JSON.parse(cached) : {
+        dictWord: 'Kaaram Kathalu',
+        dictPhonetic: '[kaa:ram ka:tha:lu]',
+        dictPart1: 'noun',
+        dictDef1: 'Spicy, fiery piquancy (కారము) derived from sun-dried red chillies and heirloom Andhra spices.',
+        dictPart2: 'noun',
+        dictDef2: 'Stories, tales, and lore (కథలు) passed down across generations and ancestral dining tables.',
         title: 'Our Story',
+        introParagraph1: "At Kaaram Kathalu, we are more than just a brand. We are storytellers preserving the vibrant tapestry of Andhra's rich history, architectural marvels, and culinary traditions.",
+        introParagraph2: "Our roots return to the lush fields of coastal Andhra Pradesh, and our palates still crave those hearty meals at ancestral homes. What began in sun-kissed courtyards with hand-ground spices continues today with pure ingredients, cold-pressed oils, and zero preservatives.",
         subtitle: 'Storytellers preserving the vibrant tapestry of Andhra\'s rich history, architectural marvels, and culinary traditions.',
         legacyTitle: 'Our Heritage',
         bannerImage: '',
@@ -32,7 +40,15 @@ export default function About() {
       };
     } catch {
       return {
+        dictWord: 'Kaaram Kathalu',
+        dictPhonetic: '[kaa:ram ka:tha:lu]',
+        dictPart1: 'noun',
+        dictDef1: 'Spicy, fiery piquancy (కారము) derived from sun-dried red chillies and heirloom Andhra spices.',
+        dictPart2: 'noun',
+        dictDef2: 'Stories, tales, and lore (కథలు) passed down across generations and ancestral dining tables.',
         title: 'Our Story',
+        introParagraph1: "At Kaaram Kathalu, we are more than just a brand. We are storytellers preserving the vibrant tapestry of Andhra's rich history, architectural marvels, and culinary traditions.",
+        introParagraph2: "Our roots return to the lush fields of coastal Andhra Pradesh, and our palates still crave those hearty meals at ancestral homes. What began in sun-kissed courtyards with hand-ground spices continues today with pure ingredients, cold-pressed oils, and zero preservatives.",
         subtitle: 'Storytellers preserving the vibrant tapestry of Andhra\'s rich history, architectural marvels, and culinary traditions.',
         legacyTitle: 'Our Heritage',
         bannerImage: '',
@@ -86,36 +102,63 @@ export default function About() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        {/* Page Title */}
-        <div className="text-center mb-12 relative w-full max-w-[95vw] mx-auto">
-          <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">
-            {storySettings.legacyTitle}
-          </span>
-          <h1 className="text-4xl md:text-5xl lg:text-7xl font-heading font-bold text-warm-accent mt-2 mb-3 uppercase">
-            {storySettings.title.split(' ').slice(0, -1).join(' ')}{' '}
-            <span className="text-warm-accent">
-              {storySettings.title.split(' ').slice(-1)[0]}
-            </span>
+        {/* Editorial Dictionary Brand Definition Section */}
+        <div className="text-center max-w-3xl mx-auto pt-6 pb-16 md:pt-10 md:pb-24 px-4 space-y-6">
+          {/* Main Brand Word Title */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-warm-dark tracking-tight">
+            {storySettings.dictWord || 'Kaaram Kathalu'}
           </h1>
-          <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto mt-2 mb-4">✻</div>
-          <p className="font-serif italic text-warm-dark/70 text-lg md:text-xl max-w-2xl mx-auto whitespace-pre-line">
-            {storySettings.subtitle}
-          </p>
-        </div>
 
-        {/* Main Banner Image */}
-        {storySettings.bannerImage && (
-          <div className="relative w-full max-w-[90vw] mx-auto mb-20 md:mb-32">
-            <div className="bg-white border-8 border-white shadow-lg relative z-10 w-full rounded-2xl overflow-hidden">
-              <img
-                src={storySettings.bannerImage}
-                alt="Traditional Andhra Culinary Banner"
-                className="w-full aspect-[16/9] md:aspect-[21/9] object-cover border border-warm-dark/5"
-                referrerPolicy="no-referrer"
-              />
-            </div>
+          {/* Phonetic Pronunciation */}
+          <p className="font-mono text-base md:text-lg text-warm-dark/60 tracking-wider">
+            {storySettings.dictPhonetic || '[kaa:ram ka:tha:lu]'}
+          </p>
+
+          {/* Grammatical Definitions */}
+          <div className="space-y-5 pt-2">
+            {storySettings.dictDef1 && (
+              <div className="space-y-1">
+                <span className="font-serif italic text-warm-dark/50 text-sm md:text-base block">
+                  {storySettings.dictPart1 || 'noun'}
+                </span>
+                <p className="font-serif text-warm-dark/85 text-base md:text-lg leading-relaxed max-w-xl mx-auto">
+                  {storySettings.dictDef1}
+                </p>
+              </div>
+            )}
+
+            {storySettings.dictDef2 && (
+              <div className="space-y-1">
+                <span className="font-serif italic text-warm-dark/50 text-sm md:text-base block">
+                  {storySettings.dictPart2 || 'noun'}
+                </span>
+                <p className="font-serif text-warm-dark/85 text-base md:text-lg leading-relaxed max-w-xl mx-auto">
+                  {storySettings.dictDef2}
+                </p>
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Heritage Flower Divider */}
+          <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto !my-8">✻</div>
+
+          {/* Our Story Intro Narrative */}
+          <div className="space-y-4 pt-2 max-w-2xl mx-auto">
+            <h2 className="font-heading text-lg sm:text-xl font-bold uppercase tracking-widest text-warm-accent">
+              {storySettings.title || 'Our Story'}
+            </h2>
+            {storySettings.introParagraph1 && (
+              <p className="font-serif text-warm-dark/75 text-base md:text-lg leading-relaxed whitespace-pre-line">
+                {storySettings.introParagraph1}
+              </p>
+            )}
+            {storySettings.introParagraph2 && (
+              <p className="font-serif text-warm-dark/75 text-base md:text-lg leading-relaxed whitespace-pre-line">
+                {storySettings.introParagraph2}
+              </p>
+            )}
+          </div>
+        </div>
 
         {/* Narrative Section 1 */}
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-24 items-center mb-24 w-full max-w-[95vw] mx-auto">
