@@ -201,7 +201,13 @@ export default function Home() {
         heroMobileBgImage1: '',
         heroMobileBgImage2: '',
         heroMobileBgImage3: '',
-        heroOverlayOpacity: '30'
+        heroOverlayOpacity: '30',
+        bestsellersTag: 'Curated Favorites',
+        bestsellersTitle: 'Our Bestsellers',
+        bestsellersDescription: 'Bold flavors. Time-honored recipes. Made with love, enjoyed by all.',
+        testimonialsTag: 'Loved by Food Lovers',
+        testimonialsTitle: 'What Our Customers Say',
+        testimonialsDescription: 'Cherished words from homes across India celebrating authentic Andhra flavors.'
       };
     } catch {
       return {
@@ -216,7 +222,13 @@ export default function Home() {
         heroMobileBgImage1: '',
         heroMobileBgImage2: '',
         heroMobileBgImage3: '',
-        heroOverlayOpacity: '30'
+        heroOverlayOpacity: '30',
+        bestsellersTag: 'Curated Favorites',
+        bestsellersTitle: 'Our Bestsellers',
+        bestsellersDescription: 'Bold flavors. Time-honored recipes. Made with love, enjoyed by all.',
+        testimonialsTag: 'Loved by Food Lovers',
+        testimonialsTitle: 'What Our Customers Say',
+        testimonialsDescription: 'Cherished words from homes across India celebrating authentic Andhra flavors.'
       };
     }
   });
@@ -281,7 +293,13 @@ export default function Home() {
           heroMobileBgImage1: data.heroMobileBgImage1 || '',
           heroMobileBgImage2: data.heroMobileBgImage2 || '',
           heroMobileBgImage3: data.heroMobileBgImage3 || '',
-          heroOverlayOpacity: data.heroOverlayOpacity || '30'
+          heroOverlayOpacity: data.heroOverlayOpacity || '30',
+          bestsellersTag: data.bestsellersTag || 'Curated Favorites',
+          bestsellersTitle: data.bestsellersTitle || 'Our Bestsellers',
+          bestsellersDescription: data.bestsellersDescription || 'Bold flavors. Time-honored recipes. Made with love, enjoyed by all.',
+          testimonialsTag: data.testimonialsTag || 'Loved by Food Lovers',
+          testimonialsTitle: data.testimonialsTitle || 'What Our Customers Say',
+          testimonialsDescription: data.testimonialsDescription || 'Cherished words from homes across India celebrating authentic Andhra flavors.'
         };
         setHeroSettings(newSettings);
         localStorage.setItem('kk_hero_settings_cache', JSON.stringify(newSettings));
@@ -455,12 +473,14 @@ export default function Home() {
       <section className="pt-10 pb-6 md:pt-14 md:pb-8 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
         <div className="text-center mb-8 max-w-2xl mx-auto flex flex-col items-center">
           <span className="font-sans text-warm-accent text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
-            <span>🌿</span> Curated Favorites <span>🌿</span>
+            <span>🌿</span> {heroSettings.bestsellersTag || 'Curated Favorites'} <span>🌿</span>
           </span>
-          <h2 className="text-3xl sm:text-4xl font-serif text-warm-accent mt-2 mb-0.5">Our Bestsellers</h2>
+          <h2 className="text-3xl sm:text-4xl font-serif text-warm-accent mt-2 mb-0.5">
+            {heroSettings.bestsellersTitle || 'Our Bestsellers'}
+          </h2>
           <div className="heritage-divider text-warm-accent w-full max-w-[160px] !my-0.5">✻</div>
           <p className="font-serif italic text-warm-dark/70 text-sm md:text-base max-w-lg leading-relaxed mt-1">
-            Bold flavors. Time-honored recipes. Made with love, enjoyed by all.
+            {heroSettings.bestsellersDescription || 'Bold flavors. Time-honored recipes. Made with love, enjoyed by all.'}
           </p>
         </div>
 
@@ -585,12 +605,14 @@ export default function Home() {
             <section className="pt-2 pb-12 md:pt-4 md:pb-16 px-4 sm:px-6 md:px-12 max-w-5xl mx-auto">
               <div className="text-center mb-8 max-w-2xl mx-auto flex flex-col items-center">
                 <span className="font-sans text-warm-accent text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
-                  <span>⭐️</span> Loved by Food Lovers <span>⭐️</span>
+                  <span>⭐️</span> {heroSettings.testimonialsTag || 'Loved by Food Lovers'} <span>⭐️</span>
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-serif text-warm-accent mt-2 mb-0.5">What Our Customers Say</h2>
+                <h2 className="text-3xl sm:text-4xl font-serif text-warm-accent mt-2 mb-0.5">
+                  {heroSettings.testimonialsTitle || 'What Our Customers Say'}
+                </h2>
                 <div className="heritage-divider text-warm-accent w-full max-w-[160px] !my-0.5">✻</div>
                 <p className="font-serif italic text-warm-dark/70 text-sm md:text-base max-w-lg leading-relaxed mt-1">
-                  Cherished words from homes across India celebrating authentic Andhra flavors.
+                  {heroSettings.testimonialsDescription || 'Cherished words from homes across India celebrating authentic Andhra flavors.'}
                 </p>
               </div>
 

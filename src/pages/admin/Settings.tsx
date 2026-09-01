@@ -31,6 +31,12 @@ export default function Settings() {
     heroMobileBgImage2: '',
     heroMobileBgImage3: '',
     heroOverlayOpacity: '30',
+    bestsellersTag: 'Curated Favorites',
+    bestsellersTitle: 'Our Bestsellers',
+    bestsellersDescription: 'Bold flavors. Time-honored recipes. Made with love, enjoyed by all.',
+    testimonialsTag: 'Loved by Food Lovers',
+    testimonialsTitle: 'What Our Customers Say',
+    testimonialsDescription: 'Cherished words from homes across India celebrating authentic Andhra flavors.',
     delhiveryWarehouseName: 'Kaaram Kathalu',
     activeCategories: {
       pickle: true,
@@ -1341,6 +1347,57 @@ export default function Settings() {
                 </div>
               </div>
               <div className="p-6 space-y-6">
+                {/* Testimonials Section Header & Subheading Settings */}
+                <div className="p-5 bg-warm-accent/5 rounded-2xl border border-warm-accent/20 space-y-4">
+                  <div className="flex items-center gap-2 border-b border-warm-accent/15 pb-3">
+                    <span className="text-base">✍️</span>
+                    <h3 className="font-serif font-bold text-warm-accent text-sm uppercase tracking-wider">
+                      Section Header & Subheading Content
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">
+                        Top Tag Badge (e.g. Loved by Food Lovers)
+                      </label>
+                      <input 
+                        type="text"
+                        value={settings.testimonialsTag || ''}
+                        onChange={(e) => setSettings(prev => ({ ...prev, testimonialsTag: e.target.value }))}
+                        placeholder="Loved by Food Lovers"
+                        className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-white focus:bg-white outline-none font-sans text-xs font-bold uppercase tracking-widest text-warm-accent focus:border-warm-accent transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">
+                        Main Section Heading Title
+                      </label>
+                      <input 
+                        type="text"
+                        value={settings.testimonialsTitle || ''}
+                        onChange={(e) => setSettings(prev => ({ ...prev, testimonialsTitle: e.target.value }))}
+                        placeholder="What Our Customers Say"
+                        className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-white focus:bg-white outline-none font-serif text-sm font-bold text-warm-dark focus:border-warm-accent transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">
+                      Subheading / Descriptive Matter
+                    </label>
+                    <textarea 
+                      rows={2}
+                      value={settings.testimonialsDescription || ''}
+                      onChange={(e) => setSettings(prev => ({ ...prev, testimonialsDescription: e.target.value }))}
+                      placeholder="Cherished words from homes across India celebrating authentic Andhra flavors."
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-white focus:bg-white outline-none font-serif italic text-sm focus:border-warm-accent transition-colors leading-relaxed"
+                    />
+                  </div>
+                </div>
+
                 {(settings.testimonials || []).map((t, idx) => (
                   <div key={t.id || idx} className="p-5 bg-warm-light/40 rounded-2xl border border-warm-dark/10 space-y-4">
                     <div className="flex items-center justify-between border-b border-warm-dark/10 pb-3">
