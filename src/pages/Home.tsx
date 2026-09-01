@@ -289,12 +289,12 @@ export default function Home() {
 
         {/* Content */}
         <div className="max-w-7xl mx-auto px-6 sm:px-12 md:px-24 relative z-10 w-full">
-          <div className="max-w-xl flex flex-col items-center text-center md:items-start md:text-left md:max-w-md lg:max-w-lg mx-auto md:mx-0">
+          <div className="max-w-xl flex flex-col items-start text-left md:max-w-md lg:max-w-lg mx-0">
             <span className="font-sans tracking-[0.2em] text-xs uppercase font-bold text-warm-accent mb-2">
               {heroSettings.heroTag || 'Handmade Traditions'}
             </span>
             <h1 
-              className="font-serif leading-[1.15] text-warm-accent whitespace-pre-line mb-1"
+              className="font-serif leading-[1.15] text-warm-accent whitespace-pre-line mb-1 text-left"
               style={{
                 fontSize: heroSettings.heroTitleFontSize 
                   ? `clamp(26px, 4.5vw, ${heroSettings.heroTitleFontSize}px)` 
@@ -305,14 +305,14 @@ export default function Home() {
             </h1>
             
             {/* Heritage Divider Line below heading */}
-            <div className="heritage-divider text-warm-accent w-full max-w-[120px] !my-0.5 mx-auto md:mx-0 justify-center md:justify-start">✻</div>
+            <div className="heritage-divider text-warm-accent w-full max-w-[120px] !my-0.5 !mx-0 justify-start">✻</div>
 
-            <p className="font-serif italic text-sm sm:text-base leading-relaxed text-warm-dark/80 whitespace-pre-line mt-1 mb-4">
+            <p className="font-serif italic text-sm sm:text-base leading-relaxed text-warm-dark/80 whitespace-pre-line mt-1 mb-4 text-left">
               {heroSettings.heroDescription || 'Handcrafted Andhra pickles, Gongura, Avakaya, and aromatic spice podis made with pure ingredients, cold-pressed oils, and zero preservatives. Every bite tells a story.'}
             </p>
             <Link 
               to="/shop" 
-              className="w-fit px-8 py-3 bg-warm-accent text-white hover:bg-warm-dark transition-all font-sans uppercase text-xs tracking-wider font-bold rounded shadow-md hover:shadow-lg active:scale-98 mx-auto md:mx-0"
+              className="w-fit px-8 py-3 bg-warm-accent text-white hover:bg-warm-dark transition-all font-sans uppercase text-xs tracking-wider font-bold rounded shadow-md hover:shadow-lg active:scale-98"
             >
               {heroSettings.heroButtonText || 'Shop Pickles & Podis'}
             </Link>
@@ -333,7 +333,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-8">
           {isLoading ? (
             [1, 2, 3, 4].map(i => (
               <div key={i} className="h-[340px] bg-warm-dark/5 animate-pulse rounded-lg border border-warm-dark/10"></div>
@@ -342,33 +342,38 @@ export default function Home() {
             <Link 
               key={product.docId}
               to={`/product/${product.id}`}
-              className="group flex flex-col items-center transition-transform duration-300 hover:-translate-y-1 text-center"
+              className="group flex flex-col justify-between h-full items-center transition-transform duration-300 hover:-translate-y-1 text-center"
             >
-              <div className="relative aspect-square w-full overflow-hidden bg-transparent mb-3">
-                <img 
-                  src={product.image} 
-                  alt={product.name} 
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  referrerPolicy="no-referrer"
-                />
+              <div className="w-full flex flex-col items-center">
+                <div className="relative aspect-square w-full overflow-hidden bg-transparent mb-3">
+                  <img 
+                    src={product.image} 
+                    alt={product.name} 
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    referrerPolicy="no-referrer"
+                  />
+                  
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      isInWishlist(product.id) ? removeFromWishlist(product.id) : addToWishlist(product);
+                    }}
+                    className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/90 hover:bg-white text-warm-dark flex items-center justify-center shadow-sm transition-all cursor-pointer group/heart active:scale-90"
+                    aria-label="Wishlist"
+                  >
+                    <Heart className={`w-4 h-4 transition-colors ${isInWishlist(product.id) ? 'fill-warm-accent text-warm-accent' : 'text-warm-dark group-hover/heart:text-warm-accent'}`} />
+                  </button>
+                </div>
                 
-                <button 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    isInWishlist(product.id) ? removeFromWishlist(product.id) : addToWishlist(product);
-                  }}
-                  className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/90 hover:bg-white text-warm-dark flex items-center justify-center shadow-sm transition-all cursor-pointer group/heart active:scale-90"
-                  aria-label="Wishlist"
-                >
-                  <Heart className={`w-4 h-4 transition-colors ${isInWishlist(product.id) ? 'fill-warm-accent text-warm-accent' : 'text-warm-dark group-hover/heart:text-warm-accent'}`} />
-                </button>
+                <h3 className="font-serif text-sm sm:text-base text-warm-dark group-hover:text-warm-accent transition-colors leading-snug mb-3 min-h-[2.75rem] sm:min-h-[3.25rem] flex items-center justify-center font-medium px-1">
+                  {product.name}
+                </h3>
               </div>
-              
-              <div className="pt-1 flex flex-col items-center w-full px-2">
-                <h3 className="font-serif text-sm sm:text-base text-warm-dark group-hover:text-warm-accent transition-colors leading-snug mb-2.5 min-h-[2.5rem] flex items-center justify-center font-medium">{product.name}</h3>
+
+              <div className="w-full flex justify-center mt-auto pb-1">
                 <div className="w-full max-w-[120px] py-1.5 border border-warm-accent/80 text-warm-accent font-sans text-[10px] tracking-widest uppercase transition-all duration-300 group-hover:bg-warm-accent group-hover:text-white rounded font-bold">
                   Shop Now
                 </div>
@@ -378,6 +383,8 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Flower divider after Bestsellers */}
+      <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto !my-8 md:!my-12">✻</div>
 
       {/* VALUE PROPOSITIONS */}
       {(() => {
@@ -389,7 +396,7 @@ export default function Home() {
 
         return (
           <>
-            <section className="pt-6 pb-10 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto space-y-8 md:space-y-12">
+            <section className="pt-2 pb-8 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto space-y-8 md:space-y-12">
               {/* First Row (Up to 3 items) */}
               <div className={`grid gap-8 md:gap-12 ${
                 firstThree.length === 1 ? 'grid-cols-1 max-w-xl mx-auto' :
@@ -430,10 +437,83 @@ export default function Home() {
             </section>
 
             {/* Heritage Flower Divider after Value Propositions Section */}
-            <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto !mt-2 !mb-14">✻</div>
+            <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto !my-8 md:!my-12">✻</div>
           </>
         );
       })()}
+
+      {/* TESTIMONIALS SECTION */}
+      <section className="pt-2 pb-14 md:pt-4 md:pb-20 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
+        <div className="text-center mb-10 max-w-2xl mx-auto flex flex-col items-center">
+          <span className="font-sans text-warm-accent text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
+            <span>⭐️</span> Loved by Food Lovers <span>⭐️</span>
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-serif text-warm-accent mt-2 mb-0.5">What Our Customers Say</h2>
+          <div className="heritage-divider text-warm-accent w-full max-w-[160px] !my-0.5">✻</div>
+          <p className="font-serif italic text-warm-dark/70 text-sm md:text-base max-w-lg leading-relaxed mt-1">
+            Cherished words from homes across India celebrating authentic Andhra flavors.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          {[
+            {
+              quote: "The Avakaya pickle transported me straight back to my grandmother's house in Rajahmundry. Perfect oil balance, crunch, and authentic spice heat!",
+              author: "Sunitha Reddy",
+              location: "Hyderabad",
+              product: "Avakaya Pickle",
+              rating: 5
+            },
+            {
+              quote: "Hands down the best Karampodi and Pappula Podi I've ordered online. Pure homemade aroma with hot steaming rice and a dollop of ghee.",
+              author: "Karthik Rao",
+              location: "Bengaluru",
+              product: "Pappula Podi Gun Powder",
+              rating: 5
+            },
+            {
+              quote: "Authentic Andhra boneless chicken pickle that doesn't compromise on freshness, tenderness, or quality. 10/10 flavor profile.",
+              author: "Venkatesh V.",
+              location: "Chennai",
+              product: "Boneless Chicken Pickle",
+              rating: 5
+            }
+          ].map((t, idx) => (
+            <div 
+              key={idx} 
+              className="bg-white/80 border border-warm-dark/10 rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative"
+            >
+              <div>
+                <div className="flex items-center gap-1 text-amber-500 mb-4">
+                  {[...Array(t.rating)].map((_, i) => (
+                    <span key={i} className="text-base">★</span>
+                  ))}
+                </div>
+                <p className="font-serif italic text-warm-dark/85 text-sm sm:text-base leading-relaxed mb-6">
+                  "{t.quote}"
+                </p>
+              </div>
+
+              <div className="pt-4 border-t border-warm-dark/5 flex items-center justify-between">
+                <div>
+                  <h4 className="font-serif font-bold text-warm-dark text-sm sm:text-base">
+                    {t.author}
+                  </h4>
+                  <span className="text-[11px] font-sans uppercase tracking-wider text-warm-dark/50">
+                    {t.location}
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono font-bold bg-warm-accent/10 text-warm-accent px-2.5 py-1 rounded-full">
+                  {t.product}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Heritage Flower Divider after Testimonials Section */}
+      <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto !mt-2 !mb-14">✻</div>
     </div>
   );
 }

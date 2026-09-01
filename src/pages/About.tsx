@@ -105,7 +105,7 @@ export default function About() {
         {/* Editorial Dictionary Brand Definition Section */}
         <div className="text-center max-w-3xl mx-auto pt-6 pb-16 md:pt-10 md:pb-24 px-4 space-y-6">
           {/* Main Brand Word Title */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-warm-dark tracking-tight">
+          <h1 className="text-3xl md:text-5xl font-heading font-bold text-warm-accent uppercase tracking-wider">
             {storySettings.dictWord || 'Kaaram Kathalu'}
           </h1>
 
@@ -144,7 +144,7 @@ export default function About() {
 
           {/* Our Story Intro Narrative */}
           <div className="space-y-4 pt-2 max-w-2xl mx-auto">
-            <h2 className="font-heading text-lg sm:text-xl font-bold uppercase tracking-widest text-warm-accent">
+            <h2 className="text-2xl md:text-3xl font-heading font-bold text-warm-accent uppercase tracking-wider">
               {storySettings.title || 'Our Story'}
             </h2>
             {storySettings.introParagraph1 && (
