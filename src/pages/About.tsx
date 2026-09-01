@@ -103,41 +103,51 @@ export default function About() {
         transition={{ duration: 0.6 }}
       >
         {/* Editorial Dictionary Brand Definition Section */}
-        <div className="text-center max-w-3xl mx-auto pt-6 pb-16 md:pt-10 md:pb-24 px-4 space-y-6">
-          {/* Main Brand Word Title */}
-          <h1 className="text-3xl md:text-5xl font-heading font-bold text-warm-accent uppercase tracking-wider">
-            {storySettings.dictWord || 'Kaaram Kathalu'}
-          </h1>
-
-          {/* Phonetic Pronunciation */}
-          <p className="font-mono text-base md:text-lg text-warm-dark/60 tracking-wider">
-            {storySettings.dictPhonetic || '[kaa:ram ka:tha:lu]'}
-          </p>
-
-          {/* Grammatical Definitions */}
-          <div className="space-y-5 pt-2">
-            {storySettings.dictDef1 && (
-              <div className="space-y-1">
-                <span className="font-serif italic text-warm-dark/50 text-sm md:text-base block">
-                  {storySettings.dictPart1 || 'noun'}
-                </span>
-                <p className="font-serif text-warm-dark/85 text-base md:text-lg leading-relaxed max-w-xl mx-auto">
-                  {storySettings.dictDef1}
-                </p>
-              </div>
-            )}
-
-            {storySettings.dictDef2 && (
-              <div className="space-y-1">
-                <span className="font-serif italic text-warm-dark/50 text-sm md:text-base block">
-                  {storySettings.dictPart2 || 'noun'}
-                </span>
-                <p className="font-serif text-warm-dark/85 text-base md:text-lg leading-relaxed max-w-xl mx-auto">
-                  {storySettings.dictDef2}
-                </p>
-              </div>
+        <div className="text-center max-w-2xl mx-auto pt-6 pb-12 md:pt-10 md:pb-16 px-4 space-y-4 md:space-y-6">
+          {/* Main Brand Word in English & Native Script */}
+          <div className="space-y-1">
+            <h1 className="text-3xl md:text-5xl font-heading font-bold text-warm-accent uppercase tracking-wider">
+              {storySettings.dictWord || 'Kaaram Kathalu'}
+            </h1>
+            {(storySettings.dictNativeScript || storySettings.dictNativeScript !== '') && (
+              <p className="text-2xl sm:text-3xl font-serif font-bold text-warm-dark/90 tracking-normal pt-1">
+                {storySettings.dictNativeScript || 'కారం కథలు'}
+              </p>
             )}
           </div>
+
+          {/* Phonetic Pronunciation */}
+          {(storySettings.dictPhonetic || storySettings.dictPhonetic !== '') && (
+            <p className="font-serif italic text-base sm:text-lg text-warm-dark/60 tracking-wider">
+              {storySettings.dictPhonetic || '[kā ka:tha]'}
+            </p>
+          )}
+
+          {/* Grammatical Definition */}
+          <div className="pt-2 space-y-2">
+            {storySettings.dictPart1 && (
+              <span className="font-serif font-bold text-warm-dark text-base sm:text-lg block">
+                {storySettings.dictPart1}
+              </span>
+            )}
+            {storySettings.dictDef1 && (
+              <p className="font-serif text-warm-dark/85 text-base sm:text-lg leading-relaxed max-w-lg mx-auto">
+                {storySettings.dictDef1}
+              </p>
+            )}
+          </div>
+
+          {/* Word Breakdowns & Meanings */}
+          {(storySettings.dictBreakdown1 || storySettings.dictBreakdown2) && (
+            <div className="pt-3 space-y-2 font-serif text-warm-dark/85 text-base sm:text-lg">
+              {storySettings.dictBreakdown1 && (
+                <p className="font-medium">{storySettings.dictBreakdown1}</p>
+              )}
+              {storySettings.dictBreakdown2 && (
+                <p className="font-medium">{storySettings.dictBreakdown2}</p>
+              )}
+            </div>
+          )}
 
           {/* Heritage Flower Divider */}
           <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto !my-8">✻</div>

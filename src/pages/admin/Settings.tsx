@@ -197,11 +197,14 @@ export default function Settings() {
 
   const [storySettings, setStorySettings] = useState({
     dictWord: 'Kaaram Kathalu',
-    dictPhonetic: '[kaa:ram ka:tha:lu]',
+    dictNativeScript: 'కారం కథలు',
+    dictPhonetic: '[kā ka:tha]',
     dictPart1: 'noun',
-    dictDef1: 'Spicy, fiery piquancy (కారము) derived from sun-dried red chillies and heirloom Andhra spices.',
-    dictPart2: 'noun',
-    dictDef2: 'Stories, tales, and lore (కథలు) passed down across generations and ancestral dining tables.',
+    dictDef1: 'Stories of spice, food, and heritage.',
+    dictBreakdown1: 'కారం — Spice',
+    dictBreakdown2: 'కథలు — Stories',
+    dictPart2: '',
+    dictDef2: '',
     title: 'Our Story',
     introParagraph1: "At Kaaram Kathalu, we are more than just a brand. We are storytellers preserving the vibrant tapestry of Andhra's rich history, architectural marvels, and culinary traditions.",
     introParagraph2: "Our roots return to the lush fields of coastal Andhra Pradesh, and our palates still crave those hearty meals at ancestral homes. What began in sun-kissed courtyards with hand-ground spices continues today with pure ingredients, cold-pressed oils, and zero preservatives.",
@@ -1517,10 +1520,10 @@ export default function Settings() {
                 </div>
               </div>
               <div className="p-6 space-y-6">
-                {/* Dictionary Word and Pronunciation */}
+                {/* Brand Word & Telugu Native Script */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Brand Word Title</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Brand Word Title (English)</label>
                     <input 
                       type="text" 
                       value={storySettings.dictWord || 'Kaaram Kathalu'}
@@ -1530,21 +1533,33 @@ export default function Settings() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Phonetic Pronunciation</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Native Script Subtitle (Telugu)</label>
                     <input 
                       type="text" 
-                      value={storySettings.dictPhonetic || '[kaa:ram ka:tha:lu]'}
-                      onChange={e => setStorySettings(prev => ({ ...prev, dictPhonetic: e.target.value }))}
-                      placeholder="e.g. [kaa:ram ka:tha:lu]"
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-mono text-sm focus:border-warm-accent transition-colors"
+                      value={storySettings.dictNativeScript || 'కారం కథలు'}
+                      onChange={e => setStorySettings(prev => ({ ...prev, dictNativeScript: e.target.value }))}
+                      placeholder="e.g. కారం కథలు"
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif text-lg font-bold text-warm-dark/90 focus:border-warm-accent transition-colors"
                     />
                   </div>
                 </div>
 
-                {/* Definition 1 */}
+                {/* Phonetic Pronunciation */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Phonetic Pronunciation</label>
+                  <input 
+                    type="text" 
+                    value={storySettings.dictPhonetic || '[kā ka:tha]'}
+                    onChange={e => setStorySettings(prev => ({ ...prev, dictPhonetic: e.target.value }))}
+                    placeholder="e.g. [kā ka:tha]"
+                    className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-mono text-sm focus:border-warm-accent transition-colors"
+                  />
+                </div>
+
+                {/* Grammatical Definition */}
                 <div className="p-4 bg-warm-light/40 rounded-2xl border border-warm-dark/10 space-y-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-widest text-warm-dark/70">Definition #1</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-warm-dark/70">Grammatical Definition</span>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="md:col-span-1 space-y-1">
@@ -1563,36 +1578,36 @@ export default function Settings() {
                         type="text"
                         value={storySettings.dictDef1 || ''}
                         onChange={e => setStorySettings(prev => ({ ...prev, dictDef1: e.target.value }))}
-                        placeholder="e.g. Spicy, fiery piquancy (కారము)..."
+                        placeholder="e.g. Stories of spice, food, and heritage."
                         className="w-full px-3 py-2 rounded-xl border border-warm-dark/10 bg-white font-serif text-sm outline-none focus:border-warm-accent"
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* Definition 2 */}
+                {/* Word Breakdowns */}
                 <div className="p-4 bg-warm-light/40 rounded-2xl border border-warm-dark/10 space-y-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-widest text-warm-dark/70">Definition #2</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-warm-dark/70">Word Breakdowns & Meanings</span>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="md:col-span-1 space-y-1">
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/50">Part of Speech</label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/50">Breakdown Line #1</label>
                       <input 
                         type="text"
-                        value={storySettings.dictPart2 || 'noun'}
-                        onChange={e => setStorySettings(prev => ({ ...prev, dictPart2: e.target.value }))}
-                        placeholder="noun"
-                        className="w-full px-3 py-2 rounded-xl border border-warm-dark/10 bg-white font-serif italic text-sm outline-none focus:border-warm-accent"
+                        value={storySettings.dictBreakdown1 || ''}
+                        onChange={e => setStorySettings(prev => ({ ...prev, dictBreakdown1: e.target.value }))}
+                        placeholder="e.g. కారం — Spice"
+                        className="w-full px-3 py-2 rounded-xl border border-warm-dark/10 bg-white font-serif text-sm outline-none focus:border-warm-accent"
                       />
                     </div>
-                    <div className="md:col-span-3 space-y-1">
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/50">Meaning / Definition Text</label>
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/50">Breakdown Line #2</label>
                       <input 
                         type="text"
-                        value={storySettings.dictDef2 || ''}
-                        onChange={e => setStorySettings(prev => ({ ...prev, dictDef2: e.target.value }))}
-                        placeholder="e.g. Stories, tales, and lore (కథలు)..."
+                        value={storySettings.dictBreakdown2 || ''}
+                        onChange={e => setStorySettings(prev => ({ ...prev, dictBreakdown2: e.target.value }))}
+                        placeholder="e.g. కథలు — Stories"
                         className="w-full px-3 py-2 rounded-xl border border-warm-dark/10 bg-white font-serif text-sm outline-none focus:border-warm-accent"
                       />
                     </div>
