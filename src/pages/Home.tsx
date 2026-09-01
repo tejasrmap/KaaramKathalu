@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, Flame, Heart } from 'lucide-react';
+import { ArrowRight, Flame, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { collection, query, limit, onSnapshot, where, doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -103,6 +103,51 @@ const DEFAULT_TESTIMONIALS: Testimonial[] = [
     quote: "Fresh roasted aroma, zero chemicals, pure traditional flavor. Our entire family loves it for morning breakfast.",
     rating: 5,
     enabled: false
+  },
+  {
+    id: '6',
+    author: 'Deepthi P.',
+    location: 'Visakhapatnam',
+    product: 'Tomato Pickle',
+    quote: "The perfect homemade consistency and punchy garlic tadka. Reminds me of traditional summer vacations.",
+    rating: 5,
+    enabled: false
+  },
+  {
+    id: '7',
+    author: 'Sravan Kumar',
+    location: 'Dallas (USA)',
+    product: 'Boneless Mutton Pickle',
+    quote: "Ordered from the US for my parents and they couldn't stop praising the authenticity. Perfectly cooked and packed.",
+    rating: 5,
+    enabled: false
+  },
+  {
+    id: '8',
+    author: 'Madhavi Latha',
+    location: 'Guntur',
+    product: 'Nalla Karam Podi',
+    quote: "Authentic Guntur spice blend that is impossible to find elsewhere. Zero artificial preservatives makes it so healthy.",
+    rating: 5,
+    enabled: false
+  },
+  {
+    id: '9',
+    author: 'Rohit Varma',
+    location: 'Pune',
+    product: 'Prawns Pickle',
+    quote: "Juicy prawns with balanced coastal masala. Arrived in leak-proof packaging and stayed ultra fresh.",
+    rating: 5,
+    enabled: false
+  },
+  {
+    id: '10',
+    author: 'Sai Teja',
+    location: 'Hyderabad',
+    product: 'Kandi Podi',
+    quote: "Wholesome, comforting, and packed with traditional flavours. A permanent staple in our pantry.",
+    rating: 5,
+    enabled: false
   }
 ];
 
@@ -140,6 +185,7 @@ export default function Home() {
       return DEFAULT_TESTIMONIALS;
     }
   });
+  const [currentReviewSlide, setCurrentReviewSlide] = useState(0);
   const [heroSettings, setHeroSettings] = useState(() => {
     try {
       const cached = localStorage.getItem('kk_hero_settings_cache');
@@ -286,7 +332,7 @@ export default function Home() {
     ? (mobileImages.length > 0 ? mobileImages : ['/hero_fallback.jpg'])
     : (desktopImages.length > 0 ? desktopImages : ['/hero_fallback.jpg']);
 
-  // Auto-cycle slides
+  // Auto-cycle hero slides
   useEffect(() => {
     if (activeHeroImages.length <= 1) return;
     const interval = setInterval(() => {
@@ -294,6 +340,16 @@ export default function Home() {
     }, 5000);
     return () => clearInterval(interval);
   }, [activeHeroImages.length]);
+
+  // Auto-cycle review slides
+  const activeTestimonials = testimonials.filter(t => t.enabled !== false);
+  useEffect(() => {
+    if (activeTestimonials.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentReviewSlide(prev => (prev + 1) % activeTestimonials.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [activeTestimonials.length]);
 
   return (
     <div className="min-h-screen bg-warm-bg">
@@ -517,15 +573,17 @@ export default function Home() {
         );
       })()}
 
-      {/* TESTIMONIALS SECTION */}
+      {/* TESTIMONIALS SECTION - SLIDESHOW */}
       {(() => {
-        const activeTestimonials = testimonials.filter(t => t.enabled !== false);
         if (activeTestimonials.length === 0) return null;
+
+        const safeSlide = currentReviewSlide % activeTestimonials.length;
+        const current = activeTestimonials[safeSlide];
 
         return (
           <>
-            <section className="pt-2 pb-12 md:pt-4 md:pb-16 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
-              <div className="text-center mb-10 max-w-2xl mx-auto flex flex-col items-center">
+            <section className="pt-2 pb-12 md:pt-4 md:pb-16 px-4 sm:px-6 md:px-12 max-w-5xl mx-auto">
+              <div className="text-center mb-8 max-w-2xl mx-auto flex flex-col items-center">
                 <span className="font-sans text-warm-accent text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
                   <span>⭐️</span> Loved by Food Lovers <span>⭐️</span>
                 </span>
@@ -536,43 +594,97 @@ export default function Home() {
                 </p>
               </div>
 
-              <div className={`grid gap-8 md:gap-12 ${
-                activeTestimonials.length === 1 ? 'grid-cols-1 max-w-xl mx-auto' :
-                activeTestimonials.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
-                'grid-cols-1 md:grid-cols-3'
-              }`}>
-                {activeTestimonials.map((t) => (
-                  <div 
-                    key={t.id} 
-                    className="flex flex-col justify-between items-center text-center px-4"
+              {/* Slideshow Container */}
+              <div className="relative min-h-[220px] sm:min-h-[190px] flex items-center justify-center px-8 sm:px-14">
+                {/* Previous Button */}
+                {activeTestimonials.length > 1 && (
+                  <button
+                    onClick={() => setCurrentReviewSlide(prev => (prev - 1 + activeTestimonials.length) % activeTestimonials.length)}
+                    className="absolute left-0 sm:left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-warm-light/80 hover:bg-warm-accent hover:text-white text-warm-dark/70 transition-all flex items-center justify-center border border-warm-dark/10 cursor-pointer shadow-sm hover:shadow active:scale-90 z-10"
+                    aria-label="Previous Review"
                   >
-                    <div>
-                      <div className="flex items-center justify-center gap-1 text-amber-500 mb-3">
-                        {[...Array(t.rating || 5)].map((_, i) => (
-                          <span key={i} className="text-base">★</span>
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                )}
+
+                {/* Animated Review Slide */}
+                <div className="w-full max-w-3xl mx-auto overflow-hidden">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={current.id || safeSlide}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -12 }}
+                      transition={{ duration: 0.45, ease: 'easeInOut' }}
+                      className="flex flex-col items-center text-center space-y-4"
+                    >
+                      {/* Rating Stars */}
+                      <div className="flex items-center justify-center gap-1 text-amber-500">
+                        {[...Array(current.rating || 5)].map((_, i) => (
+                          <span key={i} className="text-lg">★</span>
                         ))}
                       </div>
-                      <p className="font-serif italic text-warm-dark/80 text-sm sm:text-base leading-relaxed mb-4">
-                        "{t.quote}"
-                      </p>
-                    </div>
 
-                    <div className="pt-2 flex flex-col items-center">
-                      <h4 className="font-serif font-bold text-warm-dark text-sm sm:text-base">
-                        {t.author}
-                      </h4>
-                      <span className="text-[11px] font-sans uppercase tracking-wider text-warm-dark/50 mb-1.5">
-                        {t.location}
-                      </span>
-                      {t.product && (
-                        <span className="text-[10px] font-mono font-bold bg-warm-accent/10 text-warm-accent px-2.5 py-0.5 rounded-full">
-                          {t.product}
+                      {/* Review Quote */}
+                      <p className="font-serif italic text-warm-dark/85 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
+                        "{current.quote}"
+                      </p>
+
+                      {/* Author, Location, and Product Badge */}
+                      <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+                        <span className="font-serif font-bold text-warm-dark text-base sm:text-lg">
+                          {current.author}
                         </span>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                        {current.location && (
+                          <>
+                            <span className="hidden sm:inline text-warm-dark/30">•</span>
+                            <span className="text-xs font-sans uppercase tracking-widest text-warm-dark/50">
+                              {current.location}
+                            </span>
+                          </>
+                        )}
+                        {current.product && (
+                          <>
+                            <span className="hidden sm:inline text-warm-dark/30">•</span>
+                            <span className="text-[11px] font-mono font-bold bg-warm-accent/10 text-warm-accent px-3 py-0.5 rounded-full">
+                              {current.product}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+
+                {/* Next Button */}
+                {activeTestimonials.length > 1 && (
+                  <button
+                    onClick={() => setCurrentReviewSlide(prev => (prev + 1) % activeTestimonials.length)}
+                    className="absolute right-0 sm:right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-warm-light/80 hover:bg-warm-accent hover:text-white text-warm-dark/70 transition-all flex items-center justify-center border border-warm-dark/10 cursor-pointer shadow-sm hover:shadow active:scale-90 z-10"
+                    aria-label="Next Review"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                )}
               </div>
+
+              {/* Indicator Dots */}
+              {activeTestimonials.length > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-8">
+                  {activeTestimonials.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentReviewSlide(idx)}
+                      className={`transition-all duration-300 rounded-full cursor-pointer ${
+                        idx === safeSlide
+                          ? 'w-6 h-2 bg-warm-accent'
+                          : 'w-2 h-2 bg-warm-dark/20 hover:bg-warm-dark/40'
+                      }`}
+                      aria-label={`Go to slide ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
             </section>
 
             {/* Heritage Flower Divider after Testimonials Section */}

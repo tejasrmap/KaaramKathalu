@@ -116,6 +116,51 @@ export default function Settings() {
         quote: "Fresh roasted aroma, zero chemicals, pure traditional flavor. Our entire family loves it for morning breakfast.",
         rating: 5,
         enabled: false
+      },
+      {
+        id: '6',
+        author: 'Deepthi P.',
+        location: 'Visakhapatnam',
+        product: 'Tomato Pickle',
+        quote: "The perfect homemade consistency and punchy garlic tadka. Reminds me of traditional summer vacations.",
+        rating: 5,
+        enabled: false
+      },
+      {
+        id: '7',
+        author: 'Sravan Kumar',
+        location: 'Dallas (USA)',
+        product: 'Boneless Mutton Pickle',
+        quote: "Ordered from the US for my parents and they couldn't stop praising the authenticity. Perfectly cooked and packed.",
+        rating: 5,
+        enabled: false
+      },
+      {
+        id: '8',
+        author: 'Madhavi Latha',
+        location: 'Guntur',
+        product: 'Nalla Karam Podi',
+        quote: "Authentic Guntur spice blend that is impossible to find elsewhere. Zero artificial preservatives makes it so healthy.",
+        rating: 5,
+        enabled: false
+      },
+      {
+        id: '9',
+        author: 'Rohit Varma',
+        location: 'Pune',
+        product: 'Prawns Pickle',
+        quote: "Juicy prawns with balanced coastal masala. Arrived in leak-proof packaging and stayed ultra fresh.",
+        rating: 5,
+        enabled: false
+      },
+      {
+        id: '10',
+        author: 'Sai Teja',
+        location: 'Hyderabad',
+        product: 'Kandi Podi',
+        quote: "Wholesome, comforting, and packed with traditional flavours. A permanent staple in our pantry.",
+        rating: 5,
+        enabled: false
       }
     ]
   });
@@ -281,6 +326,51 @@ export default function Settings() {
               location: 'Vijayawada',
               product: 'Idli Karam Podi',
               quote: "Fresh roasted aroma, zero chemicals, pure traditional flavor. Our entire family loves it for morning breakfast.",
+              rating: 5,
+              enabled: false
+            },
+            {
+              id: '6',
+              author: 'Deepthi P.',
+              location: 'Visakhapatnam',
+              product: 'Tomato Pickle',
+              quote: "The perfect homemade consistency and punchy garlic tadka. Reminds me of traditional summer vacations.",
+              rating: 5,
+              enabled: false
+            },
+            {
+              id: '7',
+              author: 'Sravan Kumar',
+              location: 'Dallas (USA)',
+              product: 'Boneless Mutton Pickle',
+              quote: "Ordered from the US for my parents and they couldn't stop praising the authenticity. Perfectly cooked and packed.",
+              rating: 5,
+              enabled: false
+            },
+            {
+              id: '8',
+              author: 'Madhavi Latha',
+              location: 'Guntur',
+              product: 'Nalla Karam Podi',
+              quote: "Authentic Guntur spice blend that is impossible to find elsewhere. Zero artificial preservatives makes it so healthy.",
+              rating: 5,
+              enabled: false
+            },
+            {
+              id: '9',
+              author: 'Rohit Varma',
+              location: 'Pune',
+              product: 'Prawns Pickle',
+              quote: "Juicy prawns with balanced coastal masala. Arrived in leak-proof packaging and stayed ultra fresh.",
+              rating: 5,
+              enabled: false
+            },
+            {
+              id: '10',
+              author: 'Sai Teja',
+              location: 'Hyderabad',
+              product: 'Kandi Podi',
+              quote: "Wholesome, comforting, and packed with traditional flavours. A permanent staple in our pantry.",
               rating: 5,
               enabled: false
             }
