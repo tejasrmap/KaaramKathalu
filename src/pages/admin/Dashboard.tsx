@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { ArrowUpRight, TrendingUp, Users, ShoppingBag, CreditCard, Package } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
+import { ArrowUpRight, TrendingUp, Users, ShoppingBag, CreditCard, Package, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { db } from '../../firebase';
 import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
@@ -86,6 +86,38 @@ export default function Dashboard() {
     };
   }, []);
 
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white/95 backdrop-blur-md px-4 py-3 rounded-2xl shadow-xl border border-warm-dark/10 min-w-[140px] space-y-1.5">
+          <div className="flex items-center justify-between gap-2 border-b border-warm-dark/10 pb-1.5">
+            <span className="font-serif font-bold text-warm-dark text-sm tracking-wider">
+              {label}
+            </span>
+            <span className="w-2 h-2 rounded-full bg-warm-accent" />
+          </div>
+          <div className="pt-0.5">
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-mono text-2xl font-black text-warm-accent tracking-tight">
+                {data.orders}
+              </span>
+              <span className="font-serif italic text-xs text-warm-dark/70 font-semibold">
+                {data.orders === 1 ? 'order' : 'orders'}
+              </span>
+            </div>
+            {data.revenue > 0 && (
+              <p className="text-[11px] font-mono font-bold text-warm-dark/60 mt-1 pt-1 border-t border-dashed border-warm-dark/10">
+                ₹{Number(data.revenue).toLocaleString('en-IN')} total
+              </p>
+            )}
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
   const StatCard = ({ title, value, trend, icon: Icon }: any) => (
     <div className="bg-warm-light p-5 md:p-6 rounded-2xl flex items-start justify-between relative overflow-hidden border border-warm-dark/5 shadow-sm hover:shadow-md transition-shadow">
       <div className="w-full">
@@ -130,14 +162,15 @@ export default function Dashboard() {
               <h3 className="text-xl font-bold text-warm-dark font-serif">Orders Over Time</h3>
               <p className="text-xs font-serif italic text-warm-dark/50">Monthly volume of customer orders placed.</p>
             </div>
-            <span className="font-mono text-xs font-bold bg-white text-warm-accent px-3 py-1 rounded-full border border-warm-dark/10 shadow-sm">
-              Bar Graph
-            </span>
+            <div className="flex items-center gap-1.5 font-sans text-[11px] font-bold uppercase tracking-wider bg-white text-warm-accent px-3 py-1.5 rounded-full border border-warm-dark/10 shadow-sm">
+              <Calendar className="w-3.5 h-3.5" />
+              <span>Monthly Trend</span>
+            </div>
           </div>
 
-          <div className="h-[300px] w-full">
+          <div className="h-[300px] w-full pt-2">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={ordersData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <BarChart data={ordersData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="orderBarGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#B83A20" stopOpacity={0.95}/>
@@ -147,32 +180,21 @@ export default function Dashboard() {
                 <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#2A1B19" strokeOpacity={0.06} />
                 <XAxis 
                   dataKey="name" 
-                  axisLine={{ stroke: '#2A1B19', strokeOpacity: 0.1, strokeWidth: 1 }} 
+                  axisLine={{ stroke: '#2A1B19', strokeOpacity: 0.15, strokeWidth: 1 }} 
                   tickLine={false} 
-                  tick={{ fill: '#2A1B19', fontSize: 11, fontWeight: '600' }} 
+                  tick={{ fill: '#2A1B19', fontSize: 12, fontFamily: 'serif', fontWeight: 700 }} 
                   dy={10} 
                 />
                 <YAxis 
                   allowDecimals={false}
-                  axisLine={{ stroke: '#2A1B19', strokeOpacity: 0.1, strokeWidth: 1 }} 
+                  axisLine={{ stroke: '#2A1B19', strokeOpacity: 0.15, strokeWidth: 1 }} 
                   tickLine={false} 
-                  tick={{ fill: '#2A1B19', fontSize: 11, fontWeight: '600' }} 
+                  tick={{ fill: '#2A1B19', opacity: 0.6, fontSize: 11, fontFamily: 'monospace', fontWeight: 600 }} 
                   tickFormatter={(value) => `${value}`}
                 />
                 <Tooltip 
-                  cursor={{ fill: 'rgba(184, 58, 32, 0.06)' }}
-                  contentStyle={{ 
-                    backgroundColor: '#fff', 
-                    border: '1px solid rgba(42,27,25,0.1)', 
-                    borderRadius: '12px', 
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)', 
-                    fontFamily: 'sans-serif' 
-                  }}
-                  formatter={(value: number, name: string) => [
-                    `${value} Orders`, 
-                    'Orders'
-                  ]}
-                  labelStyle={{ fontWeight: 'bold', color: '#2A1B19' }}
+                  cursor={{ fill: 'rgba(184, 58, 32, 0.08)', radius: 8 }}
+                  content={<CustomTooltip />}
                 />
                 <Bar 
                   dataKey="orders" 
@@ -180,10 +202,22 @@ export default function Dashboard() {
                   radius={[8, 8, 0, 0]} 
                   maxBarSize={48}
                 >
+                  <LabelList 
+                    dataKey="orders" 
+                    position="top" 
+                    offset={8}
+                    formatter={(val: number) => (val > 0 ? `${val}` : '')}
+                    style={{ 
+                      fill: '#8A2510', 
+                      fontFamily: 'monospace', 
+                      fontWeight: '800', 
+                      fontSize: '12px' 
+                    }} 
+                  />
                   {ordersData.map((entry, index) => (
                     <Cell 
                       key={`cell-${index}`} 
-                      className="transition-opacity duration-200 hover:opacity-80" 
+                      className="transition-opacity duration-200 hover:opacity-85 cursor-pointer" 
                     />
                   ))}
                 </Bar>
