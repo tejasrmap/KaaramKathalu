@@ -190,19 +190,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
                 {/* Desktop & Mobile Actions (Right side) */}
                 <div className="flex justify-end items-center gap-2 sm:gap-4 z-10">
-                  {/* Admin Direct Access Icon */}
-                  <Link
-                    to={isAdmin ? "/admin" : "/admin/login"}
-                    className={`hidden lg:inline-flex p-2 transition-colors relative ${
-                      isAdmin ? 'text-warm-accent hover:text-warm-dark' : 'text-warm-dark hover:text-warm-accent'
-                    }`}
-                    title={isAdmin ? "Admin Dashboard" : "Admin Portal"}
-                  >
-                    <ShieldCheck className="w-5 h-5" />
-                    {isAdmin && (
+                  {/* Admin Direct Access Icon - Only visible for verified Admin accounts */}
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      className="hidden lg:inline-flex p-2 text-warm-accent hover:text-warm-dark transition-colors relative"
+                      title="Admin Dashboard"
+                    >
+                      <ShieldCheck className="w-5 h-5" />
                       <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-green-500 rounded-full ring-2 ring-warm-bg" />
-                    )}
-                  </Link>
+                    </Link>
+                  )}
 
                   {user ? (
                     <div className="hidden lg:flex items-center gap-2">
@@ -323,13 +321,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         </button>
                       </>
                     ) : (
-                      <>
-                        <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3 border-b border-warm-dark/5">Login</Link>
-                        <Link to="/admin/login" onClick={() => setMobileMenuOpen(false)} className="text-warm-dark/60 hover:text-warm-accent transition-colors pb-3 flex items-center gap-2">
-                          <ShieldCheck className="w-4 h-4 text-warm-accent" />
-                          <span>Admin Portal</span>
-                        </Link>
-                      </>
+                      <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="hover:text-warm-accent transition-colors pb-3">Login</Link>
                     )}
                   </div>
 
