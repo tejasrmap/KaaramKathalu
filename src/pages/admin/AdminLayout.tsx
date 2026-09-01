@@ -5,8 +5,19 @@ import { useAuth } from '../../context/AuthContext';
 import Layout from '../../components/Layout';
 
 export default function AdminLayout() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
   const navigate = useNavigate();
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="min-h-[60vh] flex flex-col items-center justify-center">
+          <div className="w-10 h-10 border-4 border-warm-accent/20 border-t-warm-accent rounded-full animate-spin mb-4" />
+          <p className="font-serif italic text-warm-dark/60 text-sm">Verifying administrator session...</p>
+        </div>
+      </Layout>
+    );
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/admin/login" replace />;

@@ -27,12 +27,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const checkIsAdmin = useCallback(async (email: string): Promise<boolean> => {
     const key = `kk_admin_${email.toLowerCase()}`;
     try {
-      const cached = sessionStorage.getItem(key);
+      const cached = localStorage.getItem(key);
       if (cached !== null) {
         // Fire non-blocking background check
         getDoc(doc(db, 'admins', email.toLowerCase())).then(adminSnap => {
           const status = adminSnap.exists() && adminSnap.data()?.active !== false;
-          sessionStorage.setItem(key, String(status));
+          localStorage.setItem(key, String(status));
           setIsAdmin(status);
         }).catch(() => {});
         return cached === 'true';
@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const adminRef = doc(db, 'admins', email.toLowerCase());
       const adminSnap = await getDoc(adminRef);
       const status = adminSnap.exists() && adminSnap.data()?.active !== false;
-      sessionStorage.setItem(key, String(status));
+      localStorage.setItem(key, String(status));
       return status;
     } catch (error) {
       console.error('Error checking admin status:', error);
@@ -88,6 +88,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (isAdminOnly && !adminStatus) {
+        if (loggedInUser.email) {
+          localStorage.removeItem(`kk_admin_${loggedInUser.email.toLowerCase()}`);
+        }
         await signOut(auth);
         setIsAdmin(false);
         setUser(null);
@@ -102,13 +105,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     try {
+      if (user?.email) {
+        localStorage.removeItem(`kk_admin_${user.email.toLowerCase()}`);
+      }
       await signOut(auth);
       setIsAdmin(false);
+      setUser(null);
     } catch (error) {
       console.error('Error signing out:', error);
       throw error;
     }
-  }, []);
+  }, [user]);
 
   const value = useMemo(() => ({
     user, 
