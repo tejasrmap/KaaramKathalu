@@ -141,10 +141,11 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
     <div className="pt-8 md:pt-12 pb-24 px-4 sm:px-6 md:px-12 max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto min-h-screen">
       <SEO title={pageTitle} description={`Explore our collection of authentic, hand-made ${pageTitle.toLowerCase()}.`} />
       
-      <div className="text-center mb-10 relative w-full mx-auto">
-        <h1 className="text-3xl md:text-5xl font-heading font-bold text-warm-dark uppercase tracking-wider">
+      <div className="text-center mb-8 relative w-full mx-auto">
+        <h1 className="text-3xl md:text-5xl font-heading font-bold text-warm-accent uppercase tracking-wider">
           {pageTitle}
         </h1>
+        <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto mt-2">✻</div>
       </div>
 
 

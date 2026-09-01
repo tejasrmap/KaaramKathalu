@@ -87,16 +87,17 @@ export default function About() {
         transition={{ duration: 0.6 }}
       >
         {/* Page Title */}
-        <div className="text-center mb-16 relative w-full max-w-[95vw] mx-auto">
+        <div className="text-center mb-12 relative w-full max-w-[95vw] mx-auto">
           <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">
             {storySettings.legacyTitle}
           </span>
-          <h1 className="text-4xl md:text-5xl lg:text-7xl font-heading font-bold text-warm-dark mt-2 mb-4 uppercase">
+          <h1 className="text-4xl md:text-5xl lg:text-7xl font-heading font-bold text-warm-accent mt-2 mb-3 uppercase">
             {storySettings.title.split(' ').slice(0, -1).join(' ')}{' '}
             <span className="text-warm-accent">
               {storySettings.title.split(' ').slice(-1)[0]}
             </span>
           </h1>
+          <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto mt-2 mb-4">✻</div>
           <p className="font-serif italic text-warm-dark/70 text-lg md:text-xl max-w-2xl mx-auto whitespace-pre-line">
             {storySettings.subtitle}
           </p>
@@ -119,7 +120,7 @@ export default function About() {
         {/* Narrative Section 1 */}
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-24 items-center mb-24 w-full max-w-[95vw] mx-auto">
           <div className="lg:col-span-7 bg-warm-light/30 border border-warm-dark/10 p-8 md:p-12 rounded-2xl flex flex-col justify-center">
-            <h2 className="font-heading text-2xl font-bold uppercase tracking-wider text-warm-dark mb-6">
+            <h2 className="font-heading text-2xl font-bold uppercase tracking-wider text-warm-accent mb-6">
               {storySettings.section1Title}
             </h2>
             {storySettings.section1Quote && (
@@ -162,7 +163,7 @@ export default function About() {
           )}
 
           <div className="lg:col-span-7 bg-warm-light/30 border border-warm-dark/10 p-8 md:p-12 rounded-2xl flex flex-col justify-center">
-            <h2 className="font-heading text-2xl font-bold uppercase tracking-wider text-warm-dark mb-6">
+            <h2 className="font-heading text-2xl font-bold uppercase tracking-wider text-warm-accent mb-6">
               {storySettings.section2Title}
             </h2>
             <p className="text-warm-dark/70 font-serif leading-relaxed text-sm md:text-base mb-6 whitespace-pre-line">
@@ -181,7 +182,7 @@ export default function About() {
           <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">
             {storySettings.foundersSubtitle}
           </span>
-          <h2 className="text-3xl font-heading font-bold text-warm-dark mt-2 mb-6 uppercase">
+          <h2 className="text-3xl font-heading font-bold text-warm-accent mt-2 mb-6 uppercase">
             {storySettings.foundersTitle}
           </h2>
           <p className="font-serif italic text-warm-dark/70 text-base md:text-lg leading-relaxed max-w-2xl mx-auto mb-8 whitespace-pre-line">

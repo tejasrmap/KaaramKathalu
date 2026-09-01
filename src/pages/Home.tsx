@@ -237,7 +237,7 @@ export default function Home() {
               {heroSettings.heroTag || 'Handmade Traditions'}
             </span>
             <h1 
-              className="font-serif leading-[1.15] text-warm-dark whitespace-pre-line"
+              className="font-serif leading-[1.15] text-warm-accent whitespace-pre-line"
               style={{
                 fontSize: heroSettings.heroTitleFontSize 
                   ? `clamp(26px, 4.5vw, ${heroSettings.heroTitleFontSize}px)` 
@@ -269,7 +269,7 @@ export default function Home() {
           <span className="font-sans text-warm-accent text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
             <span>🌿</span> Curated Favorites <span>🌿</span>
           </span>
-          <h2 className="text-3xl sm:text-4xl font-serif text-warm-dark mt-2 mb-2">Our Bestsellers</h2>
+          <h2 className="text-3xl sm:text-4xl font-serif text-warm-accent mt-2 mb-2">Our Bestsellers</h2>
           <p className="font-serif italic text-warm-dark/70 text-sm md:text-base max-w-lg leading-relaxed">
             Bold flavors. Time-honored recipes. Made with love, enjoyed by all.
           </p>
@@ -328,7 +328,7 @@ export default function Home() {
           <div className="w-12 h-12 bg-warm-accent/10 rounded-full flex items-center justify-center text-warm-accent mb-4">
             <Award className="w-6 h-6" />
           </div>
-          <h3 className="font-heading text-lg font-bold uppercase tracking-wider text-warm-dark mb-2">Farm-Fresh Flavors</h3>
+          <h3 className="font-heading text-lg font-bold uppercase tracking-wider text-warm-accent mb-2">Farm-Fresh Flavors</h3>
           <p className="font-serif italic text-warm-dark/70 text-sm leading-relaxed">
             We are dedicated to making products bursting with authentic, rich flavours. Our commitment to using fresh, natural ingredients from local farmers guarantees a truly delicious taste in every bite.
           </p>
@@ -338,7 +338,7 @@ export default function Home() {
           <div className="w-12 h-12 bg-warm-accent/10 rounded-full flex items-center justify-center text-warm-accent mb-4">
             <ShieldCheck className="w-6 h-6" />
           </div>
-          <h3 className="font-heading text-lg font-bold uppercase tracking-wider text-warm-dark mb-2">Quality You Can Taste</h3>
+          <h3 className="font-heading text-lg font-bold uppercase tracking-wider text-warm-accent mb-2">Quality You Can Taste</h3>
           <p className="font-serif italic text-warm-dark/70 text-sm leading-relaxed">
             We don't compromise on quality. Every bite reflects our commitment to using the finest ingredients. We source fresh seasonal offerings, ensuring peak flavor and support local farmers. We sample before we use ingredients.
           </p>
@@ -348,7 +348,7 @@ export default function Home() {
           <div className="w-12 h-12 bg-warm-accent/10 rounded-full flex items-center justify-center text-warm-accent mb-4">
             <BadgeAlert className="w-6 h-6" />
           </div>
-          <h3 className="font-heading text-lg font-bold uppercase tracking-wider text-warm-dark mb-2">Seasonal Availability</h3>
+          <h3 className="font-heading text-lg font-bold uppercase tracking-wider text-warm-accent mb-2">Seasonal Availability</h3>
           <p className="font-serif italic text-warm-dark/70 text-sm leading-relaxed">
             The journey of the fresh ingredients, from the farm directly into your product, highlights the connection to quality, traditional preservation and the authentic, seasonal taste without chemicals.
           </p>

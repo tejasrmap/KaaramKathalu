@@ -23,11 +23,12 @@ export default function Wishlist() {
         <ArrowLeft className="w-4 h-4" /> Back to Shop
       </Link>
       
-      <div className="text-center mb-12 mt-2">
+      <div className="text-center mb-10 mt-2">
         <span className="font-heading text-warm-accent text-xs font-bold uppercase tracking-[0.2em] block mb-2">Saved Items</span>
-        <h1 className="text-4xl md:text-5xl font-heading font-black text-warm-dark uppercase tracking-tight">
-          My <span className="text-warm-accent">Wishlist</span>
+        <h1 className="text-4xl md:text-5xl font-heading font-black text-warm-accent uppercase tracking-tight">
+          My Wishlist
         </h1>
+        <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto mt-2 mb-3">✻</div>
         <p className="text-warm-dark/60 font-serif italic text-sm mt-1">A collection of your favorite spicy treasures.</p>
       </div>
 

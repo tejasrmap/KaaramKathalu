@@ -158,11 +158,12 @@ export default function TrackOrder() {
       />
 
       {/* Header Block */}
-      <div className="text-center mb-12">
+      <div className="text-center mb-10">
         <span className="font-heading text-warm-accent text-xs font-bold uppercase tracking-[0.2em] block mb-2">Live Delivery</span>
-        <h1 className="text-4xl md:text-5xl font-heading font-black text-warm-dark uppercase tracking-tight">
-          Track Your <span className="text-warm-accent">Parcels</span>
+        <h1 className="text-4xl md:text-5xl font-heading font-black text-warm-accent uppercase tracking-tight">
+          Track Your Parcels
         </h1>
+        <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto mt-2">✻</div>
       </div>
 
       {/* Search Input Card */}

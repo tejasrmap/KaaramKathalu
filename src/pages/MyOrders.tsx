@@ -246,11 +246,12 @@ export default function MyOrders() {
       <SEO title="My Orders - Kaaram Kathalu" description="Track your heritage pickle and podi orders." />
 
       {/* Title Block */}
-      <div className="mb-12 mt-6 text-center">
+      <div className="mb-10 mt-6 text-center">
         <span className="font-heading text-warm-accent text-xs font-bold uppercase tracking-[0.2em] block mb-2">Track Orders</span>
-        <h1 className="text-4xl md:text-5xl font-heading font-black text-warm-dark uppercase tracking-tight">
-          My <span className="text-4xl md:text-5xl font-heading font-black text-warm-dark uppercase tracking-tight">Orders</span>
+        <h1 className="text-4xl md:text-5xl font-heading font-black text-warm-accent uppercase tracking-tight">
+          My Orders
         </h1>
+        <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto mt-2 mb-3">✻</div>
         <p className="text-warm-dark/60 font-serif italic text-sm mt-1">Track your spicy treasures as they travel from our kitchen to yours.</p>
       </div>
 
