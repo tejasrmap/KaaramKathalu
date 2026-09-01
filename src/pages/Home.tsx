@@ -232,12 +232,12 @@ export default function Home() {
 
         {/* Content */}
         <div className="max-w-7xl mx-auto px-6 sm:px-12 md:px-24 relative z-10 w-full">
-          <div className="max-w-xl flex flex-col gap-3 md:max-w-md lg:max-w-lg">
-            <span className="font-sans tracking-[0.2em] text-xs uppercase font-bold text-warm-accent">
+          <div className="max-w-xl flex flex-col md:max-w-md lg:max-w-lg">
+            <span className="font-sans tracking-[0.2em] text-xs uppercase font-bold text-warm-accent mb-2">
               {heroSettings.heroTag || 'Handmade Traditions'}
             </span>
             <h1 
-              className="font-serif leading-[1.15] text-warm-accent whitespace-pre-line"
+              className="font-serif leading-[1.15] text-warm-accent whitespace-pre-line mb-1"
               style={{
                 fontSize: heroSettings.heroTitleFontSize 
                   ? `clamp(26px, 4.5vw, ${heroSettings.heroTitleFontSize}px)` 
@@ -248,14 +248,14 @@ export default function Home() {
             </h1>
             
             {/* Heritage Divider Line below heading */}
-            <div className="heritage-divider text-warm-accent w-full max-w-[120px] !my-1.5 justify-start">✻</div>
+            <div className="heritage-divider text-warm-accent w-full max-w-[120px] !my-0.5 justify-start">✻</div>
 
-            <p className="font-serif italic text-sm sm:text-base leading-relaxed text-warm-dark/80 whitespace-pre-line">
+            <p className="font-serif italic text-sm sm:text-base leading-relaxed text-warm-dark/80 whitespace-pre-line mt-1 mb-4">
               {heroSettings.heroDescription || 'Handcrafted Andhra pickles, Gongura, Avakaya, and aromatic spice podis made with pure ingredients, cold-pressed oils, and zero preservatives. Every bite tells a story.'}
             </p>
             <Link 
               to="/shop" 
-              className="w-fit px-8 py-3 bg-warm-accent text-white hover:bg-warm-dark transition-all mt-2 font-sans uppercase text-xs tracking-wider font-bold rounded shadow-md hover:shadow-lg active:scale-98"
+              className="w-fit px-8 py-3 bg-warm-accent text-white hover:bg-warm-dark transition-all font-sans uppercase text-xs tracking-wider font-bold rounded shadow-md hover:shadow-lg active:scale-98"
             >
               {heroSettings.heroButtonText || 'Shop Pickles & Podis'}
             </Link>
@@ -269,11 +269,11 @@ export default function Home() {
           <span className="font-sans text-warm-accent text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
             <span>🌿</span> Curated Favorites <span>🌿</span>
           </span>
-          <h2 className="text-3xl sm:text-4xl font-serif text-warm-accent mt-2 mb-2">Our Bestsellers</h2>
-          <p className="font-serif italic text-warm-dark/70 text-sm md:text-base max-w-lg leading-relaxed">
+          <h2 className="text-3xl sm:text-4xl font-serif text-warm-accent mt-2 mb-0.5">Our Bestsellers</h2>
+          <div className="heritage-divider text-warm-accent w-full max-w-[160px] !my-0.5">✻</div>
+          <p className="font-serif italic text-warm-dark/70 text-sm md:text-base max-w-lg leading-relaxed mt-1">
             Bold flavors. Time-honored recipes. Made with love, enjoyed by all.
           </p>
-          <div className="heritage-divider text-warm-accent w-full max-w-[160px] mt-1.5">✻</div>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-6">
