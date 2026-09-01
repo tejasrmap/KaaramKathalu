@@ -48,6 +48,64 @@ const DEFAULT_VALUE_PROPS: ValueProposition[] = [
   }
 ];
 
+interface Testimonial {
+  id: string;
+  author: string;
+  location: string;
+  product: string;
+  quote: string;
+  rating: number;
+  enabled: boolean;
+}
+
+const DEFAULT_TESTIMONIALS: Testimonial[] = [
+  {
+    id: '1',
+    author: 'Sunitha Reddy',
+    location: 'Hyderabad',
+    product: 'Avakaya Pickle',
+    quote: "The Avakaya pickle transported me straight back to my grandmother's house in Rajahmundry. Perfect oil balance, crunch, and authentic spice heat!",
+    rating: 5,
+    enabled: true
+  },
+  {
+    id: '2',
+    author: 'Karthik Rao',
+    location: 'Bengaluru',
+    product: 'Pappula Podi Gun Powder',
+    quote: "Hands down the best Karampodi and Pappula Podi I've ordered online. Pure homemade aroma with hot steaming rice and a dollop of ghee.",
+    rating: 5,
+    enabled: true
+  },
+  {
+    id: '3',
+    author: 'Venkatesh V.',
+    location: 'Chennai',
+    product: 'Boneless Chicken Pickle',
+    quote: "Authentic Andhra boneless chicken pickle that doesn't compromise on freshness, tenderness, or quality. 10/10 flavor profile.",
+    rating: 5,
+    enabled: true
+  },
+  {
+    id: '4',
+    author: 'Ananya Sharma',
+    location: 'Mumbai',
+    product: 'Gongura Pickle',
+    quote: "Incredible tangy Gongura taste! Brings true coastal Andhra flavors right to my dining table in Mumbai.",
+    rating: 5,
+    enabled: false
+  },
+  {
+    id: '5',
+    author: 'Rajesh Naidu',
+    location: 'Vijayawada',
+    product: 'Idli Karam Podi',
+    quote: "Fresh roasted aroma, zero chemicals, pure traditional flavor. Our entire family loves it for morning breakfast.",
+    rating: 5,
+    enabled: false
+  }
+];
+
 export default function Home() {
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [bestsellers, setBestsellers] = useState<any[]>(() => {
@@ -72,6 +130,14 @@ export default function Home() {
       return cached ? JSON.parse(cached) : DEFAULT_VALUE_PROPS;
     } catch {
       return DEFAULT_VALUE_PROPS;
+    }
+  });
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(() => {
+    try {
+      const cached = localStorage.getItem('kk_testimonials_cache');
+      return cached ? JSON.parse(cached) : DEFAULT_TESTIMONIALS;
+    } catch {
+      return DEFAULT_TESTIMONIALS;
     }
   });
   const [heroSettings, setHeroSettings] = useState(() => {
@@ -181,6 +247,15 @@ export default function Home() {
           });
           setValueProps(merged);
           localStorage.setItem('kk_value_props_cache', JSON.stringify(merged));
+        }
+
+        if (Array.isArray(data.testimonials) && data.testimonials.length > 0) {
+          const mergedT = DEFAULT_TESTIMONIALS.map((defItem, idx) => {
+            const existing = data.testimonials.find((t: any) => t.id === defItem.id || t.id === String(idx + 1)) || data.testimonials[idx];
+            return existing ? { ...defItem, ...existing } : defItem;
+          });
+          setTestimonials(mergedT);
+          localStorage.setItem('kk_testimonials_cache', JSON.stringify(mergedT));
         }
       }
     }, (error) => {
@@ -443,77 +518,68 @@ export default function Home() {
       })()}
 
       {/* TESTIMONIALS SECTION */}
-      <section className="pt-2 pb-14 md:pt-4 md:pb-20 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
-        <div className="text-center mb-10 max-w-2xl mx-auto flex flex-col items-center">
-          <span className="font-sans text-warm-accent text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
-            <span>⭐️</span> Loved by Food Lovers <span>⭐️</span>
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-serif text-warm-accent mt-2 mb-0.5">What Our Customers Say</h2>
-          <div className="heritage-divider text-warm-accent w-full max-w-[160px] !my-0.5">✻</div>
-          <p className="font-serif italic text-warm-dark/70 text-sm md:text-base max-w-lg leading-relaxed mt-1">
-            Cherished words from homes across India celebrating authentic Andhra flavors.
-          </p>
-        </div>
+      {(() => {
+        const activeTestimonials = testimonials.filter(t => t.enabled !== false);
+        if (activeTestimonials.length === 0) return null;
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {[
-            {
-              quote: "The Avakaya pickle transported me straight back to my grandmother's house in Rajahmundry. Perfect oil balance, crunch, and authentic spice heat!",
-              author: "Sunitha Reddy",
-              location: "Hyderabad",
-              product: "Avakaya Pickle",
-              rating: 5
-            },
-            {
-              quote: "Hands down the best Karampodi and Pappula Podi I've ordered online. Pure homemade aroma with hot steaming rice and a dollop of ghee.",
-              author: "Karthik Rao",
-              location: "Bengaluru",
-              product: "Pappula Podi Gun Powder",
-              rating: 5
-            },
-            {
-              quote: "Authentic Andhra boneless chicken pickle that doesn't compromise on freshness, tenderness, or quality. 10/10 flavor profile.",
-              author: "Venkatesh V.",
-              location: "Chennai",
-              product: "Boneless Chicken Pickle",
-              rating: 5
-            }
-          ].map((t, idx) => (
-            <div 
-              key={idx} 
-              className="bg-white/80 border border-warm-dark/10 rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative"
-            >
-              <div>
-                <div className="flex items-center gap-1 text-amber-500 mb-4">
-                  {[...Array(t.rating)].map((_, i) => (
-                    <span key={i} className="text-base">★</span>
-                  ))}
-                </div>
-                <p className="font-serif italic text-warm-dark/85 text-sm sm:text-base leading-relaxed mb-6">
-                  "{t.quote}"
+        return (
+          <>
+            <section className="pt-2 pb-12 md:pt-4 md:pb-16 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
+              <div className="text-center mb-10 max-w-2xl mx-auto flex flex-col items-center">
+                <span className="font-sans text-warm-accent text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
+                  <span>⭐️</span> Loved by Food Lovers <span>⭐️</span>
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-serif text-warm-accent mt-2 mb-0.5">What Our Customers Say</h2>
+                <div className="heritage-divider text-warm-accent w-full max-w-[160px] !my-0.5">✻</div>
+                <p className="font-serif italic text-warm-dark/70 text-sm md:text-base max-w-lg leading-relaxed mt-1">
+                  Cherished words from homes across India celebrating authentic Andhra flavors.
                 </p>
               </div>
 
-              <div className="pt-4 border-t border-warm-dark/5 flex items-center justify-between">
-                <div>
-                  <h4 className="font-serif font-bold text-warm-dark text-sm sm:text-base">
-                    {t.author}
-                  </h4>
-                  <span className="text-[11px] font-sans uppercase tracking-wider text-warm-dark/50">
-                    {t.location}
-                  </span>
-                </div>
-                <span className="text-[10px] font-mono font-bold bg-warm-accent/10 text-warm-accent px-2.5 py-1 rounded-full">
-                  {t.product}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+              <div className={`grid gap-8 md:gap-12 ${
+                activeTestimonials.length === 1 ? 'grid-cols-1 max-w-xl mx-auto' :
+                activeTestimonials.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
+                'grid-cols-1 md:grid-cols-3'
+              }`}>
+                {activeTestimonials.map((t) => (
+                  <div 
+                    key={t.id} 
+                    className="flex flex-col justify-between items-center text-center px-4"
+                  >
+                    <div>
+                      <div className="flex items-center justify-center gap-1 text-amber-500 mb-3">
+                        {[...Array(t.rating || 5)].map((_, i) => (
+                          <span key={i} className="text-base">★</span>
+                        ))}
+                      </div>
+                      <p className="font-serif italic text-warm-dark/80 text-sm sm:text-base leading-relaxed mb-4">
+                        "{t.quote}"
+                      </p>
+                    </div>
 
-      {/* Heritage Flower Divider after Testimonials Section */}
-      <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto !mt-2 !mb-14">✻</div>
+                    <div className="pt-2 flex flex-col items-center">
+                      <h4 className="font-serif font-bold text-warm-dark text-sm sm:text-base">
+                        {t.author}
+                      </h4>
+                      <span className="text-[11px] font-sans uppercase tracking-wider text-warm-dark/50 mb-1.5">
+                        {t.location}
+                      </span>
+                      {t.product && (
+                        <span className="text-[10px] font-mono font-bold bg-warm-accent/10 text-warm-accent px-2.5 py-0.5 rounded-full">
+                          {t.product}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Heritage Flower Divider after Testimonials Section */}
+            <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto !mt-2 !mb-14">✻</div>
+          </>
+        );
+      })()}
     </div>
   );
 }

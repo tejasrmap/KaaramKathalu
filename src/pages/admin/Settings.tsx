@@ -70,6 +70,53 @@ export default function Settings() {
         description: '100% pure natural ingredients without artificial chemical preservatives, synthetic food colours, or artificial taste enhancers.',
         enabled: false
       }
+    ],
+    testimonials: [
+      {
+        id: '1',
+        author: 'Sunitha Reddy',
+        location: 'Hyderabad',
+        product: 'Avakaya Pickle',
+        quote: "The Avakaya pickle transported me straight back to my grandmother's house in Rajahmundry. Perfect oil balance, crunch, and authentic spice heat!",
+        rating: 5,
+        enabled: true
+      },
+      {
+        id: '2',
+        author: 'Karthik Rao',
+        location: 'Bengaluru',
+        product: 'Pappula Podi Gun Powder',
+        quote: "Hands down the best Karampodi and Pappula Podi I've ordered online. Pure homemade aroma with hot steaming rice and a dollop of ghee.",
+        rating: 5,
+        enabled: true
+      },
+      {
+        id: '3',
+        author: 'Venkatesh V.',
+        location: 'Chennai',
+        product: 'Boneless Chicken Pickle',
+        quote: "Authentic Andhra boneless chicken pickle that doesn't compromise on freshness, tenderness, or quality. 10/10 flavor profile.",
+        rating: 5,
+        enabled: true
+      },
+      {
+        id: '4',
+        author: 'Ananya Sharma',
+        location: 'Mumbai',
+        product: 'Gongura Pickle',
+        quote: "Incredible tangy Gongura taste! Brings true coastal Andhra flavors right to my dining table in Mumbai.",
+        rating: 5,
+        enabled: false
+      },
+      {
+        id: '5',
+        author: 'Rajesh Naidu',
+        location: 'Vijayawada',
+        product: 'Idli Karam Podi',
+        quote: "Fresh roasted aroma, zero chemicals, pure traditional flavor. Our entire family loves it for morning breakfast.",
+        rating: 5,
+        enabled: false
+      }
     ]
   });
 
@@ -191,10 +238,67 @@ export default function Settings() {
             });
           }
 
+          const defaultTestimonials = [
+            {
+              id: '1',
+              author: 'Sunitha Reddy',
+              location: 'Hyderabad',
+              product: 'Avakaya Pickle',
+              quote: "The Avakaya pickle transported me straight back to my grandmother's house in Rajahmundry. Perfect oil balance, crunch, and authentic spice heat!",
+              rating: 5,
+              enabled: true
+            },
+            {
+              id: '2',
+              author: 'Karthik Rao',
+              location: 'Bengaluru',
+              product: 'Pappula Podi Gun Powder',
+              quote: "Hands down the best Karampodi and Pappula Podi I've ordered online. Pure homemade aroma with hot steaming rice and a dollop of ghee.",
+              rating: 5,
+              enabled: true
+            },
+            {
+              id: '3',
+              author: 'Venkatesh V.',
+              location: 'Chennai',
+              product: 'Boneless Chicken Pickle',
+              quote: "Authentic Andhra boneless chicken pickle that doesn't compromise on freshness, tenderness, or quality. 10/10 flavor profile.",
+              rating: 5,
+              enabled: true
+            },
+            {
+              id: '4',
+              author: 'Ananya Sharma',
+              location: 'Mumbai',
+              product: 'Gongura Pickle',
+              quote: "Incredible tangy Gongura taste! Brings true coastal Andhra flavors right to my dining table in Mumbai.",
+              rating: 5,
+              enabled: false
+            },
+            {
+              id: '5',
+              author: 'Rajesh Naidu',
+              location: 'Vijayawada',
+              product: 'Idli Karam Podi',
+              quote: "Fresh roasted aroma, zero chemicals, pure traditional flavor. Our entire family loves it for morning breakfast.",
+              rating: 5,
+              enabled: false
+            }
+          ];
+
+          let mergedTestimonials = defaultTestimonials;
+          if (Array.isArray(data?.testimonials) && data.testimonials.length > 0) {
+            mergedTestimonials = defaultTestimonials.map((defItem, idx) => {
+              const existing = data.testimonials.find((t: any) => t.id === defItem.id || t.id === String(idx + 1)) || data.testimonials[idx];
+              return existing ? { ...defItem, ...existing } : defItem;
+            });
+          }
+
           setSettings(prev => ({
             ...prev,
             ...data,
             valueProps: mergedValueProps,
+            testimonials: mergedTestimonials,
             activeCategories: {
               ...prev.activeCategories,
               ...(data?.activeCategories || {})
@@ -1127,6 +1231,123 @@ export default function Settings() {
                           }}
                           placeholder="Enter description text..."
                           className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-white focus:bg-white outline-none font-serif text-sm focus:border-warm-accent transition-colors leading-relaxed"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Homepage Customer Reviews & Testimonials */}
+            <div className="bg-white border border-warm-dark/5 rounded-[24px] overflow-hidden shadow-sm">
+              <div className="bg-warm-light/60 p-4 border-b border-warm-dark/5 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">⭐️</span>
+                  <div>
+                    <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">Homepage Customer Reviews & Testimonials</h2>
+                    <p className="text-[11px] font-serif italic text-warm-dark/50">Edit customer feedback, city, product tags, ratings, and toggle reviews on/off.</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6 space-y-6">
+                {(settings.testimonials || []).map((t, idx) => (
+                  <div key={t.id || idx} className="p-5 bg-warm-light/40 rounded-2xl border border-warm-dark/10 space-y-4">
+                    <div className="flex items-center justify-between border-b border-warm-dark/10 pb-3">
+                      <div className="flex items-center gap-3">
+                        <span className="w-7 h-7 rounded-full bg-warm-accent/10 text-warm-accent font-mono font-bold flex items-center justify-center text-xs">
+                          {idx + 1}
+                        </span>
+                        <span className="font-serif font-bold text-warm-dark text-sm">
+                          Review #{idx + 1}: {t.author || 'Customer'}
+                        </span>
+                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase ${
+                          t.enabled ? 'bg-green-100 text-green-700' : 'bg-warm-dark/10 text-warm-dark/50'
+                        }`}>
+                          {t.enabled ? 'Active on Storefront' : 'Disabled'}
+                        </span>
+                      </div>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          const updated = [...(settings.testimonials || [])];
+                          updated[idx] = { ...updated[idx], enabled: !updated[idx].enabled };
+                          setSettings(prev => ({ ...prev, testimonials: updated }));
+                        }}
+                        className={`w-12 h-6 rounded-full relative transition-colors cursor-pointer ${t.enabled ? 'bg-warm-accent' : 'bg-warm-dark/20'}`}
+                      >
+                        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${t.enabled ? 'right-1' : 'left-1'}`} />
+                      </button>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">
+                            Customer Name
+                          </label>
+                          <input 
+                            type="text"
+                            value={t.author || ''}
+                            onChange={(e) => {
+                              const updated = [...(settings.testimonials || [])];
+                              updated[idx] = { ...updated[idx], author: e.target.value };
+                              setSettings(prev => ({ ...prev, testimonials: updated }));
+                            }}
+                            placeholder="e.g. Sunitha Reddy"
+                            className="w-full px-4 py-2 rounded-xl border border-warm-dark/10 bg-white focus:bg-white outline-none font-serif text-sm font-bold text-warm-dark focus:border-warm-accent transition-colors"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">
+                            Location / City
+                          </label>
+                          <input 
+                            type="text"
+                            value={t.location || ''}
+                            onChange={(e) => {
+                              const updated = [...(settings.testimonials || [])];
+                              updated[idx] = { ...updated[idx], location: e.target.value };
+                              setSettings(prev => ({ ...prev, testimonials: updated }));
+                            }}
+                            placeholder="e.g. Hyderabad"
+                            className="w-full px-4 py-2 rounded-xl border border-warm-dark/10 bg-white focus:bg-white outline-none font-sans text-sm text-warm-dark/80 focus:border-warm-accent transition-colors"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">
+                            Product Badge Tag
+                          </label>
+                          <input 
+                            type="text"
+                            value={t.product || ''}
+                            onChange={(e) => {
+                              const updated = [...(settings.testimonials || [])];
+                              updated[idx] = { ...updated[idx], product: e.target.value };
+                              setSettings(prev => ({ ...prev, testimonials: updated }));
+                            }}
+                            placeholder="e.g. Avakaya Pickle"
+                            className="w-full px-4 py-2 rounded-xl border border-warm-dark/10 bg-white focus:bg-white outline-none font-mono text-sm text-warm-accent font-semibold focus:border-warm-accent transition-colors"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">
+                          Review Quote Text
+                        </label>
+                        <textarea 
+                          rows={3}
+                          value={t.quote || ''}
+                          onChange={(e) => {
+                            const updated = [...(settings.testimonials || [])];
+                            updated[idx] = { ...updated[idx], quote: e.target.value };
+                            setSettings(prev => ({ ...prev, testimonials: updated }));
+                          }}
+                          placeholder="Enter testimonial quote..."
+                          className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-white focus:bg-white outline-none font-serif italic text-sm focus:border-warm-accent transition-colors leading-relaxed"
                         />
                       </div>
                     </div>
