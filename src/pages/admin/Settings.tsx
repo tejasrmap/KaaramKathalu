@@ -196,39 +196,49 @@ export default function Settings() {
 
   const [storySettings, setStorySettings] = useState({
     dictWord: 'Kaaram Kathalu',
+    dictWordFontSize: 42,
     dictNativeScript: 'కారం కథలు',
+    dictNativeScriptFontSize: 28,
     dictPhonetic: '[kā ka:tha]',
+    dictPhoneticFontSize: 16,
     dictPart1: 'noun',
     dictDef1: 'Stories of spice, food, and heritage.',
+    dictDefFontSize: 16,
     dictBreakdown1: 'కారం — Spice',
     dictBreakdown2: 'కథలు — Stories',
+    dictBreakdownFontSize: 18,
     dictPart2: '',
     dictDef2: '',
     title: 'Our Story',
+    storyTitleFontSize: 32,
     storyPhoto: '',
     storyPhotoAspectRatio: '16:9',
     storyPhotoWidth: 'max-w-2xl',
     introParagraph1: "At Kaaram Kathalu, we are more than just a brand. We are storytellers preserving the vibrant tapestry of Andhra's rich history, architectural marvels, and culinary traditions.",
     introParagraph2: "Our roots return to the lush fields of coastal Andhra Pradesh, and our palates still crave those hearty meals at ancestral homes. What began in sun-kissed courtyards with hand-ground spices continues today with pure ingredients, cold-pressed oils, and zero preservatives.",
+    introParagraphFontSize: 18,
     subtitle: 'Storytellers preserving the vibrant tapestry of Andhra\'s rich history, architectural marvels, and culinary traditions.',
     legacyTitle: 'Our Heritage',
     bannerImage: '',
     
     section1Title: 'Allure of South Indian Heritage',
-    section1Quote: '"At Kaaram Kathalu, we are more than just a brand. We are storytellers, preserving the vibrant tapestry of Andhra\'s rich history, culture, and traditions."',
+    section1TitleFontSize: 28,
     section1Content: 'Our roots return to the lush fields of coastal Andhra Pradesh, and our palates still crave those hearty meals at ancestral homes, traditionally known for bringing families together in courtyards, which dotted every village. There, in the sun-kissed courtyard, grandmothers and mothers spent afternoons grinding spices to a fine podi or powder and pickling fruits and vegetables into irreplaceable staples.',
+    section1ContentFontSize: 18,
     section1Image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&q=80',
+    section1ImageSize: 'max-w-md',
     
     section2Title: 'The Courtyard Symphony',
+    section2TitleFontSize: 28,
     section2Content1: 'Their furtive hands, busy with the rokali banda or stone mortar and pestle, produced a constant hum that would mingle with their chattering voices. Children scurried around them, playing hide and seek or hunting for a quiet corner for a game of caroms. And the air was filled with delicious promise – whiffs of ginger, garlic, mustard, sesame, chili, lemon, curry leaf and so much more wafted through the house.',
     section2Content2: 'As times changed, afternoons like these slowly started disappearing. We cannot save those old homes or hold onto the ways of life they sustained, but we can certainly keep their food alive! And that’s exactly what we, at Kaaram Kathalu, intend to do. Just like the tall ornate wooden pillars, we stand as guardians of the region\'s cultural heritage.',
+    section2ContentFontSize: 18,
     section2Image: 'https://themanduvaproject.in/cdn/shop/files/Manduvawebsitepicture_1.png?v=1749711321&width=533',
+    section2ImageSize: 'max-w-md',
     
-    foundersTitle: 'Usha Sarvarayalu & Neha Alluri',
-    foundersSubtitle: 'Co-Founders & Mission',
-    foundersContent: 'Co-founded by Usha Sarvarayalu and Neha Alluri, Kaaram Kathalu emerged from a desire to keep the food traditions of Andhra Pradesh alive. The production is largely driven by local women, supporting rural livelihoods in traditional kitchens across villages like Annadevarapeta and Uppalametta.',
-    foundersBadges: 'Artisanal & Small Batch, Preservative Free, Supporting Women-led Kitchens',
-    bottomQuote: '"Come, embark on a sensory journey that transports you to the sun-kissed plains and lush green landscapes of Andhra Pradesh. Immerse yourself in the kaleidoscope of flavours passed down through generations."'
+    bottomQuote: '"Come, embark on a sensory journey that transports you to the sun-kissed plains and lush green landscapes of Andhra Pradesh. Immerse yourself in the kaleidoscope of flavours passed down through generations."',
+    bottomQuoteFontSize: 28,
+    bottomQuoteFontFamily: 'font-serif-italic'
   });
 
   const [bannerFile, setBannerFile] = useState<File | null>(null);
@@ -414,7 +424,7 @@ export default function Settings() {
         const storyRef = doc(db, 'settings', 'story');
         const storySnap = await getDoc(storyRef);
         if (storySnap.exists()) {
-          setStorySettings(storySnap.data() as any);
+          setStorySettings(prev => ({ ...prev, ...(storySnap.data() as any) }));
         }
       } catch (error) {
         console.error("Error fetching settings:", error);
@@ -673,6 +683,16 @@ export default function Settings() {
                     placeholder="e.g. Horamavu"
                     onChange={e => setSettings(prev => ({ ...prev, delhiveryWarehouseName: e.target.value }))}
                     className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Instagram Profile URL</label>
+                  <input 
+                    type="url" 
+                    value={settings.instagramUrl || ''}
+                    placeholder="https://www.instagram.com/kaaramkathalu/"
+                    onChange={e => setSettings(prev => ({ ...prev, instagramUrl: e.target.value }))}
+                    className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-sans text-sm focus:border-warm-accent transition-colors"
                   />
                 </div>
               </div>
@@ -1403,7 +1423,7 @@ export default function Settings() {
                           {idx + 1}
                         </span>
                         <span className="font-serif font-bold text-warm-dark text-sm">
-                          Review #{idx + 1}: {t.author || 'Customer'}
+                          Review #{idx + 1}
                         </span>
                         <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase ${
                           t.enabled ? 'bg-green-100 text-green-700' : 'bg-warm-dark/10 text-warm-dark/50'
@@ -1579,7 +1599,7 @@ export default function Settings() {
                           min="18"
                           max="56"
                           step="2"
-                          value={storySettings.dictNativeScriptFontSize || 30}
+                          value={storySettings.dictNativeScriptFontSize || 28}
                           onChange={e => setStorySettings(prev => ({ ...prev, dictNativeScriptFontSize: Number(e.target.value) }))}
                           className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
                         />
@@ -1590,15 +1610,40 @@ export default function Settings() {
                 </div>
 
                 {/* Phonetic Pronunciation */}
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Phonetic Pronunciation</label>
-                  <input 
-                    type="text" 
-                    value={storySettings.dictPhonetic || '[kā ka:tha]'}
-                    onChange={e => setStorySettings(prev => ({ ...prev, dictPhonetic: e.target.value }))}
-                    placeholder="e.g. [kā ka:tha]"
-                    className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-mono text-sm focus:border-warm-accent transition-colors"
-                  />
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Phonetic Pronunciation</label>
+                    <input 
+                      type="text" 
+                      value={storySettings.dictPhonetic || '[kā ka:tha]'}
+                      onChange={e => setStorySettings(prev => ({ ...prev, dictPhonetic: e.target.value }))}
+                      placeholder="e.g. [kā ka:tha]"
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-mono text-sm focus:border-warm-accent transition-colors"
+                    />
+                  </div>
+
+                  {/* Phonetic Font Size Slider */}
+                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Phonetic Text Font Size</label>
+                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                        {storySettings.dictPhoneticFontSize || 16}px
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-mono text-warm-dark/40">12px</span>
+                      <input 
+                        type="range"
+                        min="12"
+                        max="28"
+                        step="1"
+                        value={storySettings.dictPhoneticFontSize || 16}
+                        onChange={e => setStorySettings(prev => ({ ...prev, dictPhoneticFontSize: Number(e.target.value) }))}
+                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                      />
+                      <span className="text-[10px] font-mono text-warm-dark/40">28px</span>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Grammatical Definition */}
@@ -1628,6 +1673,29 @@ export default function Settings() {
                       />
                     </div>
                   </div>
+
+                  {/* Definition Font Size Slider */}
+                  <div className="bg-white/80 p-3 rounded-xl border border-warm-dark/5 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Definition Font Size</label>
+                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                        {storySettings.dictDefFontSize || 16}px
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-mono text-warm-dark/40">12px</span>
+                      <input 
+                        type="range"
+                        min="12"
+                        max="28"
+                        step="1"
+                        value={storySettings.dictDefFontSize || 16}
+                        onChange={e => setStorySettings(prev => ({ ...prev, dictDefFontSize: Number(e.target.value) }))}
+                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                      />
+                      <span className="text-[10px] font-mono text-warm-dark/40">28px</span>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Word Breakdowns */}
@@ -1655,6 +1723,29 @@ export default function Settings() {
                         placeholder="e.g. కథలు — Stories"
                         className="w-full px-3 py-2 rounded-xl border border-warm-dark/10 bg-white font-serif text-sm outline-none focus:border-warm-accent"
                       />
+                    </div>
+                  </div>
+
+                  {/* Breakdown Font Size Slider */}
+                  <div className="bg-white/80 p-3 rounded-xl border border-warm-dark/5 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Breakdowns Font Size</label>
+                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                        {storySettings.dictBreakdownFontSize || 18}px
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-mono text-warm-dark/40">12px</span>
+                      <input 
+                        type="range"
+                        min="12"
+                        max="28"
+                        step="1"
+                        value={storySettings.dictBreakdownFontSize || 18}
+                        onChange={e => setStorySettings(prev => ({ ...prev, dictBreakdownFontSize: Number(e.target.value) }))}
+                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                      />
+                      <span className="text-[10px] font-mono text-warm-dark/40">28px</span>
                     </div>
                   </div>
                 </div>
@@ -1870,6 +1961,29 @@ export default function Settings() {
                       className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif text-sm focus:border-warm-accent transition-colors leading-relaxed"
                     />
                   </div>
+                  
+                  {/* Intro Paragraphs Font Size Slider */}
+                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Intro Paragraphs Font Size</label>
+                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                        {storySettings.introParagraphFontSize || 18}px
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-mono text-warm-dark/40">14px</span>
+                      <input 
+                        type="range"
+                        min="14"
+                        max="32"
+                        step="1"
+                        value={storySettings.introParagraphFontSize || 18}
+                        onChange={e => setStorySettings(prev => ({ ...prev, introParagraphFontSize: Number(e.target.value) }))}
+                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                      />
+                      <span className="text-[10px] font-mono text-warm-dark/40">32px</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1883,32 +1997,74 @@ export default function Settings() {
                 </h2>
               </div>
               <div className="p-6 space-y-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Section Title</label>
-                  <input 
-                    type="text" 
-                    value={storySettings.section1Title}
-                    onChange={e => setStorySettings(prev => ({ ...prev, section1Title: e.target.value }))}
-                    className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                  />
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Section Title</label>
+                    <input 
+                      type="text" 
+                      value={storySettings.section1Title}
+                      onChange={e => setStorySettings(prev => ({ ...prev, section1Title: e.target.value }))}
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
+                    />
+                  </div>
+
+                  {/* Section 1 Title Font Size Slider */}
+                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Title Font Size</label>
+                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                        {storySettings.section1TitleFontSize || 28}px
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-mono text-warm-dark/40">18px</span>
+                      <input 
+                        type="range"
+                        min="18"
+                        max="48"
+                        step="2"
+                        value={storySettings.section1TitleFontSize || 28}
+                        onChange={e => setStorySettings(prev => ({ ...prev, section1TitleFontSize: Number(e.target.value) }))}
+                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                      />
+                      <span className="text-[10px] font-mono text-warm-dark/40">48px</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Hero Highlight Quote</label>
-                  <textarea 
-                    rows={2}
-                    value={storySettings.section1Quote}
-                    onChange={e => setStorySettings(prev => ({ ...prev, section1Quote: e.target.value }))}
-                    className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif resize-none focus:border-warm-accent transition-colors"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Main Content Paragraph</label>
-                  <textarea 
-                    rows={4}
-                    value={storySettings.section1Content}
-                    onChange={e => setStorySettings(prev => ({ ...prev, section1Content: e.target.value }))}
-                    className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                  />
+
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Main Content Paragraph</label>
+                    <textarea 
+                      rows={4}
+                      value={storySettings.section1Content}
+                      onChange={e => setStorySettings(prev => ({ ...prev, section1Content: e.target.value }))}
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
+                    />
+                  </div>
+
+                  {/* Section 1 Content Font Size Slider */}
+                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Content Font Size</label>
+                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                        {storySettings.section1ContentFontSize || 18}px
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-mono text-warm-dark/40">14px</span>
+                      <input 
+                        type="range"
+                        min="14"
+                        max="32"
+                        step="1"
+                        value={storySettings.section1ContentFontSize || 18}
+                        onChange={e => setStorySettings(prev => ({ ...prev, section1ContentFontSize: Number(e.target.value) }))}
+                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                      />
+                      <span className="text-[10px] font-mono text-warm-dark/40">32px</span>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Section 1 1:1 Photo */}
@@ -1976,6 +2132,43 @@ export default function Settings() {
                       placeholder="https://..."
                     />
                   )}
+
+                  {/* Section 1 Photo Size Options */}
+                  <div className="space-y-2 pt-3 border-t border-warm-dark/10">
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
+                      Left Photo Size (Width)
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                      {[
+                        { id: 'max-w-xs', label: 'Compact', size: '~320px' },
+                        { id: 'max-w-sm', label: 'Medium', size: '~384px' },
+                        { id: 'max-w-md', label: 'Standard', size: '~448px' },
+                        { id: 'max-w-lg', label: 'Large', size: '~512px' },
+                        { id: 'w-full', label: 'Full Column', size: '100%' },
+                      ].map(sz => {
+                        const isSelected = (storySettings.section1ImageSize || 'max-w-md') === sz.id;
+                        return (
+                          <button
+                            key={sz.id}
+                            type="button"
+                            onClick={() => setStorySettings(prev => ({ ...prev, section1ImageSize: sz.id }))}
+                            className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                              isSelected 
+                                ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
+                                : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
+                            }`}
+                          >
+                            <span className={`text-xs font-bold ${isSelected ? 'text-white' : 'text-warm-dark'}`}>
+                              {sz.label}
+                            </span>
+                            <span className={`text-[10px] font-mono ${isSelected ? 'text-white/80' : 'text-warm-dark/50'}`}>
+                              {sz.size}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1989,32 +2182,83 @@ export default function Settings() {
                 </h2>
               </div>
               <div className="p-6 space-y-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Section Title</label>
-                  <input 
-                    type="text" 
-                    value={storySettings.section2Title}
-                    onChange={e => setStorySettings(prev => ({ ...prev, section2Title: e.target.value }))}
-                    className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                  />
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Section Title</label>
+                    <input 
+                      type="text" 
+                      value={storySettings.section2Title}
+                      onChange={e => setStorySettings(prev => ({ ...prev, section2Title: e.target.value }))}
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
+                    />
+                  </div>
+
+                  {/* Section 2 Title Font Size Slider */}
+                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Title Font Size</label>
+                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                        {storySettings.section2TitleFontSize || 28}px
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-mono text-warm-dark/40">18px</span>
+                      <input 
+                        type="range"
+                        min="18"
+                        max="48"
+                        step="2"
+                        value={storySettings.section2TitleFontSize || 28}
+                        onChange={e => setStorySettings(prev => ({ ...prev, section2TitleFontSize: Number(e.target.value) }))}
+                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                      />
+                      <span className="text-[10px] font-mono text-warm-dark/40">48px</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">First Content Paragraph</label>
-                  <textarea 
-                    rows={3}
-                    value={storySettings.section2Content1}
-                    onChange={e => setStorySettings(prev => ({ ...prev, section2Content1: e.target.value }))}
-                    className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Second Content Paragraph</label>
-                  <textarea 
-                    rows={3}
-                    value={storySettings.section2Content2}
-                    onChange={e => setStorySettings(prev => ({ ...prev, section2Content2: e.target.value }))}
-                    className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                  />
+
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">First Content Paragraph</label>
+                    <textarea 
+                      rows={3}
+                      value={storySettings.section2Content1}
+                      onChange={e => setStorySettings(prev => ({ ...prev, section2Content1: e.target.value }))}
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Second Content Paragraph</label>
+                    <textarea 
+                      rows={3}
+                      value={storySettings.section2Content2}
+                      onChange={e => setStorySettings(prev => ({ ...prev, section2Content2: e.target.value }))}
+                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
+                    />
+                  </div>
+
+                  {/* Section 2 Content Font Size Slider */}
+                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Content Font Size</label>
+                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                        {storySettings.section2ContentFontSize || 18}px
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-mono text-warm-dark/40">14px</span>
+                      <input 
+                        type="range"
+                        min="14"
+                        max="32"
+                        step="1"
+                        value={storySettings.section2ContentFontSize || 18}
+                        onChange={e => setStorySettings(prev => ({ ...prev, section2ContentFontSize: Number(e.target.value) }))}
+                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                      />
+                      <span className="text-[10px] font-mono text-warm-dark/40">32px</span>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Section 2 1:1 Photo */}
@@ -2082,6 +2326,43 @@ export default function Settings() {
                       placeholder="https://..."
                     />
                   )}
+
+                  {/* Section 2 Photo Size Options */}
+                  <div className="space-y-2 pt-3 border-t border-warm-dark/10">
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
+                      Right Photo Size (Width)
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                      {[
+                        { id: 'max-w-xs', label: 'Compact', size: '~320px' },
+                        { id: 'max-w-sm', label: 'Medium', size: '~384px' },
+                        { id: 'max-w-md', label: 'Standard', size: '~448px' },
+                        { id: 'max-w-lg', label: 'Large', size: '~512px' },
+                        { id: 'w-full', label: 'Full Column', size: '100%' },
+                      ].map(sz => {
+                        const isSelected = (storySettings.section2ImageSize || 'max-w-md') === sz.id;
+                        return (
+                          <button
+                            key={sz.id}
+                            type="button"
+                            onClick={() => setStorySettings(prev => ({ ...prev, section2ImageSize: sz.id }))}
+                            className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                              isSelected 
+                                ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
+                                : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
+                            }`}
+                          >
+                            <span className={`text-xs font-bold ${isSelected ? 'text-white' : 'text-warm-dark'}`}>
+                              {sz.label}
+                            </span>
+                            <span className={`text-[10px] font-mono ${isSelected ? 'text-white/80' : 'text-warm-dark/50'}`}>
+                              {sz.size}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

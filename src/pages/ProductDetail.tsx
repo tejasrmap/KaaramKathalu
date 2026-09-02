@@ -8,6 +8,7 @@ import { db } from '../firebase';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import SEO from '../components/SEO';
 import { getAvailableWeights, getProductUnitPrice, isWeightInStock } from '../utils/price';
+import { formatRichText } from '../utils/richText';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -168,26 +169,33 @@ export default function ProductDetail() {
             </div>
           </div>
 
-          <h1 className="text-3xl md:text-4xl font-serif text-warm-dark leading-tight mb-2">
-            {product.name}
+          <h1 className="text-3xl md:text-4xl font-serif text-warm-dark leading-tight mb-3">
+            {formatRichText(product.name)}
           </h1>
 
-          <div className="flex items-center gap-4 mb-6">
-            <div className="text-3xl font-serif font-bold text-warm-accent">
-              ₹{computedUnitPrice}
+          {/* Clean, Unique, Straight & Highly Readable Price Presentation */}
+          <div className="flex flex-wrap items-center gap-3 mb-6">
+            <div className="inline-flex items-baseline gap-1.5 bg-white px-4 py-2.5 rounded-2xl border border-warm-dark/15 shadow-xs">
+              <span className="text-sm font-sans font-bold text-warm-accent">₹</span>
+              <span className="text-3xl sm:text-4xl font-sans font-black text-warm-dark tracking-tight leading-none">
+                {computedUnitPrice}
+              </span>
+              <span className="text-xs font-sans font-medium text-warm-dark/60 ml-2 border-l border-warm-dark/15 pl-2.5">
+                Weight: {selectedWeight === 1000 ? '1000g (1kg)' : `${selectedWeight}g`}
+              </span>
             </div>
-            <span className="bg-warm-light/60 border border-warm-dark/5 px-3 py-1 rounded-lg text-xs font-semibold text-warm-dark/70 font-sans">
-              Weight: {selectedWeight}g
-            </span>
             {isJar && (
-              <span className="bg-warm-accent/10 border border-warm-accent/30 text-warm-accent px-2.5 py-1 rounded-lg text-xs font-bold">
+              <span className="inline-flex items-center gap-1 bg-warm-accent/10 border border-warm-accent/30 text-warm-accent px-3 py-1.5 rounded-xl text-xs font-bold font-sans">
                 🫙 Glass Jar (+₹100)
               </span>
             )}
+            <span className="text-[11px] font-sans text-warm-dark/50 uppercase tracking-wider font-bold">
+              • Inclusive of all taxes
+            </span>
           </div>
           
-          <p className="text-base text-warm-dark/70 font-serif mb-8 italic">
-            {product.description}
+          <p className="text-base text-warm-dark/75 font-serif mb-8 leading-relaxed">
+            {formatRichText(product.description)}
           </p>
 
           {/* Weight Options Selector */}

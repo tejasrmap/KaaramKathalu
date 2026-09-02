@@ -61,8 +61,9 @@ export default function Wishlist() {
                 >
                   <Trash2 className="w-4 h-4 text-warm-dark/60 hover:text-red-600 transition-colors" />
                 </button>
-                <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-warm-dark text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-sm">
-                  ₹{product.price}
+                <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-warm-dark text-xs font-sans font-black tracking-tight px-3 py-1 rounded-full shadow-sm border border-warm-dark/10 flex items-baseline gap-0.5">
+                  <span className="text-[10px] text-warm-accent font-bold">₹</span>
+                  <span>{product.price}</span>
                 </div>
               </div>
               

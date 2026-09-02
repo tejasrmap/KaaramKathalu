@@ -7,6 +7,7 @@ import { db } from '../firebase';
 import SEO from '../components/SEO';
 import { useWishlist } from '../context/WishlistContext';
 import { getProductStartingPrice } from '../utils/price';
+import { formatRichText } from '../utils/richText';
 
 interface ValueProposition {
   id: string;
@@ -557,10 +558,10 @@ export default function Home() {
                 {firstThree.map((prop) => (
                   <div key={prop.id} className="flex flex-col items-center text-center px-4">
                     <h3 className="font-heading text-lg sm:text-xl font-bold uppercase tracking-wider text-warm-accent mb-3">
-                      {prop.title}
+                      {formatRichText(prop.title)}
                     </h3>
                     <p className="font-serif italic text-warm-dark/70 text-sm md:text-base leading-relaxed whitespace-pre-line">
-                      {prop.description}
+                      {formatRichText(prop.description)}
                     </p>
                   </div>
                 ))}
@@ -576,10 +577,10 @@ export default function Home() {
                   {remaining.map((prop) => (
                     <div key={prop.id} className="flex flex-col items-center text-center px-4">
                       <h3 className="font-heading text-lg sm:text-xl font-bold uppercase tracking-wider text-warm-accent mb-3">
-                        {prop.title}
+                        {formatRichText(prop.title)}
                       </h3>
                       <p className="font-serif italic text-warm-dark/70 text-sm md:text-base leading-relaxed whitespace-pre-line">
-                        {prop.description}
+                        {formatRichText(prop.description)}
                       </p>
                     </div>
                   ))}
@@ -608,11 +609,11 @@ export default function Home() {
                   <span>⭐️</span> {heroSettings.testimonialsTag || 'Loved by Food Lovers'} <span>⭐️</span>
                 </span>
                 <h2 className="text-3xl sm:text-4xl font-serif text-warm-accent mt-2 mb-0.5">
-                  {heroSettings.testimonialsTitle || 'What Our Customers Say'}
+                  {formatRichText(heroSettings.testimonialsTitle || 'What Our Customers Say')}
                 </h2>
                 <div className="heritage-divider text-warm-accent w-full max-w-[160px] !my-0.5">✻</div>
                 <p className="font-serif italic text-warm-dark/70 text-sm md:text-base max-w-lg leading-relaxed mt-1">
-                  {heroSettings.testimonialsDescription || 'Cherished words from homes across India celebrating authentic Andhra flavors.'}
+                  {formatRichText(heroSettings.testimonialsDescription || 'Cherished words from homes across India celebrating authentic Andhra flavors.')}
                 </p>
               </div>
 
@@ -649,7 +650,7 @@ export default function Home() {
 
                       {/* Review Quote */}
                       <p className="font-serif italic text-warm-dark/85 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
-                        "{current.quote}"
+                        "{formatRichText(current.quote)}"
                       </p>
 
                       {/* Author and Location */}

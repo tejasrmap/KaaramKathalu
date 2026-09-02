@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import SEO from '../components/SEO';
+import { formatRichText } from '../utils/richText';
 
 export default function About() {
   const [storySettings, setStorySettings] = useState(() => {
@@ -73,29 +74,24 @@ export default function About() {
   });
 
   useEffect(() => {
-    const fetchStorySettings = async () => {
-      try {
-        const storyRef = doc(db, 'settings', 'story');
-        const storySnap = await getDoc(storyRef);
-        if (storySnap.exists()) {
-          const data = storySnap.data() as any;
-          setStorySettings(data);
-          localStorage.setItem('kk_story_settings_cache', JSON.stringify(data));
-        }
-      } catch (error) {
-        console.error("Error fetching story settings:", error);
+    // Real-time synchronization for instant slider preview across tabs/devices
+    const storyRef = doc(db, 'settings', 'story');
+    const unsubscribe = onSnapshot(storyRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data() as any;
+        setStorySettings(data);
+        localStorage.setItem('kk_story_settings_cache', JSON.stringify(data));
       }
-    };
-    fetchStorySettings();
-  }, []);
+    }, (error) => {
+      console.error("Error subscribing to story settings:", error);
+    });
 
-  const badges = storySettings.foundersBadges
-    ? storySettings.foundersBadges.split(',').map(b => b.trim()).filter(Boolean)
-    : [];
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div className="pt-8 md:pt-12 pb-24 px-4 sm:px-6 md:px-12 w-full max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto min-h-screen">
-      <SEO title={`${storySettings.title} - Traditional Andhra Culinary Heritage`} />
+      <SEO title={`${storySettings.title || 'Our Story'} - Traditional Andhra Culinary Heritage`} />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -110,55 +106,83 @@ export default function About() {
               className="font-heading font-bold text-warm-accent uppercase tracking-wider"
               style={{
                 fontSize: storySettings.dictWordFontSize 
-                  ? `clamp(24px, 4.5vw, ${storySettings.dictWordFontSize}px)` 
-                  : 'clamp(28px, 4.5vw, 48px)'
+                  ? `${storySettings.dictWordFontSize}px` 
+                  : '42px'
               }}
             >
-              {storySettings.dictWord || 'Kaaram Kathalu'}
+              {formatRichText(storySettings.dictWord || 'Kaaram Kathalu')}
             </h1>
             {(storySettings.dictNativeScript || storySettings.dictNativeScript !== '') && (
               <p 
                 className="font-serif font-bold text-warm-dark/90 tracking-normal pt-1"
                 style={{
                   fontSize: storySettings.dictNativeScriptFontSize 
-                    ? `clamp(20px, 3.5vw, ${storySettings.dictNativeScriptFontSize}px)` 
-                    : 'clamp(22px, 3.5vw, 30px)'
+                    ? `${storySettings.dictNativeScriptFontSize}px` 
+                    : '28px'
                 }}
               >
-                {storySettings.dictNativeScript || 'కారం కథలు'}
+                {formatRichText(storySettings.dictNativeScript || 'కారం కథలు')}
               </p>
             )}
           </div>
 
           {/* Phonetic Pronunciation */}
           {(storySettings.dictPhonetic || storySettings.dictPhonetic !== '') && (
-            <p className="font-serif italic text-base sm:text-lg text-warm-dark/60 tracking-wider">
-              {storySettings.dictPhonetic || '[kā ka:tha]'}
+            <p 
+              className="font-serif italic text-warm-dark/60 tracking-wider"
+              style={{
+                fontSize: storySettings.dictPhoneticFontSize 
+                  ? `${storySettings.dictPhoneticFontSize}px` 
+                  : '16px'
+              }}
+            >
+              {formatRichText(storySettings.dictPhonetic || '[kā ka:tha]')}
             </p>
           )}
 
           {/* Grammatical Definition */}
           <div className="pt-2 space-y-2">
             {storySettings.dictPart1 && (
-              <span className="font-serif font-bold text-warm-dark text-base sm:text-lg block">
-                {storySettings.dictPart1}
+              <span 
+                className="font-serif font-bold text-warm-dark block"
+                style={{
+                  fontSize: storySettings.dictDefFontSize 
+                    ? `${storySettings.dictDefFontSize}px` 
+                    : '16px'
+                }}
+              >
+                {formatRichText(storySettings.dictPart1)}
               </span>
             )}
             {storySettings.dictDef1 && (
-              <p className="font-serif text-warm-dark/85 text-base sm:text-lg leading-relaxed max-w-lg mx-auto">
-                {storySettings.dictDef1}
+              <p 
+                className="font-serif text-warm-dark/85 leading-relaxed max-w-lg mx-auto"
+                style={{
+                  fontSize: storySettings.dictDefFontSize 
+                    ? `${storySettings.dictDefFontSize}px` 
+                    : '16px'
+                }}
+              >
+                {formatRichText(storySettings.dictDef1)}
               </p>
             )}
           </div>
 
           {/* Word Breakdowns & Meanings */}
           {(storySettings.dictBreakdown1 || storySettings.dictBreakdown2) && (
-            <div className="pt-3 space-y-2 font-serif text-warm-dark/85 text-base sm:text-lg">
+            <div 
+              className="pt-3 space-y-2 font-serif text-warm-dark/85"
+              style={{
+                fontSize: storySettings.dictBreakdownFontSize 
+                  ? `${storySettings.dictBreakdownFontSize}px` 
+                  : '18px'
+              }}
+            >
               {storySettings.dictBreakdown1 && (
-                <p className="font-medium">{storySettings.dictBreakdown1}</p>
+                <p className="font-medium">{formatRichText(storySettings.dictBreakdown1)}</p>
               )}
               {storySettings.dictBreakdown2 && (
-                <p className="font-medium">{storySettings.dictBreakdown2}</p>
+                <p className="font-medium">{formatRichText(storySettings.dictBreakdown2)}</p>
               )}
             </div>
           )}
@@ -172,11 +196,11 @@ export default function About() {
               className="font-heading font-bold text-warm-accent uppercase tracking-wider"
               style={{
                 fontSize: storySettings.storyTitleFontSize 
-                  ? `clamp(20px, 3.5vw, ${storySettings.storyTitleFontSize}px)` 
-                  : 'clamp(24px, 3.5vw, 32px)'
+                  ? `${storySettings.storyTitleFontSize}px` 
+                  : '32px'
               }}
             >
-              {storySettings.title || 'Our Story'}
+              {formatRichText(storySettings.title || 'Our Story')}
             </h2>
 
             {/* Story Photo between headline and matter */}
@@ -209,23 +233,46 @@ export default function About() {
             )}
 
             {storySettings.introParagraph1 && (
-              <p className="font-serif text-warm-dark/75 text-base md:text-lg leading-relaxed whitespace-pre-line">
-                {storySettings.introParagraph1}
+              <p 
+                className="font-serif text-warm-dark/75 leading-relaxed whitespace-pre-line"
+                style={{
+                  fontSize: storySettings.introParagraphFontSize 
+                    ? `${storySettings.introParagraphFontSize}px` 
+                    : '18px'
+                }}
+              >
+                {formatRichText(storySettings.introParagraph1)}
               </p>
             )}
             {storySettings.introParagraph2 && (
-              <p className="font-serif text-warm-dark/75 text-base md:text-lg leading-relaxed whitespace-pre-line">
-                {storySettings.introParagraph2}
+              <p 
+                className="font-serif text-warm-dark/75 leading-relaxed whitespace-pre-line"
+                style={{
+                  fontSize: storySettings.introParagraphFontSize 
+                    ? `${storySettings.introParagraphFontSize}px` 
+                    : '18px'
+                }}
+              >
+                {formatRichText(storySettings.introParagraph2)}
               </p>
             )}
           </div>
         </div>
 
+        {/* Heritage Flower Divider on top of Essence of South Indian Heritage */}
+        <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto !my-12 md:!my-16">✻</div>
+
         {/* Narrative Section 1 (1:1 Photo on Left, Text on Right) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center mb-20 md:mb-28 max-w-6xl mx-auto px-4">
           {/* 1:1 Photo on Left */}
           {storySettings.section1Image && (
-            <div className="lg:col-span-5 w-full max-w-md mx-auto lg:max-w-none">
+            <div className={`lg:col-span-5 w-full mx-auto ${
+              storySettings.section1ImageSize === 'max-w-xs' ? 'max-w-xs' :
+              storySettings.section1ImageSize === 'max-w-sm' ? 'max-w-sm' :
+              storySettings.section1ImageSize === 'max-w-md' ? 'max-w-md' :
+              storySettings.section1ImageSize === 'max-w-lg' ? 'max-w-lg' :
+              'max-w-md lg:max-w-none'
+            }`}>
               <div className="aspect-square rounded-2xl overflow-hidden shadow-md border border-warm-dark/10 bg-warm-light/40">
                 <img
                   src={storySettings.section1Image}
@@ -240,16 +287,25 @@ export default function About() {
 
           {/* Paragraph on Right (No boxes) */}
           <div className={`${storySettings.section1Image ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-4 text-left`}>
-            <h2 className="font-heading text-2xl md:text-3xl font-bold uppercase tracking-wider text-warm-accent">
-              {storySettings.section1Title}
+            <h2 
+              className="font-heading font-bold uppercase tracking-wider text-warm-accent"
+              style={{
+                fontSize: storySettings.section1TitleFontSize 
+                  ? `${storySettings.section1TitleFontSize}px` 
+                  : '28px'
+              }}
+            >
+              {formatRichText(storySettings.section1Title)}
             </h2>
-            {storySettings.section1Quote && (
-              <p className="text-base md:text-lg font-serif leading-relaxed text-warm-dark/85 italic border-l-2 border-warm-accent/40 pl-4 py-1">
-                {storySettings.section1Quote}
-              </p>
-            )}
-            <p className="text-warm-dark/75 font-serif leading-relaxed text-base md:text-lg whitespace-pre-line">
-              {storySettings.section1Content}
+            <p 
+              className="text-warm-dark/75 font-serif leading-relaxed whitespace-pre-line"
+              style={{
+                fontSize: storySettings.section1ContentFontSize 
+                  ? `${storySettings.section1ContentFontSize}px` 
+                  : '18px'
+              }}
+            >
+              {formatRichText(storySettings.section1Content)}
             </p>
           </div>
         </div>
@@ -258,22 +314,49 @@ export default function About() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center mb-20 md:mb-28 max-w-6xl mx-auto px-4">
           {/* Paragraph on Left (No boxes) */}
           <div className={`${storySettings.section2Image ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-4 text-left order-2 lg:order-1`}>
-            <h2 className="font-heading text-2xl md:text-3xl font-bold uppercase tracking-wider text-warm-accent">
-              {storySettings.section2Title}
+            <h2 
+              className="font-heading font-bold uppercase tracking-wider text-warm-accent"
+              style={{
+                fontSize: storySettings.section2TitleFontSize 
+                  ? `${storySettings.section2TitleFontSize}px` 
+                  : '28px'
+              }}
+            >
+              {formatRichText(storySettings.section2Title)}
             </h2>
-            <p className="text-warm-dark/75 font-serif leading-relaxed text-base md:text-lg whitespace-pre-line">
-              {storySettings.section2Content1}
+            <p 
+              className="text-warm-dark/75 font-serif leading-relaxed whitespace-pre-line"
+              style={{
+                fontSize: storySettings.section2ContentFontSize 
+                  ? `${storySettings.section2ContentFontSize}px` 
+                  : '18px'
+              }}
+            >
+              {formatRichText(storySettings.section2Content1)}
             </p>
             {storySettings.section2Content2 && (
-              <p className="text-warm-dark/75 font-serif leading-relaxed text-base md:text-lg whitespace-pre-line">
-                {storySettings.section2Content2}
+              <p 
+                className="text-warm-dark/75 font-serif leading-relaxed whitespace-pre-line"
+                style={{
+                  fontSize: storySettings.section2ContentFontSize 
+                    ? `${storySettings.section2ContentFontSize}px` 
+                    : '18px'
+                }}
+              >
+                {formatRichText(storySettings.section2Content2)}
               </p>
             )}
           </div>
 
           {/* 1:1 Photo on Right */}
           {storySettings.section2Image && (
-            <div className="lg:col-span-5 w-full max-w-md mx-auto lg:max-w-none order-1 lg:order-2">
+            <div className={`lg:col-span-5 w-full mx-auto order-1 lg:order-2 ${
+              storySettings.section2ImageSize === 'max-w-xs' ? 'max-w-xs' :
+              storySettings.section2ImageSize === 'max-w-sm' ? 'max-w-sm' :
+              storySettings.section2ImageSize === 'max-w-md' ? 'max-w-md' :
+              storySettings.section2ImageSize === 'max-w-lg' ? 'max-w-lg' :
+              'max-w-md lg:max-w-none'
+            }`}>
               <div className="aspect-square rounded-2xl overflow-hidden shadow-md border border-warm-dark/10 bg-warm-light/40">
                 <img
                   src={storySettings.section2Image}
@@ -301,11 +384,11 @@ export default function About() {
               }`}
               style={{
                 fontSize: storySettings.bottomQuoteFontSize 
-                  ? `clamp(18px, 3vw, ${storySettings.bottomQuoteFontSize}px)` 
-                  : 'clamp(20px, 3vw, 28px)'
+                  ? `${storySettings.bottomQuoteFontSize}px` 
+                  : '28px'
               }}
             >
-              {storySettings.bottomQuote}
+              {formatRichText(storySettings.bottomQuote)}
             </h2>
           </div>
         )}

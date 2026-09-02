@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -17,12 +17,13 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 async function dump() {
-  const querySnapshot = await getDocs(collection(db, "products"));
-  const products: any[] = [];
-  querySnapshot.forEach((doc) => {
-    products.push({ docId: doc.id, ...doc.data() });
-  });
-  console.log(JSON.stringify(products, null, 2));
+  const docRef = doc(db, "settings", "general");
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    console.log("Settings general data:", JSON.stringify(docSnap.data(), null, 2));
+  } else {
+    console.log("No general settings found in Firestore!");
+  }
 }
 
 dump().catch(console.error);

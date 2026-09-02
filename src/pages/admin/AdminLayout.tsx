@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavLink, Outlet, Navigate, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, ShoppingBag, Package, Users, Settings, LogOut, UserCog } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Layout from '../../components/Layout';
+import { setupAdminRichTextShortcuts } from '../../utils/richText';
 
 export default function AdminLayout() {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const cleanup = setupAdminRichTextShortcuts();
+    return cleanup;
+  }, []);
 
   if (isLoading) {
     return (

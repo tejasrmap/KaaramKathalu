@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { formatRichText } from '../utils/richText';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { cart, isCartOpen, setIsCartOpen, updateQuantity, cartTotal, cartCount } = useCart();
@@ -24,6 +25,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         supportPhone: '+91 76766 44366',
         address: '002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu, Bangalore, Karnataka - 560043',
         announcementText: '',
+        instagramUrl: 'https://www.instagram.com/kaaramkathalu/',
         isMaintenanceMode: false
       };
     } catch {
@@ -33,55 +35,51 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         supportPhone: '+91 76766 44366',
         address: '002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu, Bangalore, Karnataka - 560043',
         announcementText: '',
+        instagramUrl: 'https://www.instagram.com/kaaramkathalu/',
         isMaintenanceMode: false
       };
     }
   });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchGeneralSettings = async () => {
+      try {
+        const generalRef = doc(db, 'settings', 'general');
+        const generalSnap = await getDoc(generalRef);
+        if (generalSnap.exists()) {
+          const data = generalSnap.data() as any;
+          setSettings(data);
+          localStorage.setItem('kk_general_settings_cache', JSON.stringify(data));
+        }
+      } catch (error) {
+        console.error("Error fetching general settings in layout:", error);
+      }
+    };
+    fetchGeneralSettings();
+  }, []);
+
   const location = useLocation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    setMobileMenuOpen(false);
   }, [location.pathname]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(prev => prev !== mobile ? mobile : prev);
-    };
-    window.addEventListener('resize', handleResize, { passive: true });
-
-    const fetchSettings = async () => {
-      try {
-        const docRef = doc(db, 'settings', 'general');
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setSettings(prev => {
-            const updated = { ...prev, ...data };
-            localStorage.setItem('kk_general_settings_cache', JSON.stringify(updated));
-            return updated;
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching general settings:", error);
-      }
-    };
-    fetchSettings();
-
-    let lastScrolled = false;
-    const handleScroll = () => {
-      const scrolled = window.scrollY > 20;
-      if (scrolled !== lastScrolled) {
-        lastScrolled = scrolled;
-        setIsScrolled(scrolled);
-      }
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
 
   useEffect(() => {
     if (mobileMenuOpen || isCartOpen) {
@@ -94,155 +92,159 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     };
   }, [mobileMenuOpen, isCartOpen]);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    setMobileMenuOpen(false);
-  }, [location.pathname]);
-
   return (
     <div className="min-h-screen relative overflow-x-hidden flex flex-col max-w-[100vw] bg-warm-bg font-sans">
       {/* TOP NAVIGATION WRAPPER */}
       <div className="fixed top-0 left-0 right-0 z-50">
         {/* Announcement Bar */}
         <div className="bg-warm-accent text-warm-bg py-2 px-4 overflow-hidden relative w-full text-[10px] uppercase font-bold tracking-[0.2em] border-b border-warm-bg/10 select-none">
-              {/* Mobile Single-Lined Scrolling Ticker */}
-              <div className="md:hidden flex whitespace-nowrap overflow-hidden">
-                <div className="animate-marquee flex gap-8 whitespace-nowrap">
-                  <span>{settings.announcementText || 'HANDCRAFTED ANDHRA PICKLES & PODIS | MADE IN SMALL BATCHES | DELIVERY DONE AROUND THE WORLD ✈️'}</span>
-                  <span>•</span>
-                  <span>{settings.announcementText || 'HANDCRAFTED ANDHRA PICKLES & PODIS | MADE IN SMALL BATCHES | DELIVERY DONE AROUND THE WORLD ✈️'}</span>
-                  <span>•</span>
-                </div>
-                <div className="animate-marquee flex gap-8 whitespace-nowrap" aria-hidden="true">
-                  <span>{settings.announcementText || 'HANDCRAFTED ANDHRA PICKLES & PODIS | MADE IN SMALL BATCHES | DELIVERY DONE AROUND THE WORLD ✈️'}</span>
-                  <span>•</span>
-                  <span>{settings.announcementText || 'HANDCRAFTED ANDHRA PICKLES & PODIS | MADE IN SMALL BATCHES | DELIVERY DONE AROUND THE WORLD ✈️'}</span>
-                  <span>•</span>
-                </div>
-              </div>
+          {/* Mobile Single-Lined Scrolling Ticker */}
+          <div className="md:hidden flex whitespace-nowrap overflow-hidden">
+            <div className="animate-marquee flex gap-8 whitespace-nowrap">
+              <span>{formatRichText(settings.announcementText) || 'HANDCRAFTED ANDHRA PICKLES & PODIS | MADE IN SMALL BATCHES | DELIVERY DONE AROUND THE WORLD ✈️'}</span>
+              <span>•</span>
+              <span>{formatRichText(settings.announcementText) || 'HANDCRAFTED ANDHRA PICKLES & PODIS | MADE IN SMALL BATCHES | DELIVERY DONE AROUND THE WORLD ✈️'}</span>
+              <span>•</span>
+            </div>
+            <div className="animate-marquee flex gap-8 whitespace-nowrap" aria-hidden="true">
+              <span>{formatRichText(settings.announcementText) || 'HANDCRAFTED ANDHRA PICKLES & PODIS | MADE IN SMALL BATCHES | DELIVERY DONE AROUND THE WORLD ✈️'}</span>
+              <span>•</span>
+              <span>{formatRichText(settings.announcementText) || 'HANDCRAFTED ANDHRA PICKLES & PODIS | MADE IN SMALL BATCHES | DELIVERY DONE AROUND THE WORLD ✈️'}</span>
+              <span>•</span>
+            </div>
+          </div>
 
-              {/* Desktop Single-Line Bar */}
-              <div className="hidden md:block text-center whitespace-nowrap overflow-hidden text-ellipsis max-w-7xl mx-auto">
-                {settings.announcementText || 'HANDCRAFTED ANDHRA PICKLES & PODIS | MADE IN SMALL BATCHES | DELIVERY DONE AROUND THE WORLD ✈️'}
-              </div>
+          {/* Desktop Single-Line Bar */}
+          <div className="hidden md:block text-center whitespace-nowrap overflow-hidden text-ellipsis max-w-7xl mx-auto">
+            {formatRichText(settings.announcementText) || 'HANDCRAFTED ANDHRA PICKLES & PODIS | MADE IN SMALL BATCHES | DELIVERY DONE AROUND THE WORLD ✈️'}
+          </div>
+        </div>
+
+        {/* NAVBAR */}
+        <header
+          className={`transition-all duration-300 border-b bg-warm-bg/95 backdrop-blur-sm border-warm-dark/10 shadow-sm ${isScrolled || location.pathname !== '/'
+            ? 'py-2.5 md:py-3'
+            : 'py-3.5 md:py-4'
+            }`}
+        >
+          <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-16 flex justify-between items-center w-full relative">
+            {/* Mobile Menu Toggle button (Left side on mobile) */}
+            <div className="lg:hidden flex items-center justify-start z-10">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 text-warm-dark hover:text-warm-accent transition-colors"
+                aria-label="Toggle Menu"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                )}
+              </button>
             </div>
 
-            {/* NAVBAR */}
-            <header
-              className={`transition-all duration-300 border-b bg-warm-bg/95 backdrop-blur-sm border-warm-dark/10 shadow-sm ${isScrolled || location.pathname !== '/'
-                ? 'py-2.5 md:py-3'
-                : 'py-3.5 md:py-4'
-                }`}
-            >
-              <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-16 flex justify-between items-center w-full relative">
-                {/* Mobile Menu Toggle button (Left side on mobile) */}
-                <div className="lg:hidden flex items-center justify-start z-10">
-                  <button
-                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    className="p-2 text-warm-dark hover:text-warm-accent transition-colors"
-                    aria-label="Toggle Menu"
-                  >
-                    {mobileMenuOpen ? <X className="w-6 h-6" /> : (
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
+            {/* Left Brand Logo */}
+            <div className="flex items-center justify-center lg:justify-start flex-1 lg:flex-none">
+              <Link to="/" className="flex items-center gap-3">
+                <img
+                  src="/logo_full.png"
+                  alt={settings.companyName || "Kaaram Kathalu"}
+                  className="h-10 sm:h-12 md:h-14 w-auto object-contain transition-transform duration-300 hover:scale-105"
+                />
+              </Link>
+            </div>
 
-                {/* Logo - Centered absolutely on mobile, left-aligned on desktop */}
-                <div className="absolute left-1/2 -translate-x-1/2 lg:static lg:left-auto lg:translate-x-0 flex justify-center lg:justify-start">
-                  <Link to="/" className="flex items-center group">
-                    <img
-                      src="/logo_full.png"
-                      alt="Kaaram Kathalu"
-                      className={`transition-all duration-300 object-contain ${isScrolled || location.pathname !== '/'
-                        ? 'h-9 sm:h-10 md:h-11'
-                        : 'h-10 sm:h-12 md:h-14'
-                        }`}
-                    />
-                  </Link>
-                </div>
+            {/* Centered Desktop Menu */}
+            <nav className="hidden lg:flex items-center gap-8 font-heading text-xs tracking-[0.2em] uppercase font-bold text-warm-dark/80 absolute left-1/2 -translate-x-1/2">
+              <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Home</Link>
+              <Link to="/shop" className={`${location.pathname === '/shop' && !location.search ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Shop All</Link>
+              <Link to="/shop?category=pickle" className={`${location.pathname === '/shop' && location.search.includes('category=pickle') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Pickles</Link>
+              <Link to="/shop?category=podi" className={`${location.pathname === '/shop' && location.search.includes('category=podi') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Podis</Link>
+              <Link to="/about" className={`${location.pathname === '/about' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Our Story</Link>
+            </nav>
 
-                {/* Desktop Nav Links - Absolutely Centered */}
-                <nav className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 hidden lg:flex gap-7 xl:gap-10 items-center font-heading text-sm xl:text-base tracking-widest uppercase text-warm-dark font-medium whitespace-nowrap">
-                  <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Home</Link>
-                  <Link to="/shop" className={`${location.pathname === '/shop' && !location.search ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Shop All</Link>
-                  <Link to="/shop?category=pickle" className={`${location.pathname === '/shop' && location.search.includes('category=pickle') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Pickles</Link>
-                  <Link to="/shop?category=podi" className={`${location.pathname === '/shop' && location.search.includes('category=podi') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Podis</Link>
-                  <Link to="/about" className={`${location.pathname === '/about' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Our Story</Link>
-                </nav>
+            {/* Desktop & Mobile Actions (Right side) */}
+            <div className="flex justify-end items-center gap-1.5 sm:gap-3 z-10">
+              {/* Instagram Logo for Laptop & Mobile Topbar */}
+              <a
+                href={settings.instagramUrl || 'https://www.instagram.com/kaaramkathalu/'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 text-warm-dark hover:text-warm-accent transition-colors cursor-pointer"
+                title="Follow us on Instagram"
+                aria-label="Instagram"
+              >
+                <Instagram className="w-5 h-5 text-warm-dark hover:text-warm-accent transition-colors" />
+              </a>
 
-                {/* Desktop & Mobile Actions (Right side) */}
-                <div className="flex justify-end items-center gap-2 sm:gap-4 z-10">
-                  {/* Admin Direct Access Icon - Only visible for verified Admin accounts */}
-                  {isAdmin && (
-                    <Link
-                      to="/admin"
-                      className="hidden lg:inline-flex p-2 text-warm-accent hover:text-warm-dark transition-colors relative"
-                      title="Admin Dashboard"
-                    >
-                      <ShieldCheck className="w-5 h-5" />
-                      <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-green-500 rounded-full ring-2 ring-warm-bg" />
-                    </Link>
-                  )}
+              {/* Admin Direct Access Icon - Only visible for verified Admin accounts */}
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="hidden lg:inline-flex p-2 text-warm-accent hover:text-warm-dark transition-colors relative"
+                  title="Admin Dashboard"
+                >
+                  <ShieldCheck className="w-5 h-5" />
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-green-500 rounded-full ring-2 ring-warm-bg" />
+                </Link>
+              )}
 
-                  {user ? (
-                    <div className="hidden lg:flex items-center gap-2">
-                      <Link
-                        to="/profile"
-                        className="p-2 text-warm-dark hover:text-warm-accent transition-colors"
-                        title="My Profile"
-                      >
-                        <UserIcon className="w-5 h-5" />
-                      </Link>
-                      <Link
-                        to="/my-orders"
-                        className="p-2 text-warm-dark hover:text-warm-accent transition-colors"
-                        title="My Orders"
-                      >
-                        <ShoppingBag className="w-5 h-5" />
-                      </Link>
-                    </div>
-                  ) : (
-                    <Link
-                      to="/login"
-                      className="hidden lg:inline-flex p-2 text-warm-dark hover:text-warm-accent transition-colors"
-                      title="Login"
-                    >
-                      <UserIcon className="w-5 h-5" />
-                    </Link>
-                  )}
-
+              {user ? (
+                <div className="hidden lg:flex items-center gap-2">
                   <Link
-                    to="/wishlist"
-                    className="hidden lg:inline-flex relative p-2 text-warm-dark hover:text-warm-accent transition-colors"
-                    title="My Wishlist"
+                    to="/profile"
+                    className="p-2 text-warm-dark hover:text-warm-accent transition-colors"
+                    title="My Profile"
                   >
-                    <Heart className={`w-5 h-5 ${wishlistCount > 0 ? 'fill-warm-accent text-warm-accent' : ''}`} />
-                    {wishlistCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-warm-accent text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
-                        {wishlistCount}
-                      </span>
-                    )}
+                    <UserIcon className="w-5 h-5" />
                   </Link>
-
-                  <button
-                    onClick={() => setIsCartOpen(true)}
-                    className="relative p-2 text-warm-dark hover:text-warm-accent transition-colors"
-                    aria-label="View Cart"
+                  <Link
+                    to="/my-orders"
+                    className="p-2 text-warm-dark hover:text-warm-accent transition-colors"
+                    title="My Orders"
                   >
-                    <ShoppingCart className="w-5 h-5" />
-                    {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-warm-accent text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
-                        {cartCount}
-                      </span>
-                    )}
-                  </button>
+                    <ShoppingBag className="w-5 h-5" />
+                  </Link>
                 </div>
-              </div>
-            </header>
+              ) : (
+                <Link
+                  to="/login"
+                  className="hidden lg:inline-flex p-2 text-warm-dark hover:text-warm-accent transition-colors"
+                  title="Login"
+                >
+                  <UserIcon className="w-5 h-5" />
+                </Link>
+              )}
+
+              <Link
+                to="/wishlist"
+                className="hidden lg:inline-flex relative p-2 text-warm-dark hover:text-warm-accent transition-colors"
+                title="My Wishlist"
+              >
+                <Heart className={`w-5 h-5 ${wishlistCount > 0 ? 'fill-warm-accent text-warm-accent' : ''}`} />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-warm-accent text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
+
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className="relative p-2 text-warm-dark hover:text-warm-accent transition-colors cursor-pointer"
+                aria-label="View Cart"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-warm-accent text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
+        </header>
+      </div>
 
           {/* MOBILE NAV DRAWER */}
           <AnimatePresence>
