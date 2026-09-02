@@ -480,7 +480,7 @@ export default function Orders() {
             <tbody className="divide-y divide-warm-dark/5 bg-white">
               <AnimatePresence>
                 {filteredOrders.map((order, idx) => {
-                  const openUpwards = filteredOrders.length <= 2 || idx >= Math.max(1, filteredOrders.length - 2);
+                  const openUpwards = idx > 0 && idx >= filteredOrders.length - 2;
                   return (
                     <motion.tr 
                       key={order.id}
@@ -568,7 +568,9 @@ export default function Orders() {
 
         {/* Mobile Card View */}
         <div className="md:hidden divide-y divide-warm-dark/5">
-          {filteredOrders.map(order => (
+          {filteredOrders.map((order, idx) => {
+            const openUpwardsMobile = idx > 0 && idx >= filteredOrders.length - 2;
+            return (
             <div key={order.id} className="p-4 bg-white space-y-4">
               <div className="flex justify-between items-start">
                 <div>
@@ -603,11 +605,11 @@ export default function Orders() {
                       <div className="fixed inset-0 z-10" onClick={() => setOpenDropdown(null)} />
                       <AnimatePresence>
                         <motion.div
-                          initial={{ opacity: 0, scale: 0.92, y: 6 }}
+                          initial={{ opacity: 0, scale: 0.92, y: openUpwardsMobile ? 6 : -6 }}
                           animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.92, y: 6 }}
+                          exit={{ opacity: 0, scale: 0.92, y: openUpwardsMobile ? 6 : -6 }}
                           transition={{ duration: 0.15, ease: 'easeOut' }}
-                          className="absolute right-0 bottom-full mb-2 w-48 bg-white border border-warm-dark/10 rounded-2xl shadow-lg z-20 py-2 origin-bottom-right"
+                          className={`absolute right-0 ${openUpwardsMobile ? 'bottom-full mb-2 origin-bottom-right' : 'top-full mt-2 origin-top-right'} w-48 bg-white border border-warm-dark/10 rounded-2xl shadow-lg z-20 py-2`}
                         >
                           <div className="px-4 py-2 border-b border-warm-dark/5 text-[10px] font-bold text-warm-dark/40 uppercase tracking-widest mb-1">Update Status:</div>
                           {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(status => (
@@ -635,7 +637,8 @@ export default function Orders() {
                 </div>
               </div>
             </div>
-          ))}
+          );
+        })}
         </div>
 
         {filteredOrders.length === 0 && (
