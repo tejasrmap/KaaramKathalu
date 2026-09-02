@@ -470,18 +470,43 @@ export default function Home() {
         </div>
       </section>
 
+      {/* SVG FILTERS FOR AUTHENTIC TORN PAPER FIBERS */}
+      <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
+        <defs>
+          <filter id="realPaperRipTop" x="-10%" y="-20%" width="120%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.04 0.08" numOctaves="5" seed="7" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="14" xChannelSelector="R" yChannelSelector="G" result="torn" />
+            <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#000000" floodOpacity="0.12" />
+          </filter>
+          <filter id="whitePaperPulpFiber" x="-10%" y="-20%" width="120%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.06 0.1" numOctaves="4" seed="4" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="16" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
+      </svg>
+
       {/* HERITAGE GREEN PAPERCUT TORN PAPER TRUST BADGES STRIP */}
-      <section className="relative w-full overflow-hidden select-none my-2 sm:my-4">
+      <section className="relative w-full overflow-hidden select-none my-2 sm:my-3">
         {/* Realistic Multi-Layer Torn Paper Top Edge */}
         <div className="w-full overflow-hidden leading-none select-none pointer-events-none -mb-[1px] relative">
           {/* Layer 1: White/Cream Raw Paper Pulp & Fibers (exposed when paper is torn) */}
-          <svg viewBox="0 0 1200 45" preserveAspectRatio="none" className="w-full h-7 sm:h-9 md:h-12 text-[#eae2d5] fill-current block drop-shadow-[0_2px_4px_rgba(0,0,0,0.06)]">
-            <path d="M0,45 L0,12 L8,18 L18,11 L31,22 L45,14 L62,25 L78,11 L95,20 L112,13 L130,24 L148,15 L168,26 L189,12 L210,23 L232,14 L255,25 L276,16 L298,27 L320,13 L342,24 L365,15 L389,26 L412,12 L435,23 L458,15 L482,26 L506,13 L530,24 L554,15 L578,26 L602,12 L626,23 L650,15 L674,26 L698,13 L722,24 L746,14 L770,25 L794,13 L818,24 L842,15 L866,26 L890,12 L914,23 L938,15 L962,26 L986,13 L1010,24 L1034,14 L1058,25 L1082,13 L1106,24 L1130,15 L1154,26 L1178,13 L1200,19 L1200,45 Z" />
+          <svg 
+            viewBox="0 0 1440 45" 
+            preserveAspectRatio="none" 
+            className="w-full h-7 sm:h-9 md:h-12 text-[#f5efe4] fill-current block" 
+            style={{ filter: 'url(#whitePaperPulpFiber)' }}
+          >
+            <path d="M0,45 L0,18 Q45,8 90,16 T180,14 T270,20 T360,12 T450,18 T540,14 T630,21 T720,13 T810,19 T900,14 T990,20 T1080,13 T1170,19 T1260,14 T1350,20 Q1395,16 1440,14 L1440,45 Z" />
           </svg>
 
           {/* Layer 2: Main Dark Green Paper Tear overlapping the white fiber pulp */}
-          <svg viewBox="0 0 1200 45" preserveAspectRatio="none" className="w-full h-7 sm:h-9 md:h-12 text-[#233d32] fill-current block relative -mt-6 sm:-mt-8 md:-mt-10 -mb-[1px]">
-            <path d="M0,45 L0,22 L10,16 L22,27 L35,18 L50,29 L68,17 L86,27 L105,19 L124,28 L142,20 L162,30 L182,18 L204,28 L225,19 L248,30 L270,21 L292,31 L314,19 L336,29 L359,20 L382,31 L405,18 L428,29 L451,20 L475,31 L499,19 L523,29 L547,20 L571,31 L595,18 L619,29 L643,20 L667,31 L691,19 L715,29 L739,20 L763,31 L787,18 L811,29 L835,20 L859,31 L883,19 L907,29 L931,20 L955,31 L979,18 L1003,29 L1027,20 L1051,31 L1075,19 L1099,29 L1123,20 L1147,31 L1171,19 L1190,26 L1200,21 L1200,45 Z" />
+          <svg 
+            viewBox="0 0 1440 45" 
+            preserveAspectRatio="none" 
+            className="w-full h-7 sm:h-9 md:h-12 text-[#233d32] fill-current block relative -mt-6 sm:-mt-8 md:-mt-10 -mb-[1px]" 
+            style={{ filter: 'url(#realPaperRipTop)' }}
+          >
+            <path d="M0,45 L0,22 Q45,15 90,24 T180,18 T270,25 T360,19 T450,26 T540,18 T630,26 T720,19 T810,25 T900,19 T990,26 T1080,18 T1170,25 T1260,19 T1350,25 Q1395,20 1440,21 L1440,45 Z" />
           </svg>
         </div>
 
