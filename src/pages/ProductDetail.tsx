@@ -175,17 +175,17 @@ export default function ProductDetail() {
 
           {/* Clean, Unique, Straight & Highly Readable Price Presentation */}
           <div className="flex flex-wrap items-center gap-3 mb-6">
-            <div className="inline-flex items-baseline gap-1.5 bg-white px-4 py-2.5 rounded-2xl border border-warm-dark/15 shadow-xs">
-              <span className="text-sm font-sans font-bold text-warm-accent">₹</span>
-              <span className="text-3xl sm:text-4xl font-sans font-black text-warm-dark tracking-tight leading-none">
+            <div className="inline-flex items-baseline gap-1 bg-white px-3.5 py-1.5 rounded-xl border border-warm-dark/15 shadow-2xs">
+              <span className="text-xs font-sans font-bold text-warm-accent">₹</span>
+              <span className="text-2xl font-sans font-extrabold text-warm-dark tracking-tight leading-none">
                 {computedUnitPrice}
               </span>
-              <span className="text-xs font-sans font-medium text-warm-dark/60 ml-2 border-l border-warm-dark/15 pl-2.5">
+              <span className="text-xs font-sans font-medium text-warm-dark/60 ml-2 border-l border-warm-dark/15 pl-2">
                 Weight: {selectedWeight === 1000 ? '1000g (1kg)' : `${selectedWeight}g`}
               </span>
             </div>
             {isJar && (
-              <span className="inline-flex items-center gap-1 bg-warm-accent/10 border border-warm-accent/30 text-warm-accent px-3 py-1.5 rounded-xl text-xs font-bold font-sans">
+              <span className="inline-flex items-center gap-1 bg-warm-accent/10 border border-warm-accent/30 text-warm-accent px-2.5 py-1 rounded-lg text-xs font-bold font-sans">
                 🫙 Glass Jar (+₹100)
               </span>
             )}
