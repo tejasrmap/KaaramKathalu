@@ -470,21 +470,23 @@ export default function Home() {
         </div>
       </section>
 
-      {/* HERITAGE GREEN PAPERCUT TRUST BADGES STRIP */}
-      <section className="relative w-full overflow-hidden select-none">
-        {/* Torn / Papercut Top Edge SVG */}
-        <div className="w-full overflow-hidden leading-none select-none pointer-events-none -mb-[1px]">
-          <svg 
-            viewBox="0 0 1440 38" 
-            preserveAspectRatio="none" 
-            className="w-full h-5 sm:h-7 md:h-9 text-[#233d32] fill-current block drop-shadow-[0_-2px_4px_rgba(0,0,0,0.06)]"
-          >
-            <path d="M0,38 L0,16 L12,18 L24,13 L38,20 L54,14 L72,19 L90,12 L108,18 L126,13 L144,21 L165,15 L186,22 L210,14 L232,19 L255,12 L278,20 L302,15 L328,22 L352,14 L375,19 L400,11 L425,18 L450,13 L476,21 L502,15 L528,22 L554,14 L580,19 L605,12 L630,20 L655,14 L680,21 L705,15 L730,22 L755,13 L780,19 L805,12 L830,20 L855,14 L880,22 L905,15 L930,19 L955,12 L980,21 L1005,14 L1030,20 L1055,13 L1080,22 L1105,15 L1130,19 L1155,12 L1180,21 L1205,14 L1230,20 L1255,13 L1280,22 L1305,15 L1330,19 L1355,12 L1380,21 L1405,14 L1425,18 L1440,15 L1440,38 Z" />
+      {/* HERITAGE GREEN PAPERCUT TORN PAPER TRUST BADGES STRIP */}
+      <section className="relative w-full overflow-hidden select-none my-2 sm:my-4">
+        {/* Realistic Multi-Layer Torn Paper Top Edge */}
+        <div className="w-full overflow-hidden leading-none select-none pointer-events-none -mb-[1px] relative">
+          {/* Layer 1: White/Cream Raw Paper Pulp & Fibers (exposed when paper is torn) */}
+          <svg viewBox="0 0 1200 45" preserveAspectRatio="none" className="w-full h-7 sm:h-9 md:h-12 text-[#eae2d5] fill-current block drop-shadow-[0_2px_4px_rgba(0,0,0,0.06)]">
+            <path d="M0,45 L0,12 L8,18 L18,11 L31,22 L45,14 L62,25 L78,11 L95,20 L112,13 L130,24 L148,15 L168,26 L189,12 L210,23 L232,14 L255,25 L276,16 L298,27 L320,13 L342,24 L365,15 L389,26 L412,12 L435,23 L458,15 L482,26 L506,13 L530,24 L554,15 L578,26 L602,12 L626,23 L650,15 L674,26 L698,13 L722,24 L746,14 L770,25 L794,13 L818,24 L842,15 L866,26 L890,12 L914,23 L938,15 L962,26 L986,13 L1010,24 L1034,14 L1058,25 L1082,13 L1106,24 L1130,15 L1154,26 L1178,13 L1200,19 L1200,45 Z" />
+          </svg>
+
+          {/* Layer 2: Main Dark Green Paper Tear overlapping the white fiber pulp */}
+          <svg viewBox="0 0 1200 45" preserveAspectRatio="none" className="w-full h-7 sm:h-9 md:h-12 text-[#233d32] fill-current block relative -mt-6 sm:-mt-8 md:-mt-10 -mb-[1px]">
+            <path d="M0,45 L0,22 L10,16 L22,27 L35,18 L50,29 L68,17 L86,27 L105,19 L124,28 L142,20 L162,30 L182,18 L204,28 L225,19 L248,30 L270,21 L292,31 L314,19 L336,29 L359,20 L382,31 L405,18 L428,29 L451,20 L475,31 L499,19 L523,29 L547,20 L571,31 L595,18 L619,29 L643,20 L667,31 L691,19 L715,29 L739,20 L763,31 L787,18 L811,29 L835,20 L859,31 L883,19 L907,29 L931,20 L955,31 L979,18 L1003,29 L1027,20 L1051,31 L1075,19 L1099,29 L1123,20 L1147,31 L1171,19 L1190,26 L1200,21 L1200,45 Z" />
           </svg>
         </div>
 
         {/* Main Green Patch Body */}
-        <div className="bg-[#233d32] text-[#fbf8f2] py-5 sm:py-7 md:py-9 px-2 sm:px-4 md:px-8 relative w-full">
+        <div className="bg-[#233d32] text-[#fbf8f2] py-4 sm:py-6 md:py-8 px-2 sm:px-4 md:px-8 relative w-full shadow-inner">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-5 divide-x divide-white/15 items-center">
               {/* 1. HANDMADE IN SMALL BATCHES */}
