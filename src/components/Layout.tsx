@@ -445,8 +445,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
 
-            <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-warm-bg/10 text-center font-heading tracking-wider uppercase text-warm-bg/40 text-xs">
-              &copy; {new Date().getFullYear()} {settings.companyName}. All rights reserved.
+            <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-warm-bg/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left font-heading tracking-wider uppercase text-warm-bg/50 text-xs">
+              <div>
+                &copy; {new Date().getFullYear()} {settings.companyName || 'Kaaram Kathalu'}. All rights reserved.
+              </div>
+              <div>
+                Website Designed by{' '}
+                <a
+                  href="https://gtinnox.in"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-warm-accent hover:text-white font-bold transition-colors underline decoration-warm-accent/40 hover:decoration-white underline-offset-4"
+                >
+                  GT INNOX LLP
+                </a>
+              </div>
             </div>
           </footer>
 
