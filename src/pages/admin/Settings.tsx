@@ -327,6 +327,7 @@ export default function Settings() {
 
   const [sec5File, setSec5File] = useState<File | null>(null);
   const [sec5Preview, setSec5Preview] = useState<string | null>(null);
+  const [sec5Tab, setSec5Tab] = useState<'upload' | 'url'>('upload');
   const [isUploading, setIsUploading] = useState(false);
 
   // Image Cropper & Framing Modal State
