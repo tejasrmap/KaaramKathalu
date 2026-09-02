@@ -347,7 +347,7 @@ export default function MyOrders() {
                       </div>
                       <div>
                         <p className="text-[10px] font-heading font-black tracking-widest text-warm-dark/40 uppercase mb-1">Total Value</p>
-                        <p className="font-bold text-warm-accent font-serif text-base">₹{order.total}</p>
+                        <p className="font-extrabold text-warm-accent font-sans text-base">₹{order.total}</p>
                       </div>
                       <div>
                         <p className="text-[10px] font-heading font-black tracking-widest text-warm-dark/40 uppercase mb-1">Delivery To</p>
@@ -366,7 +366,7 @@ export default function MyOrders() {
                             {item.name}
                             <span className="text-warm-dark/40 font-sans text-xs ml-2 font-normal">x{item.quantity}</span>
                           </span>
-                          <span className="font-bold text-warm-dark/60 text-sm">₹{item.price * item.quantity}</span>
+                          <span className="font-bold text-warm-dark/80 font-sans text-sm">₹{item.price * item.quantity}</span>
                         </div>
                       ))}
                     </div>

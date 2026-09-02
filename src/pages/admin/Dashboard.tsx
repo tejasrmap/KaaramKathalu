@@ -248,7 +248,7 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-warm-dark font-serif text-lg">₹{order.total || 0}</p>
+                  <p className="font-extrabold text-warm-dark font-sans text-lg">₹{order.total || 0}</p>
                   <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider mt-1 bg-warm-accent/10 text-warm-accent">
                     {order.status || 'Pending'}
                   </span>

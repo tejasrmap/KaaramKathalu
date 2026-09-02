@@ -513,10 +513,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                 <h4 className="font-heading font-bold text-base text-warm-dark hover:text-warm-accent transition-colors leading-tight mb-1 truncate">{item.product.name}</h4>
                               </Link>
                               <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
-                                <span className="font-bold text-warm-accent text-sm">₹{price}</span>
+                                <span className="font-sans font-bold text-warm-accent text-sm">₹{price}</span>
                                 <span className="text-[10px] bg-warm-dark/5 px-2 py-0.5 rounded font-medium text-warm-dark/70 font-sans">{weight}g</span>
                                 {item.selectedJar && (
-                                  <span className="text-[9px] bg-warm-accent/10 border border-warm-accent/30 text-warm-accent px-1.5 py-0.5 rounded font-bold">
+                                  <span className="text-[9px] bg-warm-accent/10 border border-warm-accent/30 text-warm-accent px-1.5 py-0.5 rounded font-bold font-sans">
                                     🫙 Jar (+₹100)
                                   </span>
                                 )}
@@ -548,7 +548,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <div className="p-6 bg-warm-light border-t border-warm-dark/10">
                       <div className="flex justify-between items-center mb-6">
                         <span className="text-warm-dark font-heading font-bold uppercase tracking-wider text-xs">Estimated Total</span>
-                        <span className="font-serif text-2xl font-bold text-warm-dark">₹{cartTotal}</span>
+                        <span className="font-sans text-2xl font-black text-warm-dark tracking-tight">₹{cartTotal}</span>
                       </div>
                       <Link
                         to="/checkout"

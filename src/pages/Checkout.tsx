@@ -939,7 +939,7 @@ export default function Checkout() {
                         )}
                       </div>
                     </div>
-                    <div className="font-bold text-warm-dark font-serif">₹{price * item.quantity}</div>
+                    <div className="font-sans font-extrabold text-warm-dark text-base">₹{price * item.quantity}</div>
                   </div>
                 );
               })}
@@ -948,7 +948,7 @@ export default function Checkout() {
             <div className="pt-6 border-t border-dashed border-warm-dark/10 space-y-4">
               <div className="flex justify-between text-warm-dark/50 text-xs font-semibold uppercase tracking-wider">
                 <span>Subtotal</span>
-                <span>₹{cartTotal}</span>
+                <span className="font-sans font-bold text-warm-dark">₹{cartTotal}</span>
               </div>
               <div className="flex justify-between text-warm-dark/50 text-xs font-semibold uppercase tracking-wider items-center">
                 <span>Shipping</span>
@@ -969,18 +969,18 @@ export default function Checkout() {
                     Unavailable
                   </span>
                 ) : (
-                  <span className="text-warm-accent font-bold font-serif text-sm">
+                  <span className="text-warm-accent font-bold font-sans text-sm">
                     {shippingCost === 0 ? 'Free' : `₹${shippingCost}`}
                   </span>
                 )}
               </div>
               <div className="flex justify-between text-warm-dark/50 text-xs font-semibold uppercase tracking-wider">
                 <span>Total Weight</span>
-                <span className="text-warm-dark/70 font-bold">{totalWeightGrams}g</span>
+                <span className="text-warm-dark/70 font-bold font-sans">{totalWeightGrams}g</span>
               </div>
               <div className="flex justify-between items-center pt-5 border-t border-warm-dark/10">
-                <span className="font-serif text-xl font-bold text-warm-dark">Grand Total</span>
-                <span className="font-serif text-2xl font-bold text-warm-accent">
+                <span className="font-heading uppercase tracking-wider text-base font-bold text-warm-dark">Grand Total</span>
+                <span className="font-sans text-2xl font-black text-warm-accent tracking-tight">
                   {pincodeError || shippingCost === null
                     ? '—'
                     : formData.pincode.trim().length !== 6

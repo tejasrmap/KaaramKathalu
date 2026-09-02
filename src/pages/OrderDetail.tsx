@@ -289,25 +289,25 @@ export default function OrderDetail() {
                       <p className="font-bold text-warm-dark text-base">{item.name}</p>
                       <p className="text-[10px] text-warm-dark/50 font-sans mt-0.5">Quantity: {item.quantity}</p>
                     </div>
-                    <p className="font-bold text-warm-dark text-base">₹{item.price * item.quantity}</p>
+                    <p className="font-bold text-warm-dark font-sans text-base">₹{item.price * item.quantity}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Total Breakdown */}
-            <div className="bg-warm-light/20 p-6 rounded-2xl border border-warm-accent/5 max-w-md ml-auto text-sm font-serif space-y-2.5">
+            <div className="bg-warm-light/20 p-6 rounded-2xl border border-warm-accent/5 max-w-md ml-auto text-sm space-y-2.5">
               <div className="flex justify-between text-warm-dark/70">
-                <span>Subtotal</span>
-                <span>₹{order.total - (order.shippingCost || 0)}</span>
+                <span className="font-serif">Subtotal</span>
+                <span className="font-sans font-bold">₹{order.total - (order.shippingCost || 0)}</span>
               </div>
               <div className="flex justify-between text-warm-dark/70">
-                <span>Shipping Cost</span>
-                <span>₹{order.shippingCost || 0}</span>
+                <span className="font-serif">Shipping Cost</span>
+                <span className="font-sans font-bold">₹{order.shippingCost || 0}</span>
               </div>
               <div className="flex justify-between font-bold text-warm-dark text-base border-t border-warm-dark/5 pt-3 mt-1.5">
-                <span>Grand Total</span>
-                <span className="text-warm-accent text-lg">₹{order.total}</span>
+                <span className="font-heading uppercase tracking-wider text-sm">Grand Total</span>
+                <span className="text-warm-accent font-sans font-black text-xl tracking-tight">₹{order.total}</span>
               </div>
             </div>
           </div>
