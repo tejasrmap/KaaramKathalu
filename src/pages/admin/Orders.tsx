@@ -463,9 +463,9 @@ export default function Orders() {
       </div>
 
       {/* Table (Desktop) / Cards (Mobile) */}
-      <div className="bg-white border border-warm-dark/5 rounded-2xl overflow-hidden w-full max-w-[95vw] md:max-w-none mx-auto relative z-10 p-1 shadow-sm">
+      <div className="bg-white border border-warm-dark/5 rounded-2xl w-full max-w-[95vw] md:max-w-none mx-auto relative z-10 p-1 shadow-sm min-h-[360px]">
         {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto min-h-[340px] pb-24">
           <table className="w-full text-left text-sm">
             <thead className="bg-warm-light text-warm-dark font-bold font-serif border-b border-warm-dark/10 tracking-widest uppercase">
               <tr>
@@ -479,85 +479,88 @@ export default function Orders() {
             </thead>
             <tbody className="divide-y divide-warm-dark/5 bg-white">
               <AnimatePresence>
-                {filteredOrders.map(order => (
-                  <motion.tr 
-                    key={order.id}
-                    layout
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="hover:bg-warm-bg/30 transition-colors"
-                  >
-                    <td className="px-6 py-4 font-bold text-warm-dark font-serif">{order.id.slice(0, 8)}...</td>
-                    <td className="px-6 py-4">
-                      <div>
-                        <div className="font-bold text-warm-dark font-serif text-base">{order.customer?.name}</div>
-                        <div className="text-[10px] text-warm-dark/60 uppercase tracking-widest">{order.customer?.email}</div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-warm-dark/80 font-serif font-bold">{order.date}</td>
-                    <td className="px-6 py-4 font-bold text-warm-dark text-lg text-right">₹{order.total}</td>
-                    <td className="px-6 py-4 text-center">
-                      <span className={`inline-block px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-warm-accent/10 text-warm-accent`}>
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 relative">
-                      <div className="flex items-center justify-center gap-2">
-                        <button 
-                          onClick={() => openOrderDetails(order)}
-                          className="px-3 py-1.5 rounded-xl border border-warm-dark/10 bg-white hover:bg-warm-dark hover:text-white transition-colors text-warm-dark font-bold uppercase tracking-widest text-[10px] flex items-center gap-1 cursor-pointer"
-                        >
-                          <Eye className="w-3.5 h-3.5" /> View
-                        </button>
-                        
-                        <div className="relative">
+                {filteredOrders.map((order, idx) => {
+                  const openUpwards = filteredOrders.length <= 2 || idx >= Math.max(1, filteredOrders.length - 2);
+                  return (
+                    <motion.tr 
+                      key={order.id}
+                      layout
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="hover:bg-warm-bg/30 transition-colors"
+                    >
+                      <td className="px-6 py-4 font-bold text-warm-dark font-serif">{order.id.slice(0, 8)}...</td>
+                      <td className="px-6 py-4">
+                        <div>
+                          <div className="font-bold text-warm-dark font-serif text-base">{order.customer?.name}</div>
+                          <div className="text-[10px] text-warm-dark/60 uppercase tracking-widest">{order.customer?.email}</div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-warm-dark/80 font-serif font-bold">{order.date}</td>
+                      <td className="px-6 py-4 font-bold text-warm-dark text-lg text-right">₹{order.total}</td>
+                      <td className="px-6 py-4 text-center">
+                        <span className={`inline-block px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-warm-accent/10 text-warm-accent`}>
+                          {order.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 relative">
+                        <div className="flex items-center justify-center gap-2">
                           <button 
-                            onClick={() => setOpenDropdown(openDropdown === order.id ? null : order.id)}
-                            className="p-1.5 rounded-xl border border-warm-dark/10 bg-warm-light hover:bg-warm-accent hover:text-white text-warm-dark transition-colors cursor-pointer"
+                            onClick={() => openOrderDetails(order)}
+                            className="px-3 py-1.5 rounded-xl border border-warm-dark/10 bg-white hover:bg-warm-dark hover:text-white transition-colors text-warm-dark font-bold uppercase tracking-widest text-[10px] flex items-center gap-1 cursor-pointer"
                           >
-                            <MoreVertical className="w-4 h-4" />
+                            <Eye className="w-3.5 h-3.5" /> View
                           </button>
                           
-                          {openDropdown === order.id && (
-                            <>
-                              <div className="fixed inset-0 z-10" onClick={() => setOpenDropdown(null)} />
-                              <AnimatePresence>
-                                <motion.div
-                                  initial={{ opacity: 0, scale: 0.92, y: -6 }}
-                                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                                  exit={{ opacity: 0, scale: 0.92, y: -6 }}
-                                  transition={{ duration: 0.15, ease: 'easeOut' }}
-                                  className="absolute right-0 mt-2 w-48 bg-white border border-warm-dark/10 rounded-2xl shadow-lg z-20 py-2 origin-top-right"
-                                >
-                                  <div className="px-4 py-2 border-b border-warm-dark/5 text-[10px] font-bold text-warm-dark/40 uppercase tracking-widest mb-1">Update Status To:</div>
-                                  {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(status => (
-                                    <button
-                                      key={status}
-                                      onClick={() => updateStatus(order.id, status)}
-                                      className="w-full text-left px-4 py-2.5 text-xs font-serif text-warm-dark hover:bg-warm-light hover:text-warm-accent transition-colors flex items-center justify-between cursor-pointer"
-                                    >
-                                      {status}
-                                      {order.status === status && <div className="w-1.5 h-1.5 rounded-full bg-warm-accent"></div>}
-                                    </button>
-                                  ))}
-                                  <div className="border-t border-warm-dark/10 my-1"></div>
-                                  <button
-                                    onClick={(e) => deleteOrder(order.id, e)}
-                                    className="w-full text-left px-4 py-2 text-xs font-serif text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 cursor-pointer font-bold"
+                          <div className="relative">
+                            <button 
+                              onClick={() => setOpenDropdown(openDropdown === order.id ? null : order.id)}
+                              className="p-1.5 rounded-xl border border-warm-dark/10 bg-warm-light hover:bg-warm-accent hover:text-white text-warm-dark transition-colors cursor-pointer"
+                            >
+                              <MoreVertical className="w-4 h-4" />
+                            </button>
+                            
+                            {openDropdown === order.id && (
+                              <>
+                                <div className="fixed inset-0 z-10" onClick={() => setOpenDropdown(null)} />
+                                <AnimatePresence>
+                                  <motion.div
+                                    initial={{ opacity: 0, scale: 0.92, y: openUpwards ? 6 : -6 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.92, y: openUpwards ? 6 : -6 }}
+                                    transition={{ duration: 0.15, ease: 'easeOut' }}
+                                    className={`absolute right-0 ${openUpwards ? 'bottom-full mb-2 origin-bottom-right' : 'top-full mt-2 origin-top-right'} w-48 bg-white border border-warm-dark/10 rounded-2xl shadow-xl z-30 py-2`}
                                   >
-                                    <Trash2 className="w-3.5 h-3.5 text-red-600" />
-                                    Delete Order
-                                  </button>
-                                </motion.div>
-                              </AnimatePresence>
-                            </>
-                          )}
+                                    <div className="px-4 py-2 border-b border-warm-dark/5 text-[10px] font-bold text-warm-dark/40 uppercase tracking-widest mb-1">Update Status To:</div>
+                                    {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(status => (
+                                      <button
+                                        key={status}
+                                        onClick={() => updateStatus(order.id, status)}
+                                        className="w-full text-left px-4 py-2.5 text-xs font-serif text-warm-dark hover:bg-warm-light hover:text-warm-accent transition-colors flex items-center justify-between cursor-pointer"
+                                      >
+                                        {status}
+                                        {order.status === status && <div className="w-1.5 h-1.5 rounded-full bg-warm-accent"></div>}
+                                      </button>
+                                    ))}
+                                    <div className="border-t border-warm-dark/10 my-1"></div>
+                                    <button
+                                      onClick={(e) => deleteOrder(order.id, e)}
+                                      className="w-full text-left px-4 py-2 text-xs font-serif text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 cursor-pointer font-bold"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5 text-red-600" />
+                                      Delete Order
+                                    </button>
+                                  </motion.div>
+                                </AnimatePresence>
+                              </>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))}
+                      </td>
+                    </motion.tr>
+                  );
+                })}
               </AnimatePresence>
             </tbody>
           </table>
