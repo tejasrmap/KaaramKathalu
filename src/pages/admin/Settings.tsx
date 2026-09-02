@@ -37,6 +37,7 @@ export default function Settings() {
     testimonialsTitle: 'What Our Customers Say',
     testimonialsDescription: 'Cherished words from homes across India celebrating authentic Andhra flavors.',
     delhiveryWarehouseName: 'Kaaram Kathalu',
+    valuePropsHeadingColor: '#8B2E0F',
     activeCategories: {
       pickle: true,
       podi: true,
@@ -1365,10 +1366,67 @@ export default function Settings() {
                   <span className="text-lg">🌿</span>
                   <div>
                     <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">Homepage Feature Columns (Value Propositions)</h2>
-                    <p className="text-[11px] font-serif italic text-warm-dark/50">Edit text matter and toggle up to 5 feature columns on/off.</p>
+                    <p className="text-[11px] font-serif italic text-warm-dark/50">Edit text matter, customize heading colors by #hex codes, and toggle up to 5 feature columns on/off.</p>
                   </div>
                 </div>
               </div>
+
+              {/* Section-wide Heading Color Controls */}
+              <div className="p-5 bg-warm-light/25 border-b border-warm-dark/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark block mb-1">
+                    Default Headings Color (Hex Code)
+                  </label>
+                  <p className="text-[11px] font-serif italic text-warm-dark/60">
+                    Set the default color code for all column titles in this section (e.g. #3E400E).
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                  {/* Color Picker + Hex Input */}
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-warm-dark/15 rounded-xl shadow-xs">
+                    <input 
+                      type="color"
+                      value={settings.valuePropsHeadingColor || '#8B2E0F'}
+                      onChange={(e) => setSettings(prev => ({ ...prev, valuePropsHeadingColor: e.target.value }))}
+                      className="w-7 h-7 rounded-lg cursor-pointer border-0 p-0 bg-transparent"
+                      title="Choose custom color"
+                    />
+                    <input 
+                      type="text"
+                      value={settings.valuePropsHeadingColor || '#8B2E0F'}
+                      onChange={(e) => setSettings(prev => ({ ...prev, valuePropsHeadingColor: e.target.value }))}
+                      placeholder="#3E400E"
+                      className="w-24 px-2 py-1 font-mono text-xs font-bold text-warm-dark uppercase bg-transparent outline-none"
+                    />
+                  </div>
+
+                  {/* Preset Swatches */}
+                  <div className="flex items-center gap-1.5 pl-2 border-l border-warm-dark/15">
+                    {[
+                      { code: '#3E400E', label: 'Olive / Heritage Green (#3E400E)' },
+                      { code: '#8B2E0F', label: 'Brick Red (#8B2E0F)' },
+                      { code: '#1B3127', label: 'Forest Green (#1B3127)' },
+                      { code: '#9E2A2B', label: 'Chilli Red (#9E2A2B)' },
+                      { code: '#2C1810', label: 'Coffee Brown (#2C1810)' },
+                      { code: '#D97706', label: 'Amber Gold (#D97706)' }
+                    ].map(preset => (
+                      <button
+                        key={preset.code}
+                        type="button"
+                        onClick={() => setSettings(prev => ({ ...prev, valuePropsHeadingColor: preset.code }))}
+                        title={preset.label}
+                        className={`w-7 h-7 rounded-lg transition-transform hover:scale-110 cursor-pointer border ${
+                          (settings.valuePropsHeadingColor || '#8B2E0F').toUpperCase() === preset.code.toUpperCase()
+                            ? 'ring-2 ring-warm-accent ring-offset-1 border-white shadow-xs'
+                            : 'border-black/10'
+                        }`}
+                        style={{ backgroundColor: preset.code }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
               <div className="p-6 space-y-6">
                 {(settings.valueProps || []).map((prop, idx) => (
                   <div key={prop.id || idx} className="p-5 bg-warm-light/40 rounded-2xl border border-warm-dark/10 space-y-4">
@@ -1399,11 +1457,40 @@ export default function Settings() {
                       </button>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       <div>
-                        <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">
-                          Column Heading / Title
-                        </label>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block">
+                            Column Heading / Title
+                          </label>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-mono uppercase text-warm-dark/50">Custom #Color:</span>
+                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-white border border-warm-dark/10 rounded-lg">
+                              <input 
+                                type="color"
+                                value={prop.titleColor || settings.valuePropsHeadingColor || '#8B2E0F'}
+                                onChange={(e) => {
+                                  const updated = [...(settings.valueProps || [])];
+                                  updated[idx] = { ...updated[idx], titleColor: e.target.value };
+                                  setSettings(prev => ({ ...prev, valueProps: updated }));
+                                }}
+                                className="w-4 h-4 rounded cursor-pointer border-0 p-0 bg-transparent"
+                                title="Custom color for this heading"
+                              />
+                              <input 
+                                type="text"
+                                value={prop.titleColor || ''}
+                                onChange={(e) => {
+                                  const updated = [...(settings.valueProps || [])];
+                                  updated[idx] = { ...updated[idx], titleColor: e.target.value };
+                                  setSettings(prev => ({ ...prev, valueProps: updated }));
+                                }}
+                                placeholder={settings.valuePropsHeadingColor || '#8B2E0F'}
+                                className="w-18 font-mono text-[11px] uppercase bg-transparent outline-none"
+                              />
+                            </div>
+                          </div>
+                        </div>
                         <input 
                           type="text"
                           value={prop.title || ''}
@@ -1413,7 +1500,8 @@ export default function Settings() {
                             setSettings(prev => ({ ...prev, valueProps: updated }));
                           }}
                           placeholder="e.g. Farm-Fresh Flavors"
-                          className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-white focus:bg-white outline-none font-serif text-sm font-bold text-warm-accent focus:border-warm-accent transition-colors"
+                          style={{ color: prop.titleColor || settings.valuePropsHeadingColor || '#8B2E0F' }}
+                          className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-white focus:bg-white outline-none font-serif text-sm font-bold focus:border-warm-accent transition-colors"
                         />
                       </div>
 

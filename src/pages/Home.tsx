@@ -14,6 +14,7 @@ interface ValueProposition {
   title: string;
   description: string;
   enabled: boolean;
+  titleColor?: string;
 }
 
 const DEFAULT_VALUE_PROPS: ValueProposition[] = [
@@ -300,7 +301,8 @@ export default function Home() {
           bestsellersDescription: data.bestsellersDescription || 'Bold flavors. Time-honored recipes. Made with love, enjoyed by all.',
           testimonialsTag: data.testimonialsTag || 'Loved by Food Lovers',
           testimonialsTitle: data.testimonialsTitle || 'What Our Customers Say',
-          testimonialsDescription: data.testimonialsDescription || 'Cherished words from homes across India celebrating authentic Andhra flavors.'
+          testimonialsDescription: data.testimonialsDescription || 'Cherished words from homes across India celebrating authentic Andhra flavors.',
+          valuePropsHeadingColor: data.valuePropsHeadingColor || '#8B2E0F'
         };
         setHeroSettings(newSettings);
         localStorage.setItem('kk_hero_settings_cache', JSON.stringify(newSettings));
@@ -557,7 +559,10 @@ export default function Home() {
               }`}>
                 {firstThree.map((prop) => (
                   <div key={prop.id} className="flex flex-col items-center text-center px-4">
-                    <h3 className="font-heading text-lg sm:text-xl font-bold uppercase tracking-wider text-warm-accent mb-3">
+                    <h3 
+                      className="font-heading text-lg sm:text-xl font-bold uppercase tracking-wider mb-3 transition-colors"
+                      style={{ color: prop.titleColor || (heroSettings as any).valuePropsHeadingColor || '#8B2E0F' }}
+                    >
                       {formatRichText(prop.title)}
                     </h3>
                     <p className="font-serif italic text-warm-dark/70 text-sm md:text-base leading-relaxed whitespace-pre-line">
@@ -576,7 +581,10 @@ export default function Home() {
                 }`}>
                   {remaining.map((prop) => (
                     <div key={prop.id} className="flex flex-col items-center text-center px-4">
-                      <h3 className="font-heading text-lg sm:text-xl font-bold uppercase tracking-wider text-warm-accent mb-3">
+                      <h3 
+                        className="font-heading text-lg sm:text-xl font-bold uppercase tracking-wider mb-3 transition-colors"
+                        style={{ color: prop.titleColor || (heroSettings as any).valuePropsHeadingColor || '#8B2E0F' }}
+                      >
                         {formatRichText(prop.title)}
                       </h3>
                       <p className="font-serif italic text-warm-dark/70 text-sm md:text-base leading-relaxed whitespace-pre-line">
