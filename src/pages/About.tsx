@@ -221,95 +221,77 @@ export default function About() {
           </div>
         </div>
 
-        {/* Narrative Section 1 */}
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-24 items-center mb-24 w-full max-w-[95vw] mx-auto">
-          <div className="lg:col-span-7 bg-warm-light/30 border border-warm-dark/10 p-8 md:p-12 rounded-2xl flex flex-col justify-center">
-            <h2 className="font-heading text-2xl font-bold uppercase tracking-wider text-warm-accent mb-6">
+        {/* Narrative Section 1 (1:1 Photo on Left, Text on Right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center mb-20 md:mb-28 max-w-6xl mx-auto px-4">
+          {/* 1:1 Photo on Left */}
+          {storySettings.section1Image && (
+            <div className="lg:col-span-5 w-full max-w-md mx-auto lg:max-w-none">
+              <div className="aspect-square rounded-2xl overflow-hidden shadow-md border border-warm-dark/10 bg-warm-light/40">
+                <img
+                  src={storySettings.section1Image}
+                  alt={storySettings.section1Title || 'South Indian Heritage'}
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Paragraph on Right (No boxes) */}
+          <div className={`${storySettings.section1Image ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-4 text-left`}>
+            <h2 className="font-heading text-2xl md:text-3xl font-bold uppercase tracking-wider text-warm-accent">
               {storySettings.section1Title}
             </h2>
             {storySettings.section1Quote && (
-              <p className="text-base md:text-lg font-serif leading-relaxed text-warm-dark/80 italic mb-6">
+              <p className="text-base md:text-lg font-serif leading-relaxed text-warm-dark/85 italic border-l-2 border-warm-accent/40 pl-4 py-1">
                 {storySettings.section1Quote}
               </p>
             )}
-            <p className="text-warm-dark/70 font-serif leading-relaxed text-sm md:text-base whitespace-pre-line">
+            <p className="text-warm-dark/75 font-serif leading-relaxed text-base md:text-lg whitespace-pre-line">
               {storySettings.section1Content}
             </p>
           </div>
-
-          {storySettings.section1Image && (
-            <div className="lg:col-span-5 relative w-[80%] mx-auto lg:w-full">
-              <div className="bg-white border-4 border-white shadow-md rounded-2xl overflow-hidden">
-                <img
-                  src={storySettings.section1Image}
-                  alt="Narrative Section 1 Media"
-                  className="w-full aspect-square md:aspect-[4/5] object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Narrative Section 2 */}
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-24 items-center mb-20 w-full max-w-[95vw] mx-auto">
-          {storySettings.section2Image && (
-            <div className="lg:col-span-5 order-last lg:order-first relative w-[80%] mx-auto lg:w-full">
-              <div className="bg-white border-4 border-white shadow-md rounded-2xl overflow-hidden">
-                <img
-                  src={storySettings.section2Image}
-                  alt="Narrative Section 2 Media"
-                  className="w-full aspect-[4/5] object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-            </div>
-          )}
-
-          <div className="lg:col-span-7 bg-warm-light/30 border border-warm-dark/10 p-8 md:p-12 rounded-2xl flex flex-col justify-center">
-            <h2 className="font-heading text-2xl font-bold uppercase tracking-wider text-warm-accent mb-6">
+        {/* Narrative Section 2 (Text on Left, 1:1 Photo on Right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center mb-20 md:mb-28 max-w-6xl mx-auto px-4">
+          {/* Paragraph on Left (No boxes) */}
+          <div className={`${storySettings.section2Image ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-4 text-left order-2 lg:order-1`}>
+            <h2 className="font-heading text-2xl md:text-3xl font-bold uppercase tracking-wider text-warm-accent">
               {storySettings.section2Title}
             </h2>
-            <p className="text-warm-dark/70 font-serif leading-relaxed text-sm md:text-base mb-6 whitespace-pre-line">
+            <p className="text-warm-dark/75 font-serif leading-relaxed text-base md:text-lg whitespace-pre-line">
               {storySettings.section2Content1}
             </p>
             {storySettings.section2Content2 && (
-              <p className="text-warm-dark/70 font-serif leading-relaxed text-sm md:text-base whitespace-pre-line">
+              <p className="text-warm-dark/75 font-serif leading-relaxed text-base md:text-lg whitespace-pre-line">
                 {storySettings.section2Content2}
               </p>
             )}
           </div>
-        </div>
 
-        {/* Co-Founders & Livelihoods Section */}
-        <section className="py-16 md:py-24 bg-white border border-warm-dark/5 rounded-3xl p-8 md:p-12 mb-20 text-center max-w-4xl mx-auto shadow-sm">
-          <span className="font-heading text-warm-accent text-xs font-bold tracking-[0.2em] uppercase">
-            {storySettings.foundersSubtitle}
-          </span>
-          <h2 className="text-3xl font-heading font-bold text-warm-accent mt-2 mb-6 uppercase">
-            {storySettings.foundersTitle}
-          </h2>
-          <p className="font-serif italic text-warm-dark/70 text-base md:text-lg leading-relaxed max-w-2xl mx-auto mb-8 whitespace-pre-line">
-            {storySettings.foundersContent}
-          </p>
-          {badges.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-4">
-              {badges.map((badge, idx) => (
-                <span key={idx} className="bg-warm-bg border text-warm-dark px-4 py-2 font-serif italic text-sm rounded-full shadow-sm">
-                  {badge}
-                </span>
-              ))}
+          {/* 1:1 Photo on Right */}
+          {storySettings.section2Image && (
+            <div className="lg:col-span-5 w-full max-w-md mx-auto lg:max-w-none order-1 lg:order-2">
+              <div className="aspect-square rounded-2xl overflow-hidden shadow-md border border-warm-dark/10 bg-warm-light/40">
+                <img
+                  src={storySettings.section2Image}
+                  alt={storySettings.section2Title || 'Courtyard Symphony'}
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                  loading="lazy"
+                />
+              </div>
             </div>
           )}
-        </section>
+        </div>
 
-        {/* Quote Block */}
+        {/* Heritage Quote Block */}
         {storySettings.bottomQuote && (
-          <div className="text-center max-w-3xl mx-auto w-full max-w-[95vw] bg-white border border-warm-dark/10 p-8 md:p-12 rounded-2xl shadow-sm relative mt-16 md:mt-24 mb-8">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border border-warm-dark/10 bg-warm-bg flex items-center justify-center">
-              <div className="w-2.5 h-2.5 bg-warm-accent rounded-full"></div>
-            </div>
-            <h2 className="text-xl md:text-3xl font-serif text-warm-dark italic leading-relaxed">
+          <div className="text-center max-w-3xl mx-auto px-4 mt-16 md:mt-24 mb-12 space-y-4">
+            <div className="heritage-divider text-warm-accent w-full max-w-[140px] mx-auto">✻</div>
+            <h2 className="text-xl md:text-3xl font-serif text-warm-dark/90 italic leading-relaxed">
               {storySettings.bottomQuote}
             </h2>
           </div>

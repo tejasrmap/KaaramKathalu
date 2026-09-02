@@ -1892,11 +1892,13 @@ export default function Settings() {
               </div>
             </div>
 
-            {/* Narrative Section 1 */}
+            {/* Narrative Section 1 (Photo Left, Text Right) */}
             <div className="bg-white border border-warm-dark/5 rounded-[24px] overflow-hidden shadow-sm">
               <div className="bg-warm-light/60 p-4 border-b border-warm-dark/5 flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-warm-dark" />
-                <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">Narrative Section 1</h2>
+                <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">
+                  Narrative Section 1 (Photo Left, Text Right)
+                </h2>
               </div>
               <div className="p-6 space-y-6">
                 <div className="space-y-2">
@@ -1927,9 +1929,9 @@ export default function Settings() {
                   />
                 </div>
 
-                {/* Section 1 Image */}
+                {/* Section 1 1:1 Photo */}
                 <div className="space-y-3 pt-4 border-t border-warm-dark/5">
-                  <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">Side Image</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">1:1 Square Photo (Left Side)</label>
                   <div className="flex border-b border-warm-dark/10 mb-4 gap-4">
                     <button
                       type="button"
@@ -1953,7 +1955,7 @@ export default function Settings() {
                   {sec1Tab === 'upload' ? (
                     <div className="space-y-4">
                       {sec1Preview || (storySettings.section1Image && !sec1File && storySettings.section1Image !== '') ? (
-                        <div className="relative w-full aspect-[4/3] max-w-md rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                        <div className="relative w-full aspect-square max-w-xs rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
                           <img src={sec1Preview || storySettings.section1Image} alt="Section 1 Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                           <button 
                             type="button"
@@ -1969,7 +1971,7 @@ export default function Settings() {
                           className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
                         >
                           <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
-                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Side Image</span>
+                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload 1:1 Photo</span>
                           <input 
                             id="sec1-upload"
                             type="file" 
@@ -1996,11 +1998,13 @@ export default function Settings() {
               </div>
             </div>
 
-            {/* Narrative Section 2 */}
+            {/* Narrative Section 2 (Text Left, Photo Right) */}
             <div className="bg-white border border-warm-dark/5 rounded-[24px] overflow-hidden shadow-sm">
               <div className="bg-warm-light/60 p-4 border-b border-warm-dark/5 flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-warm-dark" />
-                <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">Narrative Section 2</h2>
+                <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">
+                  Narrative Section 2 (Text Left, Photo Right)
+                </h2>
               </div>
               <div className="p-6 space-y-6">
                 <div className="space-y-2">
@@ -2031,9 +2035,9 @@ export default function Settings() {
                   />
                 </div>
 
-                {/* Section 2 Image */}
+                {/* Section 2 1:1 Photo */}
                 <div className="space-y-3 pt-4 border-t border-warm-dark/5">
-                  <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">Side Image</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">1:1 Square Photo (Right Side)</label>
                   <div className="flex border-b border-warm-dark/10 mb-4 gap-4">
                     <button
                       type="button"
@@ -2057,7 +2061,7 @@ export default function Settings() {
                   {sec2Tab === 'upload' ? (
                     <div className="space-y-4">
                       {sec2Preview || (storySettings.section2Image && !sec2File && storySettings.section2Image !== '') ? (
-                        <div className="relative w-full aspect-[4/3] max-w-md rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                        <div className="relative w-full aspect-square max-w-xs rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
                           <img src={sec2Preview || storySettings.section2Image} alt="Section 2 Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                           <button 
                             type="button"
@@ -2073,7 +2077,7 @@ export default function Settings() {
                           className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
                         >
                           <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
-                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Side Image</span>
+                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload 1:1 Photo</span>
                           <input 
                             id="sec2-upload"
                             type="file" 
@@ -2096,55 +2100,6 @@ export default function Settings() {
                       placeholder="https://..."
                     />
                   )}
-                </div>
-              </div>
-            </div>
-
-            {/* Founders Section */}
-            <div className="bg-white border border-warm-dark/5 rounded-[24px] overflow-hidden shadow-sm">
-              <div className="bg-warm-light/60 p-4 border-b border-warm-dark/5 flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-warm-dark" />
-                <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">Founders & Badges</h2>
-              </div>
-              <div className="p-6 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Section Tag</label>
-                    <input 
-                      type="text" 
-                      value={storySettings.foundersSubtitle}
-                      onChange={e => setStorySettings(prev => ({ ...prev, foundersSubtitle: e.target.value }))}
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Founders Names Heading</label>
-                    <input 
-                      type="text" 
-                      value={storySettings.foundersTitle}
-                      onChange={e => setStorySettings(prev => ({ ...prev, foundersTitle: e.target.value }))}
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Mission Statement Paragraph</label>
-                  <textarea 
-                    rows={3}
-                    value={storySettings.foundersContent}
-                    onChange={e => setStorySettings(prev => ({ ...prev, foundersContent: e.target.value }))}
-                    className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Badges (Comma Separated)</label>
-                  <input 
-                    type="text" 
-                    value={storySettings.foundersBadges}
-                    onChange={e => setStorySettings(prev => ({ ...prev, foundersBadges: e.target.value }))}
-                    className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                    placeholder="Badge 1, Badge 2, Badge 3"
-                  />
                 </div>
               </div>
             </div>
