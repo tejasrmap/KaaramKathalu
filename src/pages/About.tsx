@@ -291,7 +291,20 @@ export default function About() {
         {storySettings.bottomQuote && (
           <div className="text-center max-w-3xl mx-auto px-4 mt-16 md:mt-24 mb-12 space-y-4">
             <div className="heritage-divider text-warm-accent w-full max-w-[140px] mx-auto">✻</div>
-            <h2 className="text-xl md:text-3xl font-serif text-warm-dark/90 italic leading-relaxed">
+            <h2 
+              className={`leading-relaxed text-warm-dark/90 ${
+                storySettings.bottomQuoteFontFamily === 'font-serif' ? 'font-serif' :
+                storySettings.bottomQuoteFontFamily === 'font-cormorant' ? 'font-serif italic font-light tracking-wide' :
+                storySettings.bottomQuoteFontFamily === 'font-heading' ? 'font-heading font-semibold uppercase tracking-wider' :
+                storySettings.bottomQuoteFontFamily === 'font-sans' ? 'font-sans font-medium' :
+                'font-serif italic'
+              }`}
+              style={{
+                fontSize: storySettings.bottomQuoteFontSize 
+                  ? `clamp(18px, 3vw, ${storySettings.bottomQuoteFontSize}px)` 
+                  : 'clamp(20px, 3vw, 28px)'
+              }}
+            >
               {storySettings.bottomQuote}
             </h2>
           </div>

@@ -2110,14 +2110,76 @@ export default function Settings() {
                 <BookOpen className="w-5 h-5 text-warm-dark" />
                 <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">Bottom Quote Section</h2>
               </div>
-              <div className="p-6 space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Invitation Quote Text</label>
-                <textarea 
-                  rows={3}
-                  value={storySettings.bottomQuote}
-                  onChange={e => setStorySettings(prev => ({ ...prev, bottomQuote: e.target.value }))}
-                  className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif resize-none focus:border-warm-accent transition-colors"
-                />
+              <div className="p-6 space-y-5">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Invitation Quote Text</label>
+                  <textarea 
+                    rows={4}
+                    value={storySettings.bottomQuote}
+                    onChange={e => setStorySettings(prev => ({ ...prev, bottomQuote: e.target.value }))}
+                    className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif text-base focus:border-warm-accent transition-colors leading-relaxed"
+                  />
+                </div>
+
+                {/* Font Size Slider */}
+                <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Quote Text Font Size</label>
+                    <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                      {storySettings.bottomQuoteFontSize || 28}px
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-mono text-warm-dark/40">16px</span>
+                    <input 
+                      type="range"
+                      min="16"
+                      max="48"
+                      step="2"
+                      value={storySettings.bottomQuoteFontSize || 28}
+                      onChange={e => setStorySettings(prev => ({ ...prev, bottomQuoteFontSize: Number(e.target.value) }))}
+                      className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                    />
+                    <span className="text-[10px] font-mono text-warm-dark/40">48px</span>
+                  </div>
+                </div>
+
+                {/* Font Family / Style Selector */}
+                <div className="space-y-2 pt-2 border-t border-warm-dark/10">
+                  <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
+                    Font Style & Family
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                    {[
+                      { id: 'font-serif-italic', label: 'Playfair Italic', desc: 'Poetic' },
+                      { id: 'font-serif', label: 'Playfair Regular', desc: 'Classic' },
+                      { id: 'font-cormorant', label: 'Garamond', desc: 'Editorial' },
+                      { id: 'font-heading', label: 'Cinzel', desc: 'Heritage' },
+                      { id: 'font-sans', label: 'Modern Sans', desc: 'Clean' },
+                    ].map(font => {
+                      const isSelected = (storySettings.bottomQuoteFontFamily || 'font-serif-italic') === font.id;
+                      return (
+                        <button
+                          key={font.id}
+                          type="button"
+                          onClick={() => setStorySettings(prev => ({ ...prev, bottomQuoteFontFamily: font.id }))}
+                          className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                            isSelected 
+                              ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
+                              : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
+                          }`}
+                        >
+                          <span className={`text-xs font-bold ${isSelected ? 'text-white' : 'text-warm-dark'}`}>
+                            {font.label}
+                          </span>
+                          <span className={`text-[10px] uppercase font-sans tracking-wider ${isSelected ? 'text-white/80' : 'text-warm-dark/50'}`}>
+                            {font.desc}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
           </>
