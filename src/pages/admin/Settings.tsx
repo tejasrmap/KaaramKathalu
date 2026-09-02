@@ -220,6 +220,7 @@ export default function Settings() {
     introParagraph2: "Our roots return to the lush fields of coastal Andhra Pradesh, and our palates still crave those hearty meals at ancestral homes. What began in sun-kissed courtyards with hand-ground spices continues today with pure ingredients, cold-pressed oils, and zero preservatives.",
     introParagraphFontSize: 18,
     subtitle: 'Storytellers preserving the vibrant tapestry of Andhra\'s rich history, architectural marvels, and culinary traditions.',
+    storySubtitleFontSize: 18,
     legacyTitle: 'Our Heritage',
     bannerImage: '',
     
@@ -1794,6 +1795,43 @@ export default function Settings() {
                           className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
                         />
                         <span className="text-[10px] font-mono text-warm-dark/40">60px</span>
+                      </div>
+                    </div>
+
+                    {/* Subheading under Our Story */}
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1">
+                        Subheading / Tagline (Under Heading)
+                      </label>
+                      <input 
+                        type="text" 
+                        value={storySettings.subtitle ?? ''}
+                        onChange={e => setStorySettings(prev => ({ ...prev, subtitle: e.target.value }))}
+                        placeholder="e.g. Storytellers preserving the vibrant tapestry of Andhra..."
+                        className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif italic text-sm text-warm-dark/80 focus:border-warm-accent transition-colors"
+                      />
+                    </div>
+
+                    {/* Subheading Font Size Slider */}
+                    <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Subheading Font Size</label>
+                        <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                          {storySettings.storySubtitleFontSize || 18}px
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-mono text-warm-dark/40">12px</span>
+                        <input 
+                          type="range"
+                          min="12"
+                          max="36"
+                          step="1"
+                          value={storySettings.storySubtitleFontSize || 18}
+                          onChange={e => setStorySettings(prev => ({ ...prev, storySubtitleFontSize: Number(e.target.value) }))}
+                          className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                        />
+                        <span className="text-[10px] font-mono text-warm-dark/40">36px</span>
                       </div>
                     </div>
                   </div>

@@ -203,6 +203,20 @@ export default function About() {
               {formatRichText(storySettings.title || 'Our Story')}
             </h2>
 
+            {/* Subheading under Our Story */}
+            {storySettings.subtitle && (
+              <p 
+                className="text-warm-dark/80 font-serif italic max-w-xl mx-auto leading-relaxed"
+                style={{
+                  fontSize: storySettings.storySubtitleFontSize 
+                    ? `${storySettings.storySubtitleFontSize}px` 
+                    : '18px'
+                }}
+              >
+                {formatRichText(storySettings.subtitle)}
+              </p>
+            )}
+
             {/* Story Photo between headline and matter */}
             {storySettings.storyPhoto && (
               <div 
