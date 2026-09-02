@@ -167,7 +167,7 @@ export default function About() {
           <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto !my-8">✻</div>
 
           {/* Our Story Intro Narrative */}
-          <div className="space-y-4 pt-2 max-w-2xl mx-auto">
+          <div className="space-y-6 pt-2 max-w-2xl mx-auto">
             <h2 
               className="font-heading font-bold text-warm-accent uppercase tracking-wider"
               style={{
@@ -178,6 +178,36 @@ export default function About() {
             >
               {storySettings.title || 'Our Story'}
             </h2>
+
+            {/* Story Photo between headline and matter */}
+            {storySettings.storyPhoto && (
+              <div className={`mx-auto overflow-hidden rounded-2xl border border-warm-dark/10 shadow-md ${
+                storySettings.storyPhotoWidth === 'max-w-md' ? 'max-w-md' :
+                storySettings.storyPhotoWidth === 'max-w-xl' ? 'max-w-xl' :
+                storySettings.storyPhotoWidth === 'max-w-3xl' ? 'max-w-3xl' :
+                storySettings.storyPhotoWidth === 'max-w-4xl' ? 'max-w-4xl' :
+                storySettings.storyPhotoWidth === 'w-full' ? 'w-full' :
+                'max-w-2xl'
+              }`}>
+                <div className={`w-full overflow-hidden bg-warm-light/40 flex items-center justify-center ${
+                  storySettings.storyPhotoAspectRatio === '16:9' ? 'aspect-[16/9]' :
+                  storySettings.storyPhotoAspectRatio === '4:3' ? 'aspect-[4/3]' :
+                  storySettings.storyPhotoAspectRatio === '3:2' ? 'aspect-[3/2]' :
+                  storySettings.storyPhotoAspectRatio === '1:1' ? 'aspect-square' :
+                  storySettings.storyPhotoAspectRatio === '21:9' ? 'aspect-[21/9]' :
+                  storySettings.storyPhotoAspectRatio === 'auto' ? 'aspect-auto' :
+                  'aspect-[16/9]'
+                }`}>
+                  <img 
+                    src={storySettings.storyPhoto} 
+                    alt={storySettings.title || 'Our Story'} 
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            )}
+
             {storySettings.introParagraph1 && (
               <p className="font-serif text-warm-dark/75 text-base md:text-lg leading-relaxed whitespace-pre-line">
                 {storySettings.introParagraph1}

@@ -206,6 +206,9 @@ export default function Settings() {
     dictPart2: '',
     dictDef2: '',
     title: 'Our Story',
+    storyPhoto: '',
+    storyPhotoAspectRatio: '16:9',
+    storyPhotoWidth: 'max-w-2xl',
     introParagraph1: "At Kaaram Kathalu, we are more than just a brand. We are storytellers preserving the vibrant tapestry of Andhra's rich history, architectural marvels, and culinary traditions.",
     introParagraph2: "Our roots return to the lush fields of coastal Andhra Pradesh, and our palates still crave those hearty meals at ancestral homes. What began in sun-kissed courtyards with hand-ground spices continues today with pure ingredients, cold-pressed oils, and zero preservatives.",
     subtitle: 'Storytellers preserving the vibrant tapestry of Andhra\'s rich history, architectural marvels, and culinary traditions.',
@@ -232,6 +235,10 @@ export default function Settings() {
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [bannerTab, setBannerTab] = useState<'upload' | 'url'>('upload');
+
+  const [storyPhotoFile, setStoryPhotoFile] = useState<File | null>(null);
+  const [storyPhotoPreview, setStoryPhotoPreview] = useState<string | null>(null);
+  const [storyPhotoTab, setStoryPhotoTab] = useState<'upload' | 'url'>('upload');
 
   const [sec1File, setSec1File] = useState<File | null>(null);
   const [sec1Preview, setSec1Preview] = useState<string | null>(null);
@@ -530,6 +537,9 @@ export default function Settings() {
         if (bannerFile && bannerTab === 'upload') {
           updatedStory.bannerImage = await uploadImage(bannerFile, 'story');
         }
+        if (storyPhotoFile && storyPhotoTab === 'upload') {
+          updatedStory.storyPhoto = await uploadImage(storyPhotoFile, 'story');
+        }
         if (sec1File && sec1Tab === 'upload') {
           updatedStory.section1Image = await uploadImage(sec1File, 'story');
         }
@@ -546,6 +556,8 @@ export default function Settings() {
         
         setStorySettings(updatedStory);
         setBannerFile(null);
+        setStoryPhotoFile(null);
+        setStoryPhotoPreview(null);
         setSec1File(null);
         setSec2File(null);
       }
@@ -1699,6 +1711,114 @@ export default function Settings() {
                           className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
                         />
                         <span className="text-[10px] font-mono text-warm-dark/40">60px</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Story Photo between headline and matter */}
+                  <div className="p-4 bg-warm-light/40 rounded-2xl border border-warm-dark/10 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <ImageIcon className="w-4 h-4 text-warm-accent" />
+                        <span className="text-xs font-bold uppercase tracking-widest text-warm-dark/80">Story Photo (Between Headline & Matter)</span>
+                      </div>
+                    </div>
+
+                    <div className="flex border-b border-warm-dark/10 gap-4">
+                      <button
+                        type="button"
+                        onClick={() => setStoryPhotoTab('upload')}
+                        className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                          storyPhotoTab === 'upload' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
+                        }`}
+                      >
+                        Upload File
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setStoryPhotoTab('url')}
+                        className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                          storyPhotoTab === 'url' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
+                        }`}
+                      >
+                        Paste URL
+                      </button>
+                    </div>
+
+                    {storyPhotoTab === 'upload' ? (
+                      <div className="space-y-4">
+                        {storyPhotoPreview || (storySettings.storyPhoto && !storyPhotoFile && storySettings.storyPhoto !== '') ? (
+                          <div className="relative w-full aspect-[16/9] max-w-md mx-auto rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                            <img src={storyPhotoPreview || storySettings.storyPhoto} alt="Story Photo Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                            <button 
+                              type="button"
+                              onClick={() => { setStoryPhotoFile(null); setStoryPhotoPreview(null); setStorySettings(prev => ({ ...prev, storyPhoto: '' })); }}
+                              className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div 
+                            onClick={() => document.getElementById('story-photo-upload')?.click()}
+                            className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
+                          >
+                            <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
+                            <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Story Photo</span>
+                            <input 
+                              id="story-photo-upload"
+                              type="file" 
+                              accept="image/*" 
+                              className="hidden" 
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) { setStoryPhotoFile(file); setStoryPhotoPreview(URL.createObjectURL(file)); }
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <input 
+                        type="text" 
+                        value={storySettings.storyPhoto || ''}
+                        onChange={e => setStorySettings(prev => ({ ...prev, storyPhoto: e.target.value }))}
+                        className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors text-sm"
+                        placeholder="https://..."
+                      />
+                    )}
+
+                    {/* Size & Aspect Ratio Options */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-warm-dark/10">
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1.5">Aspect Ratio (Shape)</label>
+                        <select
+                          value={storySettings.storyPhotoAspectRatio || '16:9'}
+                          onChange={e => setStorySettings(prev => ({ ...prev, storyPhotoAspectRatio: e.target.value }))}
+                          className="w-full px-3 py-2 rounded-xl border border-warm-dark/10 bg-white font-sans text-xs font-semibold text-warm-dark outline-none focus:border-warm-accent cursor-pointer"
+                        >
+                          <option value="16:9">16:9 — Landscape (Standard Widescreen)</option>
+                          <option value="4:3">4:3 — Classic Photo</option>
+                          <option value="3:2">3:2 — Standard DSLR Ratio</option>
+                          <option value="1:1">1:1 — Square Format</option>
+                          <option value="21:9">21:9 — Cinematic Ultra-Wide</option>
+                          <option value="auto">Auto — Original Photo Height</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1.5">Display Width (Size on Page)</label>
+                        <select
+                          value={storySettings.storyPhotoWidth || 'max-w-2xl'}
+                          onChange={e => setStorySettings(prev => ({ ...prev, storyPhotoWidth: e.target.value }))}
+                          className="w-full px-3 py-2 rounded-xl border border-warm-dark/10 bg-white font-sans text-xs font-semibold text-warm-dark outline-none focus:border-warm-accent cursor-pointer"
+                        >
+                          <option value="max-w-md">Compact (Max Width ~450px)</option>
+                          <option value="max-w-xl">Medium (Max Width ~576px)</option>
+                          <option value="max-w-2xl">Standard (Max Width ~672px - Matches Text)</option>
+                          <option value="max-w-3xl">Wide (Max Width ~768px)</option>
+                          <option value="max-w-4xl">Full Width (Max Width ~896px)</option>
+                        </select>
                       </div>
                     </div>
                   </div>
