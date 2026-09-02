@@ -99,7 +99,7 @@ export default function About() {
         transition={{ duration: 0.6 }}
       >
         {/* Editorial Dictionary Brand Definition Section */}
-        <div className="text-center max-w-2xl mx-auto pt-6 pb-12 md:pt-10 md:pb-16 px-4 space-y-4 md:space-y-6">
+        <div className="text-center max-w-2xl mx-auto pt-6 pb-2 md:pt-10 md:pb-3 px-4 space-y-4 md:space-y-6">
           {/* Main Brand Word in English & Native Script */}
           <div className="space-y-1">
             <h1 
@@ -260,7 +260,7 @@ export default function About() {
         </div>
 
         {/* Heritage Flower Divider on top of Essence of South Indian Heritage */}
-        <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto !my-12 md:!my-16">✻</div>
+        <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto !my-4 md:!my-6">✻</div>
 
         {/* Narrative Section 1 (1:1 Photo on Left, Text on Right) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center mb-20 md:mb-28 max-w-6xl mx-auto px-4">
