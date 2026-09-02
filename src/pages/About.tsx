@@ -264,16 +264,30 @@ export default function About() {
 
         {/* Narrative Section 1 (1:1 Photo on Left, Text on Right) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center mb-20 md:mb-28 max-w-6xl mx-auto px-4">
-          {/* 1:1 Photo on Left */}
+          {/* Left Side Photo */}
           {storySettings.section1Image && (
             <div className={`lg:col-span-5 w-full mx-auto ${
               storySettings.section1ImageSize === 'max-w-xs' ? 'max-w-xs' :
               storySettings.section1ImageSize === 'max-w-sm' ? 'max-w-sm' :
               storySettings.section1ImageSize === 'max-w-md' ? 'max-w-md' :
               storySettings.section1ImageSize === 'max-w-lg' ? 'max-w-lg' :
+              storySettings.section1ImageSize === 'max-w-xl' ? 'max-w-xl' :
+              storySettings.section1ImageSize === 'w-full' ? 'w-full' :
               'max-w-md lg:max-w-none'
             }`}>
-              <div className="aspect-square rounded-2xl overflow-hidden shadow-md border border-warm-dark/10 bg-warm-light/40">
+              <div className={`overflow-hidden shadow-md border border-warm-dark/10 bg-warm-light/40 ${
+                storySettings.section1ImageRadius === 'rounded-none' ? 'rounded-none' :
+                storySettings.section1ImageRadius === 'rounded-xl' ? 'rounded-xl' :
+                storySettings.section1ImageRadius === 'rounded-3xl' ? 'rounded-3xl' :
+                'rounded-2xl'
+              } ${
+                storySettings.section1ImageAspectRatio === '4:5' ? 'aspect-[4/5]' :
+                storySettings.section1ImageAspectRatio === '3:4' ? 'aspect-[3/4]' :
+                storySettings.section1ImageAspectRatio === '16:9' ? 'aspect-[16/9]' :
+                storySettings.section1ImageAspectRatio === '3:2' ? 'aspect-[3/2]' :
+                storySettings.section1ImageAspectRatio === 'auto' ? 'aspect-auto' :
+                'aspect-square'
+              }`}>
                 <img
                   src={storySettings.section1Image}
                   alt={storySettings.section1Title || 'South Indian Heritage'}
@@ -310,7 +324,7 @@ export default function About() {
           </div>
         </div>
 
-        {/* Narrative Section 2 (Text on Left, 1:1 Photo on Right) */}
+        {/* Narrative Section 2 (Text on Left, Photo on Right) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center mb-20 md:mb-28 max-w-6xl mx-auto px-4">
           {/* Paragraph on Left (No boxes) */}
           <div className={`${storySettings.section2Image ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-4 text-left order-2 lg:order-1`}>
@@ -348,16 +362,30 @@ export default function About() {
             )}
           </div>
 
-          {/* 1:1 Photo on Right */}
+          {/* Right Side Photo */}
           {storySettings.section2Image && (
             <div className={`lg:col-span-5 w-full mx-auto order-1 lg:order-2 ${
               storySettings.section2ImageSize === 'max-w-xs' ? 'max-w-xs' :
               storySettings.section2ImageSize === 'max-w-sm' ? 'max-w-sm' :
               storySettings.section2ImageSize === 'max-w-md' ? 'max-w-md' :
               storySettings.section2ImageSize === 'max-w-lg' ? 'max-w-lg' :
+              storySettings.section2ImageSize === 'max-w-xl' ? 'max-w-xl' :
+              storySettings.section2ImageSize === 'w-full' ? 'w-full' :
               'max-w-md lg:max-w-none'
             }`}>
-              <div className="aspect-square rounded-2xl overflow-hidden shadow-md border border-warm-dark/10 bg-warm-light/40">
+              <div className={`overflow-hidden shadow-md border border-warm-dark/10 bg-warm-light/40 ${
+                storySettings.section2ImageRadius === 'rounded-none' ? 'rounded-none' :
+                storySettings.section2ImageRadius === 'rounded-xl' ? 'rounded-xl' :
+                storySettings.section2ImageRadius === 'rounded-3xl' ? 'rounded-3xl' :
+                'rounded-2xl'
+              } ${
+                storySettings.section2ImageAspectRatio === '4:5' ? 'aspect-[4/5]' :
+                storySettings.section2ImageAspectRatio === '3:4' ? 'aspect-[3/4]' :
+                storySettings.section2ImageAspectRatio === '16:9' ? 'aspect-[16/9]' :
+                storySettings.section2ImageAspectRatio === '3:2' ? 'aspect-[3/2]' :
+                storySettings.section2ImageAspectRatio === 'auto' ? 'aspect-auto' :
+                'aspect-square'
+              }`}>
                 <img
                   src={storySettings.section2Image}
                   alt={storySettings.section2Title || 'Courtyard Symphony'}

@@ -227,6 +227,8 @@ export default function Settings() {
     section1ContentFontSize: 18,
     section1Image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&q=80',
     section1ImageSize: 'max-w-md',
+    section1ImageAspectRatio: '1:1',
+    section1ImageRadius: 'rounded-2xl',
     
     section2Title: 'The Courtyard Symphony',
     section2TitleFontSize: 28,
@@ -235,6 +237,8 @@ export default function Settings() {
     section2ContentFontSize: 18,
     section2Image: 'https://themanduvaproject.in/cdn/shop/files/Manduvawebsitepicture_1.png?v=1749711321&width=533',
     section2ImageSize: 'max-w-md',
+    section2ImageAspectRatio: '1:1',
+    section2ImageRadius: 'rounded-2xl',
     
     bottomQuote: '"Come, embark on a sensory journey that transports you to the sun-kissed plains and lush green landscapes of Andhra Pradesh. Immerse yourself in the kaleidoscope of flavours passed down through generations."',
     bottomQuoteFontSize: 28,
@@ -2067,9 +2071,9 @@ export default function Settings() {
                   </div>
                 </div>
 
-                {/* Section 1 1:1 Photo */}
-                <div className="space-y-3 pt-4 border-t border-warm-dark/5">
-                  <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">1:1 Square Photo (Left Side)</label>
+                {/* Section 1 Side Photo */}
+                <div className="space-y-4 pt-4 border-t border-warm-dark/5">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">Side Photo (Left Side)</label>
                   <div className="flex border-b border-warm-dark/10 mb-4 gap-4">
                     <button
                       type="button"
@@ -2109,7 +2113,7 @@ export default function Settings() {
                           className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
                         >
                           <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
-                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload 1:1 Photo</span>
+                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Side Photo</span>
                           <input 
                             id="sec1-upload"
                             type="file" 
@@ -2133,17 +2137,56 @@ export default function Settings() {
                     />
                   )}
 
-                  {/* Section 1 Photo Size Options */}
+                  {/* Section 1 Aspect Ratio */}
                   <div className="space-y-2 pt-3 border-t border-warm-dark/10">
                     <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
-                      Left Photo Size (Width)
+                      Photo Aspect Ratio (Crop / Shape)
                     </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                      {[
+                        { id: '1:1', label: '1:1', desc: 'Square' },
+                        { id: '4:5', label: '4:5', desc: 'Portrait' },
+                        { id: '3:4', label: '3:4', desc: 'Classic' },
+                        { id: '16:9', label: '16:9', desc: 'Landscape' },
+                        { id: '3:2', label: '3:2', desc: 'DSLR' },
+                        { id: 'auto', label: 'Auto', desc: 'Original' },
+                      ].map(ratio => {
+                        const isSelected = (storySettings.section1ImageAspectRatio || '1:1') === ratio.id;
+                        return (
+                          <button
+                            key={ratio.id}
+                            type="button"
+                            onClick={() => setStorySettings(prev => ({ ...prev, section1ImageAspectRatio: ratio.id }))}
+                            className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                              isSelected 
+                                ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
+                                : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
+                            }`}
+                          >
+                            <span className={`font-mono text-xs font-bold ${isSelected ? 'text-white' : 'text-warm-dark'}`}>
+                              {ratio.label}
+                            </span>
+                            <span className={`text-[10px] uppercase font-sans tracking-wider ${isSelected ? 'text-white/80' : 'text-warm-dark/50'}`}>
+                              {ratio.desc}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Section 1 Photo Size Options */}
+                  <div className="space-y-2 pt-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
+                      Display Width (Size on Page)
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-6 gap-2">
                       {[
                         { id: 'max-w-xs', label: 'Compact', size: '~320px' },
                         { id: 'max-w-sm', label: 'Medium', size: '~384px' },
                         { id: 'max-w-md', label: 'Standard', size: '~448px' },
                         { id: 'max-w-lg', label: 'Large', size: '~512px' },
+                        { id: 'max-w-xl', label: 'Wide', size: '~576px' },
                         { id: 'w-full', label: 'Full Column', size: '100%' },
                       ].map(sz => {
                         const isSelected = (storySettings.section1ImageSize || 'max-w-md') === sz.id;
@@ -2164,6 +2207,37 @@ export default function Settings() {
                             <span className={`text-[10px] font-mono ${isSelected ? 'text-white/80' : 'text-warm-dark/50'}`}>
                               {sz.size}
                             </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Section 1 Corner Rounding */}
+                  <div className="space-y-2 pt-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
+                      Corner Border Radius
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {[
+                        { id: 'rounded-2xl', label: 'Curved (16px)' },
+                        { id: 'rounded-3xl', label: 'Deep Curve (24px)' },
+                        { id: 'rounded-xl', label: 'Soft (12px)' },
+                        { id: 'rounded-none', label: 'Sharp Heritage (0px)' },
+                      ].map(r => {
+                        const isSelected = (storySettings.section1ImageRadius || 'rounded-2xl') === r.id;
+                        return (
+                          <button
+                            key={r.id}
+                            type="button"
+                            onClick={() => setStorySettings(prev => ({ ...prev, section1ImageRadius: r.id }))}
+                            className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer text-xs font-bold ${
+                              isSelected 
+                                ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
+                                : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
+                            }`}
+                          >
+                            {r.label}
                           </button>
                         );
                       })}
@@ -2261,9 +2335,9 @@ export default function Settings() {
                   </div>
                 </div>
 
-                {/* Section 2 1:1 Photo */}
-                <div className="space-y-3 pt-4 border-t border-warm-dark/5">
-                  <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">1:1 Square Photo (Right Side)</label>
+                {/* Section 2 Side Photo */}
+                <div className="space-y-4 pt-4 border-t border-warm-dark/5">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">Side Photo (Right Side)</label>
                   <div className="flex border-b border-warm-dark/10 mb-4 gap-4">
                     <button
                       type="button"
@@ -2303,7 +2377,7 @@ export default function Settings() {
                           className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
                         >
                           <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
-                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload 1:1 Photo</span>
+                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Side Photo</span>
                           <input 
                             id="sec2-upload"
                             type="file" 
@@ -2327,17 +2401,56 @@ export default function Settings() {
                     />
                   )}
 
-                  {/* Section 2 Photo Size Options */}
+                  {/* Section 2 Aspect Ratio */}
                   <div className="space-y-2 pt-3 border-t border-warm-dark/10">
                     <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
-                      Right Photo Size (Width)
+                      Photo Aspect Ratio (Crop / Shape)
                     </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                      {[
+                        { id: '1:1', label: '1:1', desc: 'Square' },
+                        { id: '4:5', label: '4:5', desc: 'Portrait' },
+                        { id: '3:4', label: '3:4', desc: 'Classic' },
+                        { id: '16:9', label: '16:9', desc: 'Landscape' },
+                        { id: '3:2', label: '3:2', desc: 'DSLR' },
+                        { id: 'auto', label: 'Auto', desc: 'Original' },
+                      ].map(ratio => {
+                        const isSelected = (storySettings.section2ImageAspectRatio || '1:1') === ratio.id;
+                        return (
+                          <button
+                            key={ratio.id}
+                            type="button"
+                            onClick={() => setStorySettings(prev => ({ ...prev, section2ImageAspectRatio: ratio.id }))}
+                            className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                              isSelected 
+                                ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
+                                : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
+                            }`}
+                          >
+                            <span className={`font-mono text-xs font-bold ${isSelected ? 'text-white' : 'text-warm-dark'}`}>
+                              {ratio.label}
+                            </span>
+                            <span className={`text-[10px] uppercase font-sans tracking-wider ${isSelected ? 'text-white/80' : 'text-warm-dark/50'}`}>
+                              {ratio.desc}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Section 2 Photo Size Options */}
+                  <div className="space-y-2 pt-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
+                      Display Width (Size on Page)
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-6 gap-2">
                       {[
                         { id: 'max-w-xs', label: 'Compact', size: '~320px' },
                         { id: 'max-w-sm', label: 'Medium', size: '~384px' },
                         { id: 'max-w-md', label: 'Standard', size: '~448px' },
                         { id: 'max-w-lg', label: 'Large', size: '~512px' },
+                        { id: 'max-w-xl', label: 'Wide', size: '~576px' },
                         { id: 'w-full', label: 'Full Column', size: '100%' },
                       ].map(sz => {
                         const isSelected = (storySettings.section2ImageSize || 'max-w-md') === sz.id;
@@ -2358,6 +2471,37 @@ export default function Settings() {
                             <span className={`text-[10px] font-mono ${isSelected ? 'text-white/80' : 'text-warm-dark/50'}`}>
                               {sz.size}
                             </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Section 2 Corner Rounding */}
+                  <div className="space-y-2 pt-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
+                      Corner Border Radius
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {[
+                        { id: 'rounded-2xl', label: 'Curved (16px)' },
+                        { id: 'rounded-3xl', label: 'Deep Curve (24px)' },
+                        { id: 'rounded-xl', label: 'Soft (12px)' },
+                        { id: 'rounded-none', label: 'Sharp Heritage (0px)' },
+                      ].map(r => {
+                        const isSelected = (storySettings.section2ImageRadius || 'rounded-2xl') === r.id;
+                        return (
+                          <button
+                            key={r.id}
+                            type="button"
+                            onClick={() => setStorySettings(prev => ({ ...prev, section2ImageRadius: r.id }))}
+                            className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer text-xs font-bold ${
+                              isSelected 
+                                ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
+                                : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
+                            }`}
+                          >
+                            {r.label}
                           </button>
                         );
                       })}
