@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Eye, MoreVertical, X, Truck, AlertTriangle, Check, Loader2, Send } from 'lucide-react';
+import { Search, Filter, Eye, MoreVertical, X, Truck, AlertTriangle, Check, Loader2, Send, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { db } from '../../firebase';
-import { collection, onSnapshot, query, orderBy, doc, updateDoc, getDoc } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
 
 const STATUSES = ['All', 'Pending', 'Processing', 'Shipped', 'Delivered'];
 
@@ -291,11 +291,22 @@ export default function Orders() {
   useEffect(() => {
     const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const ordersData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        date: doc.data().createdAt?.toDate().toLocaleDateString() || 'Recent'
-      }));
+      const ordersData = snapshot.docs.map(doc => {
+        const d = doc.data();
+        let displayDate = 'Recent';
+        if (d.createdAt?.toDate) {
+          displayDate = d.createdAt.toDate().toLocaleDateString('en-GB');
+        } else if (d.createdAt?.seconds) {
+          displayDate = new Date(d.createdAt.seconds * 1000).toLocaleDateString('en-GB');
+        } else if (typeof d.createdAt === 'string') {
+          displayDate = new Date(d.createdAt).toLocaleDateString('en-GB');
+        }
+        return {
+          id: doc.id,
+          ...d,
+          date: displayDate
+        };
+      });
       setOrders(ordersData);
       setIsLoading(false);
     });
@@ -319,11 +330,83 @@ export default function Orders() {
     }
   };
 
+  const deleteOrder = async (id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!window.confirm("Are you sure you want to permanently delete this order from the database?")) {
+      return;
+    }
+    try {
+      await deleteDoc(doc(db, 'orders', id));
+      setOpenDropdown(null);
+      if (selectedOrder?.id === id) setSelectedOrder(null);
+      showToast("Order deleted successfully!", "success");
+    } catch (error: any) {
+      console.error("Error deleting order:", error);
+      showAlert("Failed to delete order: " + (error?.message || error), "Error");
+    }
+  };
+
+  // Cutoff: 01 September 2026 00:00:00 IST
+  const cutoffTime = new Date('2026-09-01T00:00:00+05:30').getTime();
+
+  const isOldOrder = (order: any) => {
+    let t = 0;
+    if (order.createdAt?.toDate) t = order.createdAt.toDate().getTime();
+    else if (order.createdAt?.seconds) t = order.createdAt.seconds * 1000;
+    else if (typeof order.createdAt === 'string') t = new Date(order.createdAt).getTime();
+    else if (typeof order.date === 'string') t = new Date(order.date).getTime();
+    return t > 0 && t < cutoffTime;
+  };
+
+  const oldOrders = orders.filter(isOldOrder);
+  const [isDeletingOld, setIsDeletingOld] = useState(false);
+
+  const deleteOldOrdersBulk = async () => {
+    if (oldOrders.length === 0) {
+      showAlert("No orders found before 01/09/2026.", "Notice");
+      return;
+    }
+    if (!window.confirm(`Are you sure you want to permanently delete all ${oldOrders.length} orders placed before 01/09/2026? This cannot be undone.`)) {
+      return;
+    }
+    setIsDeletingOld(true);
+    try {
+      let count = 0;
+      for (const order of oldOrders) {
+        await deleteDoc(doc(db, 'orders', order.id));
+        count++;
+      }
+      showToast(`Successfully deleted ${count} orders placed before 01/09/2026!`, "success");
+    } catch (error: any) {
+      console.error("Error deleting old orders:", error);
+      showAlert("Failed to delete old orders: " + (error?.message || error), "Error");
+    } finally {
+      setIsDeletingOld(false);
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-[100vw] overflow-x-hidden md:max-w-none">
-      <div className="bg-warm-light p-6 rounded-2xl border border-warm-dark/5 shadow-sm mb-6">
-        <h2 className="text-2xl font-serif font-bold text-warm-dark">Ledger of Parcels</h2>
-        <p className="text-sm text-warm-dark/60 mt-1 font-serif">Manage and track customer orders.</p>
+      <div className="bg-warm-light p-6 rounded-2xl border border-warm-dark/5 shadow-sm mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-serif font-bold text-warm-dark">Ledger of Parcels</h2>
+          <p className="text-sm text-warm-dark/60 mt-1 font-serif">Manage, track, and dispatch customer orders.</p>
+        </div>
+        {oldOrders.length > 0 && (
+          <button
+            type="button"
+            onClick={deleteOldOrdersBulk}
+            disabled={isDeletingOld}
+            className="flex items-center gap-2 px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm cursor-pointer self-start sm:self-auto"
+          >
+            {isDeletingOld ? (
+              <Loader2 className="w-4 h-4 animate-spin text-red-600" />
+            ) : (
+              <Trash2 className="w-4 h-4 text-red-600" />
+            )}
+            {isDeletingOld ? 'Deleting Orders...' : `Delete ${oldOrders.length} Orders (< 01/09/2026)`}
+          </button>
+        )}
       </div>
 
       {/* Toolbar */}
@@ -440,6 +523,14 @@ export default function Orders() {
                                       {order.status === status && <div className="w-1.5 h-1.5 rounded-full bg-warm-accent"></div>}
                                     </button>
                                   ))}
+                                  <div className="border-t border-warm-dark/10 my-1"></div>
+                                  <button
+                                    onClick={(e) => deleteOrder(order.id, e)}
+                                    className="w-full text-left px-4 py-2 text-xs font-serif text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 cursor-pointer font-bold"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5 text-red-600" />
+                                    Delete Order
+                                  </button>
                                 </motion.div>
                               </AnimatePresence>
                             </>
@@ -508,6 +599,14 @@ export default function Orders() {
                               {order.status === status && <div className="w-1.5 h-1.5 rounded-full bg-warm-accent"></div>}
                             </button>
                           ))}
+                          <div className="border-t border-warm-dark/10 my-1"></div>
+                          <button
+                            onClick={(e) => deleteOrder(order.id, e)}
+                            className="w-full text-left px-4 py-2 text-xs font-serif text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 cursor-pointer font-bold"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 text-red-600" />
+                            Delete Order
+                          </button>
                         </motion.div>
                       </AnimatePresence>
                     </>
@@ -688,7 +787,15 @@ export default function Orders() {
                 </div>
               </div>
 
-              <div className="p-6 border-t border-warm-dark/10 bg-warm-light flex justify-end">
+              <div className="p-6 border-t border-warm-dark/10 bg-warm-light flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => deleteOrder(selectedOrder.id)}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-full font-bold uppercase tracking-widest text-xs transition-colors cursor-pointer"
+                >
+                  <Trash2 className="w-4 h-4 text-red-600" />
+                  Delete Order
+                </button>
                 <button 
                   onClick={() => openOrderDetails(null)}
                   className="px-8 py-3 bg-warm-dark hover:bg-warm-accent text-white font-bold uppercase tracking-widest text-xs rounded-full transition-colors cursor-pointer shadow-sm"
