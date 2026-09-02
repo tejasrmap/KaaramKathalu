@@ -1789,36 +1789,80 @@ export default function Settings() {
                     )}
 
                     {/* Size & Aspect Ratio Options */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-warm-dark/10">
-                      <div>
-                        <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1.5">Aspect Ratio (Shape)</label>
-                        <select
-                          value={storySettings.storyPhotoAspectRatio || '16:9'}
-                          onChange={e => setStorySettings(prev => ({ ...prev, storyPhotoAspectRatio: e.target.value }))}
-                          className="w-full px-3 py-2 rounded-xl border border-warm-dark/10 bg-white font-sans text-xs font-semibold text-warm-dark outline-none focus:border-warm-accent cursor-pointer"
-                        >
-                          <option value="16:9">16:9 — Landscape (Standard Widescreen)</option>
-                          <option value="4:3">4:3 — Classic Photo</option>
-                          <option value="3:2">3:2 — Standard DSLR Ratio</option>
-                          <option value="1:1">1:1 — Square Format</option>
-                          <option value="21:9">21:9 — Cinematic Ultra-Wide</option>
-                          <option value="auto">Auto — Original Photo Height</option>
-                        </select>
+                    <div className="space-y-4 pt-3 border-t border-warm-dark/10">
+                      {/* Aspect Ratio (Shape) */}
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
+                          Aspect Ratio (Photo Shape)
+                        </label>
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                          {[
+                            { id: '16:9', label: '16:9', desc: 'Landscape' },
+                            { id: '4:3', label: '4:3', desc: 'Classic' },
+                            { id: '3:2', label: '3:2', desc: 'DSLR' },
+                            { id: '1:1', label: '1:1', desc: 'Square' },
+                            { id: '21:9', label: '21:9', desc: 'Cinema' },
+                            { id: 'auto', label: 'Auto', desc: 'Original' },
+                          ].map(ratio => {
+                            const isSelected = (storySettings.storyPhotoAspectRatio || '16:9') === ratio.id;
+                            return (
+                              <button
+                                key={ratio.id}
+                                type="button"
+                                onClick={() => setStorySettings(prev => ({ ...prev, storyPhotoAspectRatio: ratio.id }))}
+                                className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                                  isSelected 
+                                    ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
+                                    : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
+                                }`}
+                              >
+                                <span className={`font-mono text-xs font-bold ${isSelected ? 'text-white' : 'text-warm-dark'}`}>
+                                  {ratio.label}
+                                </span>
+                                <span className={`text-[10px] uppercase font-sans tracking-wider ${isSelected ? 'text-white/80' : 'text-warm-dark/50'}`}>
+                                  {ratio.desc}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
 
-                      <div>
-                        <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60 block mb-1.5">Display Width (Size on Page)</label>
-                        <select
-                          value={storySettings.storyPhotoWidth || 'max-w-2xl'}
-                          onChange={e => setStorySettings(prev => ({ ...prev, storyPhotoWidth: e.target.value }))}
-                          className="w-full px-3 py-2 rounded-xl border border-warm-dark/10 bg-white font-sans text-xs font-semibold text-warm-dark outline-none focus:border-warm-accent cursor-pointer"
-                        >
-                          <option value="max-w-md">Compact (Max Width ~450px)</option>
-                          <option value="max-w-xl">Medium (Max Width ~576px)</option>
-                          <option value="max-w-2xl">Standard (Max Width ~672px - Matches Text)</option>
-                          <option value="max-w-3xl">Wide (Max Width ~768px)</option>
-                          <option value="max-w-4xl">Full Width (Max Width ~896px)</option>
-                        </select>
+                      {/* Display Width (Size on Page) */}
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
+                          Display Width (Size on Page)
+                        </label>
+                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                          {[
+                            { id: 'max-w-md', label: 'Compact', size: '~450px' },
+                            { id: 'max-w-xl', label: 'Medium', size: '~576px' },
+                            { id: 'max-w-2xl', label: 'Standard', size: '~672px' },
+                            { id: 'max-w-3xl', label: 'Wide', size: '~768px' },
+                            { id: 'max-w-4xl', label: 'Full Width', size: '~896px' },
+                          ].map(width => {
+                            const isSelected = (storySettings.storyPhotoWidth || 'max-w-2xl') === width.id;
+                            return (
+                              <button
+                                key={width.id}
+                                type="button"
+                                onClick={() => setStorySettings(prev => ({ ...prev, storyPhotoWidth: width.id }))}
+                                className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                                  isSelected 
+                                    ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
+                                    : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
+                                }`}
+                              >
+                                <span className={`font-sans text-xs font-bold ${isSelected ? 'text-white' : 'text-warm-dark'}`}>
+                                  {width.label}
+                                </span>
+                                <span className={`text-[10px] font-mono ${isSelected ? 'text-white/80' : 'text-warm-dark/50'}`}>
+                                  {width.size}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
                   </div>
