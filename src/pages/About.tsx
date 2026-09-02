@@ -287,149 +287,109 @@ export default function About() {
         {/* Heritage Flower Divider on top of Essence of South Indian Heritage */}
         <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto !my-4 md:!my-6">✻</div>
 
-        {/* Narrative Section 1 (Photo on Left, Text on Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center mb-20 md:mb-28 max-w-6xl mx-auto px-4">
-          {/* Left Side Photo */}
-          {storySettings.section1Image && (
-            <div 
-              style={{
-                '--m-w': storySettings.section1ImageMobileWidthPx ? `${storySettings.section1ImageMobileWidthPx}px` : '100%',
-                '--d-w': storySettings.section1ImageWidthPx ? `${storySettings.section1ImageWidthPx}px` : (
-                  storySettings.section1ImageSize === 'max-w-xs' ? '320px' :
-                  storySettings.section1ImageSize === 'max-w-sm' ? '384px' :
-                  storySettings.section1ImageSize === 'max-w-md' ? '448px' :
-                  storySettings.section1ImageSize === 'max-w-lg' ? '512px' :
-                  storySettings.section1ImageSize === 'max-w-xl' ? '576px' : '100%'
-                )
-              } as React.CSSProperties}
-              className="lg:col-span-5 w-full max-w-[var(--m-w)] lg:max-w-[var(--d-w)] mx-auto"
-            >
-              <div className={`overflow-hidden shadow-md border border-warm-dark/10 bg-warm-light/40 w-full ${
-                storySettings.section1ImageRadius === 'rounded-none' ? 'rounded-none' :
-                storySettings.section1ImageRadius === 'rounded-xl' ? 'rounded-xl' :
-                storySettings.section1ImageRadius === 'rounded-3xl' ? 'rounded-3xl' :
-                'rounded-2xl'
-              } ${
-                storySettings.section1ImageAspectRatio === '4:5' ? 'aspect-[4/5]' :
-                storySettings.section1ImageAspectRatio === '3:4' ? 'aspect-[3/4]' :
-                storySettings.section1ImageAspectRatio === '16:9' ? 'aspect-[16/9]' :
-                storySettings.section1ImageAspectRatio === '3:2' ? 'aspect-[3/2]' :
-                storySettings.section1ImageAspectRatio === 'auto' ? 'aspect-auto' :
-                'aspect-square'
+        {/* Narrative Sections (Supports up to 5 customizable sections with individual ON/OFF toggles) */}
+        {[1, 2, 3, 4, 5].map((num) => {
+          const isEnabled = (storySettings as any)[`section${num}Enabled`] !== false;
+          if (!isEnabled) return null;
+
+          const title = (storySettings as any)[`section${num}Title`];
+          const titleFontSize = (storySettings as any)[`section${num}TitleFontSize`] || 28;
+          const content1 = (storySettings as any)[`section${num}Content`] || (storySettings as any)[`section${num}Content1`];
+          const content2 = (storySettings as any)[`section${num}Content2`];
+          const contentFontSize = (storySettings as any)[`section${num}ContentFontSize`] || 18;
+          const image = (storySettings as any)[`section${num}Image`];
+          const imageSize = (storySettings as any)[`section${num}ImageSize`] || 'max-w-md';
+          const imageWidthPx = (storySettings as any)[`section${num}ImageWidthPx`];
+          const imageMobileWidthPx = (storySettings as any)[`section${num}ImageMobileWidthPx`];
+          const imageAspectRatio = (storySettings as any)[`section${num}ImageAspectRatio`] || '1:1';
+          const imageRadius = (storySettings as any)[`section${num}ImageRadius`] || 'rounded-2xl';
+          const imagePosition = (storySettings as any)[`section${num}ImagePosition`] || (num % 2 === 1 ? 'left' : 'right');
+
+          if (!title && !content1 && !image) return null;
+
+          const isImageLeft = imagePosition === 'left';
+
+          return (
+            <div key={num} className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center mb-20 md:mb-28 max-w-6xl mx-auto px-4">
+              {/* Photo Component */}
+              {image && (
+                <div 
+                  style={{
+                    '--m-w': imageMobileWidthPx ? `${imageMobileWidthPx}px` : '100%',
+                    '--d-w': imageWidthPx ? `${imageWidthPx}px` : (
+                      imageSize === 'max-w-xs' ? '320px' :
+                      imageSize === 'max-w-sm' ? '384px' :
+                      imageSize === 'max-w-md' ? '448px' :
+                      imageSize === 'max-w-lg' ? '512px' :
+                      imageSize === 'max-w-xl' ? '576px' : '100%'
+                    )
+                  } as React.CSSProperties}
+                  className={`lg:col-span-5 w-full max-w-[var(--m-w)] lg:max-w-[var(--d-w)] mx-auto ${
+                    isImageLeft ? 'order-1' : 'order-1 lg:order-2'
+                  }`}
+                >
+                  <div className={`overflow-hidden shadow-md border border-warm-dark/10 bg-warm-light/40 w-full ${
+                    imageRadius === 'rounded-none' ? 'rounded-none' :
+                    imageRadius === 'rounded-xl' ? 'rounded-xl' :
+                    imageRadius === 'rounded-3xl' ? 'rounded-3xl' :
+                    'rounded-2xl'
+                  } ${
+                    imageAspectRatio === '4:5' ? 'aspect-[4/5]' :
+                    imageAspectRatio === '3:4' ? 'aspect-[3/4]' :
+                    imageAspectRatio === '16:9' ? 'aspect-[16/9]' :
+                    imageAspectRatio === '3:2' ? 'aspect-[3/2]' :
+                    imageAspectRatio === 'auto' ? 'aspect-auto' :
+                    'aspect-square'
+                  }`}>
+                    <img
+                      src={image}
+                      alt={title || `Narrative Section ${num}`}
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Text Component */}
+              <div className={`${image ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-4 text-left ${
+                isImageLeft ? 'order-2' : 'order-2 lg:order-1'
               }`}>
-                <img
-                  src={storySettings.section1Image}
-                  alt={storySettings.section1Title || 'South Indian Heritage'}
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                  loading="lazy"
-                />
+                {title && (
+                  <h2 
+                    className="font-heading font-bold uppercase tracking-wider text-warm-accent"
+                    style={{
+                      fontSize: `${titleFontSize}px`
+                    }}
+                  >
+                    {formatRichText(title)}
+                  </h2>
+                )}
+                {content1 && (
+                  <p 
+                    className="text-warm-dark/75 font-serif leading-relaxed whitespace-pre-line"
+                    style={{
+                      fontSize: `${contentFontSize}px`
+                    }}
+                  >
+                    {formatRichText(content1)}
+                  </p>
+                )}
+                {content2 && (
+                  <p 
+                    className="text-warm-dark/75 font-serif leading-relaxed whitespace-pre-line"
+                    style={{
+                      fontSize: `${contentFontSize}px`
+                    }}
+                  >
+                    {formatRichText(content2)}
+                  </p>
+                )}
               </div>
             </div>
-          )}
-
-          {/* Paragraph on Right (No boxes) */}
-          <div className={`${storySettings.section1Image ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-4 text-left`}>
-            <h2 
-              className="font-heading font-bold uppercase tracking-wider text-warm-accent"
-              style={{
-                fontSize: storySettings.section1TitleFontSize 
-                  ? `${storySettings.section1TitleFontSize}px` 
-                  : '28px'
-              }}
-            >
-              {formatRichText(storySettings.section1Title)}
-            </h2>
-            <p 
-              className="text-warm-dark/75 font-serif leading-relaxed whitespace-pre-line"
-              style={{
-                fontSize: storySettings.section1ContentFontSize 
-                  ? `${storySettings.section1ContentFontSize}px` 
-                  : '18px'
-              }}
-            >
-              {formatRichText(storySettings.section1Content)}
-            </p>
-          </div>
-        </div>
-
-        {/* Narrative Section 2 (Text on Left, Photo on Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center mb-20 md:mb-28 max-w-6xl mx-auto px-4">
-          {/* Paragraph on Left (No boxes) */}
-          <div className={`${storySettings.section2Image ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-4 text-left order-2 lg:order-1`}>
-            <h2 
-              className="font-heading font-bold uppercase tracking-wider text-warm-accent"
-              style={{
-                fontSize: storySettings.section2TitleFontSize 
-                  ? `${storySettings.section2TitleFontSize}px` 
-                  : '28px'
-              }}
-            >
-              {formatRichText(storySettings.section2Title)}
-            </h2>
-            <p 
-              className="text-warm-dark/75 font-serif leading-relaxed whitespace-pre-line"
-              style={{
-                fontSize: storySettings.section2ContentFontSize 
-                  ? `${storySettings.section2ContentFontSize}px` 
-                  : '18px'
-              }}
-            >
-              {formatRichText(storySettings.section2Content1)}
-            </p>
-            {storySettings.section2Content2 && (
-              <p 
-                className="text-warm-dark/75 font-serif leading-relaxed whitespace-pre-line"
-                style={{
-                  fontSize: storySettings.section2ContentFontSize 
-                    ? `${storySettings.section2ContentFontSize}px` 
-                    : '18px'
-                }}
-              >
-                {formatRichText(storySettings.section2Content2)}
-              </p>
-            )}
-          </div>
-
-          {/* Right Side Photo */}
-          {storySettings.section2Image && (
-            <div 
-              style={{
-                '--m-w': storySettings.section2ImageMobileWidthPx ? `${storySettings.section2ImageMobileWidthPx}px` : '100%',
-                '--d-w': storySettings.section2ImageWidthPx ? `${storySettings.section2ImageWidthPx}px` : (
-                  storySettings.section2ImageSize === 'max-w-xs' ? '320px' :
-                  storySettings.section2ImageSize === 'max-w-sm' ? '384px' :
-                  storySettings.section2ImageSize === 'max-w-md' ? '448px' :
-                  storySettings.section2ImageSize === 'max-w-lg' ? '512px' :
-                  storySettings.section2ImageSize === 'max-w-xl' ? '576px' : '100%'
-                )
-              } as React.CSSProperties}
-              className="lg:col-span-5 w-full max-w-[var(--m-w)] lg:max-w-[var(--d-w)] mx-auto order-1 lg:order-2"
-            >
-              <div className={`overflow-hidden shadow-md border border-warm-dark/10 bg-warm-light/40 w-full ${
-                storySettings.section2ImageRadius === 'rounded-none' ? 'rounded-none' :
-                storySettings.section2ImageRadius === 'rounded-xl' ? 'rounded-xl' :
-                storySettings.section2ImageRadius === 'rounded-3xl' ? 'rounded-3xl' :
-                'rounded-2xl'
-              } ${
-                storySettings.section2ImageAspectRatio === '4:5' ? 'aspect-[4/5]' :
-                storySettings.section2ImageAspectRatio === '3:4' ? 'aspect-[3/4]' :
-                storySettings.section2ImageAspectRatio === '16:9' ? 'aspect-[16/9]' :
-                storySettings.section2ImageAspectRatio === '3:2' ? 'aspect-[3/2]' :
-                storySettings.section2ImageAspectRatio === 'auto' ? 'aspect-auto' :
-                'aspect-square'
-              }`}>
-                <img
-                  src={storySettings.section2Image}
-                  alt={storySettings.section2Title || 'Courtyard Symphony'}
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                  loading="lazy"
-                />
-              </div>
-            </div>
-          )}
-        </div>
+          );
+        })}
 
         {/* Heritage Quote Block */}
         {storySettings.bottomQuote && (

@@ -225,6 +225,7 @@ export default function Settings() {
     legacyTitle: 'Our Heritage',
     bannerImage: '',
     
+    section1Enabled: true,
     section1Title: 'Allure of South Indian Heritage',
     section1TitleFontSize: 28,
     section1Content: 'Our roots return to the lush fields of coastal Andhra Pradesh, and our palates still crave those hearty meals at ancestral homes, traditionally known for bringing families together in courtyards, which dotted every village. There, in the sun-kissed courtyard, grandmothers and mothers spent afternoons grinding spices to a fine podi or powder and pickling fruits and vegetables into irreplaceable staples.',
@@ -235,7 +236,9 @@ export default function Settings() {
     section1ImageMobileWidthPx: 320,
     section1ImageAspectRatio: '1:1',
     section1ImageRadius: 'rounded-2xl',
+    section1ImagePosition: 'left',
     
+    section2Enabled: true,
     section2Title: 'The Courtyard Symphony',
     section2TitleFontSize: 28,
     section2Content1: 'Their furtive hands, busy with the rokali banda or stone mortar and pestle, produced a constant hum that would mingle with their chattering voices. Children scurried around them, playing hide and seek or hunting for a quiet corner for a game of caroms. And the air was filled with delicious promise – whiffs of ginger, garlic, mustard, sesame, chili, lemon, curry leaf and so much more wafted through the house.',
@@ -247,6 +250,49 @@ export default function Settings() {
     section2ImageMobileWidthPx: 320,
     section2ImageAspectRatio: '1:1',
     section2ImageRadius: 'rounded-2xl',
+    section2ImagePosition: 'right',
+
+    section3Enabled: false,
+    section3Title: 'Traditions Passed Down',
+    section3TitleFontSize: 28,
+    section3Content1: 'Every recipe is an heirloom passed down through grandmothers and mothers, perfected over decades of culinary devotion.',
+    section3Content2: '',
+    section3ContentFontSize: 18,
+    section3Image: '',
+    section3ImageSize: 'max-w-md',
+    section3ImageWidthPx: 448,
+    section3ImageMobileWidthPx: 320,
+    section3ImageAspectRatio: '1:1',
+    section3ImageRadius: 'rounded-2xl',
+    section3ImagePosition: 'left',
+
+    section4Enabled: false,
+    section4Title: 'Purity in Every Grain',
+    section4TitleFontSize: 28,
+    section4Content1: 'We handpick the freshest farm produce, sun-dry our spices naturally, and stone-grind every batch to preserve the soulful Andhra aroma.',
+    section4Content2: '',
+    section4ContentFontSize: 18,
+    section4Image: '',
+    section4ImageSize: 'max-w-md',
+    section4ImageWidthPx: 448,
+    section4ImageMobileWidthPx: 320,
+    section4ImageAspectRatio: '1:1',
+    section4ImageRadius: 'rounded-2xl',
+    section4ImagePosition: 'right',
+
+    section5Enabled: false,
+    section5Title: 'From Our Home to Yours',
+    section5TitleFontSize: 28,
+    section5Content1: 'Experience the authentic heat, tangy richness, and deep nostalgia of real Andhra pickles and podis delivered straight to your dining table.',
+    section5Content2: '',
+    section5ContentFontSize: 18,
+    section5Image: '',
+    section5ImageSize: 'max-w-md',
+    section5ImageWidthPx: 448,
+    section5ImageMobileWidthPx: 320,
+    section5ImageAspectRatio: '1:1',
+    section5ImageRadius: 'rounded-2xl',
+    section5ImagePosition: 'left',
     
     bottomQuote: '"Come, embark on a sensory journey that transports you to the sun-kissed plains and lush green landscapes of Andhra Pradesh. Immerse yourself in the kaleidoscope of flavours passed down through generations."',
     bottomQuoteFontSize: 28,
@@ -268,6 +314,18 @@ export default function Settings() {
   const [sec2File, setSec2File] = useState<File | null>(null);
   const [sec2Preview, setSec2Preview] = useState<string | null>(null);
   const [sec2Tab, setSec2Tab] = useState<'upload' | 'url'>('upload');
+
+  const [sec3File, setSec3File] = useState<File | null>(null);
+  const [sec3Preview, setSec3Preview] = useState<string | null>(null);
+  const [sec3Tab, setSec3Tab] = useState<'upload' | 'url'>('upload');
+
+  const [sec4File, setSec4File] = useState<File | null>(null);
+  const [sec4Preview, setSec4Preview] = useState<string | null>(null);
+  const [sec4Tab, setSec4Tab] = useState<'upload' | 'url'>('upload');
+
+  const [sec5File, setSec5File] = useState<File | null>(null);
+  const [sec5Preview, setSec5Preview] = useState<string | null>(null);
+  const [sec5Tab, setSec5Tab] = useState<'upload' | 'url'>('upload');
 
   const [isUploading, setIsUploading] = useState(false);
 
@@ -567,6 +625,15 @@ export default function Settings() {
         if (sec2File && sec2Tab === 'upload') {
           updatedStory.section2Image = await uploadImage(sec2File, 'story');
         }
+        if (sec3File && sec3Tab === 'upload') {
+          updatedStory.section3Image = await uploadImage(sec3File, 'story');
+        }
+        if (sec4File && sec4Tab === 'upload') {
+          updatedStory.section4Image = await uploadImage(sec4File, 'story');
+        }
+        if (sec5File && sec5Tab === 'upload') {
+          updatedStory.section5Image = await uploadImage(sec5File, 'story');
+        }
 
         setIsUploading(false);
 
@@ -580,7 +647,15 @@ export default function Settings() {
         setStoryPhotoFile(null);
         setStoryPhotoPreview(null);
         setSec1File(null);
+        setSec1Preview(null);
         setSec2File(null);
+        setSec2Preview(null);
+        setSec3File(null);
+        setSec3Preview(null);
+        setSec4File(null);
+        setSec4Preview(null);
+        setSec5File(null);
+        setSec5Preview(null);
       }
       showToast("Settings saved successfully!", "success");
     } catch (error: any) {
@@ -2132,638 +2207,428 @@ export default function Settings() {
               </div>
             </div>
 
-            {/* Narrative Section 1 (Photo Left, Text Right) */}
-            <div className="bg-white border border-warm-dark/5 rounded-[24px] overflow-hidden shadow-sm">
-              <div className="bg-warm-light/60 p-4 border-b border-warm-dark/5 flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-warm-dark" />
-                <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">
-                  Narrative Section 1 (Photo Left, Text Right)
-                </h2>
-              </div>
-              <div className="p-6 space-y-6">
-                <div className="space-y-3">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Section Title</label>
-                    <input 
-                      type="text" 
-                      value={storySettings.section1Title}
-                      onChange={e => setStorySettings(prev => ({ ...prev, section1Title: e.target.value }))}
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                    />
-                  </div>
+            {/* Narrative Sections 1 through 5 with Individual ON/OFF Toggles */}
+            {[
+              { num: 1, defaultPos: 'left', file: sec1File, setFile: setSec1File, preview: sec1Preview, setPreview: setSec1Preview, tab: sec1Tab, setTab: setSec1Tab },
+              { num: 2, defaultPos: 'right', file: sec2File, setFile: setSec2File, preview: sec2Preview, setPreview: setSec2Preview, tab: sec2Tab, setTab: setSec2Tab },
+              { num: 3, defaultPos: 'left', file: sec3File, setFile: setSec3File, preview: sec3Preview, setPreview: setSec3Preview, tab: sec3Tab, setTab: setSec3Tab },
+              { num: 4, defaultPos: 'right', file: sec4File, setFile: setSec4File, preview: sec4Preview, setPreview: setSec4Preview, tab: sec4Tab, setTab: setSec4Tab },
+              { num: 5, defaultPos: 'left', file: sec5File, setFile: setSec5File, preview: sec5Preview, setPreview: setSec5Preview, tab: sec5Tab, setTab: setSec5Tab },
+            ].map(({ num, defaultPos, file, setFile, preview, setPreview, tab, setTab }) => {
+              const isEnabled = (storySettings as any)[`section${num}Enabled`] !== false;
+              const titleKey = `section${num}Title`;
+              const titleFontSizeKey = `section${num}TitleFontSize`;
+              const content1Key = num === 1 ? 'section1Content' : `section${num}Content1`;
+              const content2Key = `section${num}Content2`;
+              const contentFontSizeKey = `section${num}ContentFontSize`;
+              const imageKey = `section${num}Image`;
+              const imageWidthPxKey = `section${num}ImageWidthPx`;
+              const imageMobileWidthPxKey = `section${num}ImageMobileWidthPx`;
+              const imageAspectRatioKey = `section${num}ImageAspectRatio`;
+              const imageRadiusKey = `section${num}ImageRadius`;
+              const imagePosKey = `section${num}ImagePosition`;
 
-                  {/* Section 1 Title Font Size Slider */}
-                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Title Font Size</label>
-                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
-                        {storySettings.section1TitleFontSize || 28}px
-                      </span>
+              const currentPos = (storySettings as any)[imagePosKey] || defaultPos;
+              const currentTitle = (storySettings as any)[titleKey] || '';
+              const currentImage = (storySettings as any)[imageKey] || '';
+
+              return (
+                <div key={num} className={`bg-white border rounded-[24px] overflow-hidden shadow-sm transition-all ${
+                  isEnabled ? 'border-warm-dark/10' : 'border-warm-dark/10 bg-warm-light/10 opacity-80'
+                }`}>
+                  {/* Card Header with ON/OFF Toggle */}
+                  <div className={`p-4 border-b flex flex-wrap items-center justify-between gap-3 transition-colors ${
+                    isEnabled ? 'bg-warm-light/60 border-warm-dark/5' : 'bg-warm-dark/5 border-warm-dark/10'
+                  }`}>
+                    <div className="flex items-center gap-2">
+                      <BookOpen className={`w-5 h-5 ${isEnabled ? 'text-warm-dark' : 'text-warm-dark/50'}`} />
+                      <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">
+                        Narrative Section {num} {currentTitle ? `— ${currentTitle}` : ''}
+                      </h2>
                     </div>
+                    
                     <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-mono text-warm-dark/40">18px</span>
-                      <input 
-                        type="range"
-                        min="18"
-                        max="48"
-                        step="2"
-                        value={storySettings.section1TitleFontSize || 28}
-                        onChange={e => setStorySettings(prev => ({ ...prev, section1TitleFontSize: Number(e.target.value) }))}
-                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
-                      />
-                      <span className="text-[10px] font-mono text-warm-dark/40">48px</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Main Content Paragraph</label>
-                    <textarea 
-                      rows={4}
-                      value={storySettings.section1Content}
-                      onChange={e => setStorySettings(prev => ({ ...prev, section1Content: e.target.value }))}
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                    />
-                  </div>
-
-                  {/* Section 1 Content Font Size Slider */}
-                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Content Font Size</label>
-                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
-                        {storySettings.section1ContentFontSize || 18}px
+                      <span className={`text-[11px] font-bold uppercase tracking-wider ${
+                        isEnabled ? 'text-green-700 font-black' : 'text-warm-dark/50'
+                      }`}>
+                        {isEnabled ? '● Visible on Website' : '○ Hidden from Website'}
                       </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-mono text-warm-dark/40">14px</span>
-                      <input 
-                        type="range"
-                        min="14"
-                        max="32"
-                        step="1"
-                        value={storySettings.section1ContentFontSize || 18}
-                        onChange={e => setStorySettings(prev => ({ ...prev, section1ContentFontSize: Number(e.target.value) }))}
-                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
-                      />
-                      <span className="text-[10px] font-mono text-warm-dark/40">32px</span>
+                      <button
+                        type="button"
+                        onClick={() => setStorySettings(prev => ({ ...prev, [`section${num}Enabled`]: !isEnabled }))}
+                        className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
+                          isEnabled ? 'bg-green-600' : 'bg-warm-dark/25'
+                        }`}
+                        title={isEnabled ? "Click to hide from website" : "Click to show on website"}
+                      >
+                        <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                          isEnabled ? 'translate-x-6' : 'translate-x-0'
+                        }`} />
+                      </button>
                     </div>
                   </div>
-                </div>
 
-                {/* Section 1 Side Photo */}
-                <div className="space-y-4 pt-4 border-t border-warm-dark/5">
-                  <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">Side Photo (Left Side)</label>
-                  <div className="flex border-b border-warm-dark/10 mb-4 gap-4">
-                    <button
-                      type="button"
-                      onClick={() => setSec1Tab('upload')}
-                      className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
-                        sec1Tab === 'upload' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
-                      }`}
-                    >
-                      Upload File
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSec1Tab('url')}
-                      className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
-                        sec1Tab === 'url' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
-                      }`}
-                    >
-                      Paste URL
-                    </button>
-                  </div>
-                  {sec1Tab === 'upload' ? (
+                  {/* Card Content Body */}
+                  <div className="p-6 space-y-6">
+                    {!isEnabled && (
+                      <div className="p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs font-serif italic flex items-center gap-2">
+                        <span>ⓘ</span> This section is currently hidden from the storefront. Switch the toggle above ON to display it.
+                      </div>
+                    )}
+
+                    {/* Section Title & Layout Position */}
                     <div className="space-y-4">
-                      {sec1Preview || (storySettings.section1Image && !sec1File && storySettings.section1Image !== '') ? (
-                        <div className="relative w-full aspect-square max-w-xs rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
-                          <img src={sec1Preview || storySettings.section1Image} alt="Section 1 Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                          <button 
-                            type="button"
-                            onClick={() => { setSec1File(null); setSec1Preview(null); setStorySettings(prev => ({ ...prev, section1Image: '' })); }}
-                            className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
-                          >
-                            <Trash2 className="w-4.5 h-4.5" />
-                          </button>
-                        </div>
-                      ) : (
-                        <div 
-                          onClick={() => document.getElementById('sec1-upload')?.click()}
-                          className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
-                        >
-                          <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
-                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Side Photo</span>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="md:col-span-2 space-y-2">
+                          <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Section Title</label>
                           <input 
-                            id="sec1-upload"
-                            type="file" 
-                            accept="image/*" 
-                            className="hidden" 
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) { setSec1File(file); setSec1Preview(URL.createObjectURL(file)); }
-                            }}
+                            type="text" 
+                            value={currentTitle}
+                            onChange={e => setStorySettings(prev => ({ ...prev, [titleKey]: e.target.value }))}
+                            placeholder={`e.g. Narrative Section ${num} Title`}
+                            className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif font-bold text-warm-accent focus:border-warm-accent transition-colors"
                           />
                         </div>
-                      )}
-                    </div>
-                  ) : (
-                    <input 
-                      type="text" 
-                      value={storySettings.section1Image}
-                      onChange={e => setStorySettings(prev => ({ ...prev, section1Image: e.target.value }))}
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                      placeholder="https://..."
-                    />
-                  )}
 
-                  {/* Section 1 Aspect Ratio */}
-                  <div className="space-y-2 pt-3 border-t border-warm-dark/10">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
-                      Photo Aspect Ratio (Crop / Shape)
-                    </label>
-                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                      {[
-                        { id: '1:1', label: '1:1', desc: 'Square' },
-                        { id: '4:5', label: '4:5', desc: 'Portrait' },
-                        { id: '3:4', label: '3:4', desc: 'Classic' },
-                        { id: '16:9', label: '16:9', desc: 'Landscape' },
-                        { id: '3:2', label: '3:2', desc: 'DSLR' },
-                        { id: 'auto', label: 'Auto', desc: 'Original' },
-                      ].map(ratio => {
-                        const isSelected = (storySettings.section1ImageAspectRatio || '1:1') === ratio.id;
-                        return (
-                          <button
-                            key={ratio.id}
-                            type="button"
-                            onClick={() => setStorySettings(prev => ({ ...prev, section1ImageAspectRatio: ratio.id }))}
-                            className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
-                              isSelected 
-                                ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
-                                : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
-                            }`}
-                          >
-                            <span className={`font-mono text-xs font-bold ${isSelected ? 'text-white' : 'text-warm-dark'}`}>
-                              {ratio.label}
-                            </span>
-                            <span className={`text-[10px] uppercase font-sans tracking-wider ${isSelected ? 'text-white/80' : 'text-warm-dark/50'}`}>
-                              {ratio.desc}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                        {/* Image Position Selector */}
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Layout Position</label>
+                          <div className="grid grid-cols-2 gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setStorySettings(prev => ({ ...prev, [imagePosKey]: 'left' }))}
+                              className={`py-2.5 px-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer text-center ${
+                                currentPos === 'left'
+                                  ? 'bg-warm-accent text-white border-warm-accent shadow-sm'
+                                  : 'bg-white text-warm-dark border-warm-dark/10 hover:bg-warm-accent/5'
+                              }`}
+                            >
+                              Photo Left
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setStorySettings(prev => ({ ...prev, [imagePosKey]: 'right' }))}
+                              className={`py-2.5 px-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer text-center ${
+                                currentPos === 'right'
+                                  ? 'bg-warm-accent text-white border-warm-accent shadow-sm'
+                                  : 'bg-white text-warm-dark border-warm-dark/10 hover:bg-warm-accent/5'
+                              }`}
+                            >
+                              Photo Right
+                            </button>
+                          </div>
+                        </div>
+                      </div>
 
-                  {/* Section 1 Desktop / Laptop Width */}
-                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">
-                        💻 Laptop / Desktop Width
+                      {/* Title Font Size Slider */}
+                      <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Title Font Size</label>
+                          <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                            {(storySettings as any)[titleFontSizeKey] || 28}px
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[10px] font-mono text-warm-dark/40">18px</span>
+                          <input 
+                            type="range"
+                            min="18"
+                            max="48"
+                            step="2"
+                            value={(storySettings as any)[titleFontSizeKey] || 28}
+                            onChange={e => setStorySettings(prev => ({ ...prev, [titleFontSizeKey]: Number(e.target.value) }))}
+                            className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                          />
+                          <span className="text-[10px] font-mono text-warm-dark/40">48px</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Content Paragraphs */}
+                    <div className="space-y-3">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Main Content Paragraph 1</label>
+                        <textarea 
+                          rows={3}
+                          value={(storySettings as any)[content1Key] || ''}
+                          onChange={e => setStorySettings(prev => ({ ...prev, [content1Key]: e.target.value }))}
+                          placeholder="Write the first paragraph of your story here..."
+                          className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif text-sm focus:border-warm-accent transition-colors leading-relaxed"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Paragraph 2 (Optional)</label>
+                        <textarea 
+                          rows={3}
+                          value={(storySettings as any)[content2Key] || ''}
+                          onChange={e => setStorySettings(prev => ({ ...prev, [content2Key]: e.target.value }))}
+                          placeholder="Write an additional paragraph (optional)..."
+                          className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif text-sm focus:border-warm-accent transition-colors leading-relaxed"
+                        />
+                      </div>
+
+                      {/* Content Font Size Slider */}
+                      <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Content Font Size</label>
+                          <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                            {(storySettings as any)[contentFontSizeKey] || 18}px
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[10px] font-mono text-warm-dark/40">14px</span>
+                          <input 
+                            type="range"
+                            min="14"
+                            max="32"
+                            step="1"
+                            value={(storySettings as any)[contentFontSizeKey] || 18}
+                            onChange={e => setStorySettings(prev => ({ ...prev, [contentFontSizeKey]: Number(e.target.value) }))}
+                            className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                          />
+                          <span className="text-[10px] font-mono text-warm-dark/40">32px</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Side Photo */}
+                    <div className="space-y-4 pt-4 border-t border-warm-dark/10">
+                      <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">
+                        Side Photo ({currentPos === 'left' ? 'Left Position' : 'Right Position'})
                       </label>
-                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
-                        {storySettings.section1ImageWidthPx || 448}px
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-mono text-warm-dark/40">200px</span>
-                      <input 
-                        type="range"
-                        min="200"
-                        max="650"
-                        step="10"
-                        value={storySettings.section1ImageWidthPx || 448}
-                        onChange={e => setStorySettings(prev => ({ ...prev, section1ImageWidthPx: Number(e.target.value) }))}
-                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
-                      />
-                      <span className="text-[10px] font-mono text-warm-dark/40">650px</span>
-                    </div>
-                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 pt-1">
-                      {[
-                        { px: 320, label: '320px' },
-                        { px: 384, label: '384px' },
-                        { px: 448, label: '448px' },
-                        { px: 512, label: '512px' },
-                        { px: 576, label: '576px' },
-                        { px: 650, label: '650px' },
-                      ].map(preset => (
+                      <div className="flex border-b border-warm-dark/10 mb-4 gap-4">
                         <button
-                          key={preset.px}
                           type="button"
-                          onClick={() => setStorySettings(prev => ({ ...prev, section1ImageWidthPx: preset.px }))}
-                          className={`py-1 px-2 rounded-lg text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
-                            (storySettings.section1ImageWidthPx || 448) === preset.px
-                              ? 'bg-warm-accent text-white border-warm-accent'
-                              : 'bg-white text-warm-dark/70 border-warm-dark/10 hover:bg-warm-accent/5'
+                          onClick={() => setTab('upload')}
+                          className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                            tab === 'upload' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
                           }`}
                         >
-                          {preset.label}
+                          Upload File
                         </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Section 1 Mobile Width */}
-                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">
-                        📱 Mobile Screen Width
-                      </label>
-                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
-                        {storySettings.section1ImageMobileWidthPx || 320}px
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-mono text-warm-dark/40">140px</span>
-                      <input 
-                        type="range"
-                        min="140"
-                        max="450"
-                        step="10"
-                        value={storySettings.section1ImageMobileWidthPx || 320}
-                        onChange={e => setStorySettings(prev => ({ ...prev, section1ImageMobileWidthPx: Number(e.target.value) }))}
-                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
-                      />
-                      <span className="text-[10px] font-mono text-warm-dark/40">450px</span>
-                    </div>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5 pt-1">
-                      {[
-                        { px: 200, label: '200px' },
-                        { px: 260, label: '260px' },
-                        { px: 300, label: '300px' },
-                        { px: 340, label: '340px' },
-                        { px: 380, label: '380px' },
-                      ].map(preset => (
                         <button
-                          key={preset.px}
                           type="button"
-                          onClick={() => setStorySettings(prev => ({ ...prev, section1ImageMobileWidthPx: preset.px }))}
-                          className={`py-1 px-2 rounded-lg text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
-                            (storySettings.section1ImageMobileWidthPx || 320) === preset.px
-                              ? 'bg-warm-accent text-white border-warm-accent'
-                              : 'bg-white text-warm-dark/70 border-warm-dark/10 hover:bg-warm-accent/5'
+                          onClick={() => setTab('url')}
+                          className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                            tab === 'url' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
                           }`}
                         >
-                          {preset.label}
+                          Paste URL
                         </button>
-                      ))}
-                    </div>
-                  </div>
+                      </div>
 
-                  {/* Section 1 Corner Rounding */}
-                  <div className="space-y-2 pt-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
-                      Corner Border Radius
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      {[
-                        { id: 'rounded-2xl', label: 'Curved (16px)' },
-                        { id: 'rounded-3xl', label: 'Deep Curve (24px)' },
-                        { id: 'rounded-xl', label: 'Soft (12px)' },
-                        { id: 'rounded-none', label: 'Sharp Heritage (0px)' },
-                      ].map(r => {
-                        const isSelected = (storySettings.section1ImageRadius || 'rounded-2xl') === r.id;
-                        return (
-                          <button
-                            key={r.id}
-                            type="button"
-                            onClick={() => setStorySettings(prev => ({ ...prev, section1ImageRadius: r.id }))}
-                            className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer text-xs font-bold ${
-                              isSelected 
-                                ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
-                                : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
-                            }`}
-                          >
-                            {r.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Narrative Section 2 (Text Left, Photo Right) */}
-            <div className="bg-white border border-warm-dark/5 rounded-[24px] overflow-hidden shadow-sm">
-              <div className="bg-warm-light/60 p-4 border-b border-warm-dark/5 flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-warm-dark" />
-                <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">
-                  Narrative Section 2 (Text Left, Photo Right)
-                </h2>
-              </div>
-              <div className="p-6 space-y-6">
-                <div className="space-y-3">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Section Title</label>
-                    <input 
-                      type="text" 
-                      value={storySettings.section2Title}
-                      onChange={e => setStorySettings(prev => ({ ...prev, section2Title: e.target.value }))}
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                    />
-                  </div>
-
-                  {/* Section 2 Title Font Size Slider */}
-                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Title Font Size</label>
-                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
-                        {storySettings.section2TitleFontSize || 28}px
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-mono text-warm-dark/40">18px</span>
-                      <input 
-                        type="range"
-                        min="18"
-                        max="48"
-                        step="2"
-                        value={storySettings.section2TitleFontSize || 28}
-                        onChange={e => setStorySettings(prev => ({ ...prev, section2TitleFontSize: Number(e.target.value) }))}
-                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
-                      />
-                      <span className="text-[10px] font-mono text-warm-dark/40">48px</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">First Content Paragraph</label>
-                    <textarea 
-                      rows={3}
-                      value={storySettings.section2Content1}
-                      onChange={e => setStorySettings(prev => ({ ...prev, section2Content1: e.target.value }))}
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Second Content Paragraph</label>
-                    <textarea 
-                      rows={3}
-                      value={storySettings.section2Content2}
-                      onChange={e => setStorySettings(prev => ({ ...prev, section2Content2: e.target.value }))}
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                    />
-                  </div>
-
-                  {/* Section 2 Content Font Size Slider */}
-                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">Content Font Size</label>
-                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
-                        {storySettings.section2ContentFontSize || 18}px
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-mono text-warm-dark/40">14px</span>
-                      <input 
-                        type="range"
-                        min="14"
-                        max="32"
-                        step="1"
-                        value={storySettings.section2ContentFontSize || 18}
-                        onChange={e => setStorySettings(prev => ({ ...prev, section2ContentFontSize: Number(e.target.value) }))}
-                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
-                      />
-                      <span className="text-[10px] font-mono text-warm-dark/40">32px</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Section 2 Side Photo */}
-                <div className="space-y-4 pt-4 border-t border-warm-dark/5">
-                  <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/60">Side Photo (Right Side)</label>
-                  <div className="flex border-b border-warm-dark/10 mb-4 gap-4">
-                    <button
-                      type="button"
-                      onClick={() => setSec2Tab('upload')}
-                      className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
-                        sec2Tab === 'upload' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
-                      }`}
-                    >
-                      Upload File
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSec2Tab('url')}
-                      className={`pb-2 px-1 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
-                        sec2Tab === 'url' ? 'border-warm-accent text-warm-dark font-black' : 'border-transparent text-warm-dark/40'
-                      }`}
-                    >
-                      Paste URL
-                    </button>
-                  </div>
-                  {sec2Tab === 'upload' ? (
-                    <div className="space-y-4">
-                      {sec2Preview || (storySettings.section2Image && !sec2File && storySettings.section2Image !== '') ? (
-                        <div className="relative w-full aspect-square max-w-xs rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
-                          <img src={sec2Preview || storySettings.section2Image} alt="Section 2 Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                          <button 
-                            type="button"
-                            onClick={() => { setSec2File(null); setSec2Preview(null); setStorySettings(prev => ({ ...prev, section2Image: '' })); }}
-                            className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
-                          >
-                            <Trash2 className="w-4.5 h-4.5" />
-                          </button>
+                      {tab === 'upload' ? (
+                        <div className="space-y-4">
+                          {preview || (currentImage && !file && currentImage !== '') ? (
+                            <div className="relative w-full aspect-square max-w-xs rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                              <img src={preview || currentImage} alt={`Section ${num} Preview`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                              <button 
+                                type="button"
+                                onClick={() => { setFile(null); setPreview(null); setStorySettings(prev => ({ ...prev, [imageKey]: '' })); }}
+                                className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                              >
+                                <Trash2 className="w-4.5 h-4.5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <div 
+                              onClick={() => document.getElementById(`sec${num}-upload`)?.click()}
+                              className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
+                            >
+                              <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
+                              <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Side Photo</span>
+                              <input 
+                                id={`sec${num}-upload`}
+                                type="file" 
+                                accept="image/*" 
+                                className="hidden" 
+                                onChange={(e) => {
+                                  const f = e.target.files?.[0];
+                                  if (f) { setFile(f); setPreview(URL.createObjectURL(f)); }
+                                }}
+                              />
+                            </div>
+                          )}
                         </div>
                       ) : (
-                        <div 
-                          onClick={() => document.getElementById('sec2-upload')?.click()}
-                          className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
-                        >
-                          <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
-                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Side Photo</span>
-                          <input 
-                            id="sec2-upload"
-                            type="file" 
-                            accept="image/*" 
-                            className="hidden" 
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) { setSec2File(file); setSec2Preview(URL.createObjectURL(file)); }
-                            }}
-                          />
-                        </div>
+                        <input 
+                          type="text" 
+                          value={currentImage}
+                          onChange={e => setStorySettings(prev => ({ ...prev, [imageKey]: e.target.value }))}
+                          className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
+                          placeholder="https://..."
+                        />
                       )}
-                    </div>
-                  ) : (
-                    <input 
-                      type="text" 
-                      value={storySettings.section2Image}
-                      onChange={e => setStorySettings(prev => ({ ...prev, section2Image: e.target.value }))}
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif focus:border-warm-accent transition-colors"
-                      placeholder="https://..."
-                    />
-                  )}
 
-                  {/* Section 2 Aspect Ratio */}
-                  <div className="space-y-2 pt-3 border-t border-warm-dark/10">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
-                      Photo Aspect Ratio (Crop / Shape)
-                    </label>
-                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                      {[
-                        { id: '1:1', label: '1:1', desc: 'Square' },
-                        { id: '4:5', label: '4:5', desc: 'Portrait' },
-                        { id: '3:4', label: '3:4', desc: 'Classic' },
-                        { id: '16:9', label: '16:9', desc: 'Landscape' },
-                        { id: '3:2', label: '3:2', desc: 'DSLR' },
-                        { id: 'auto', label: 'Auto', desc: 'Original' },
-                      ].map(ratio => {
-                        const isSelected = (storySettings.section2ImageAspectRatio || '1:1') === ratio.id;
-                        return (
-                          <button
-                            key={ratio.id}
-                            type="button"
-                            onClick={() => setStorySettings(prev => ({ ...prev, section2ImageAspectRatio: ratio.id }))}
-                            className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
-                              isSelected 
-                                ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
-                                : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
-                            }`}
-                          >
-                            <span className={`font-mono text-xs font-bold ${isSelected ? 'text-white' : 'text-warm-dark'}`}>
-                              {ratio.label}
-                            </span>
-                            <span className={`text-[10px] uppercase font-sans tracking-wider ${isSelected ? 'text-white/80' : 'text-warm-dark/50'}`}>
-                              {ratio.desc}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                      {/* Photo Aspect Ratio */}
+                      <div className="space-y-2 pt-3 border-t border-warm-dark/10">
+                        <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
+                          Photo Aspect Ratio (Crop / Shape)
+                        </label>
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                          {[
+                            { id: '1:1', label: '1:1', desc: 'Square' },
+                            { id: '4:5', label: '4:5', desc: 'Portrait' },
+                            { id: '3:4', label: '3:4', desc: 'Classic' },
+                            { id: '16:9', label: '16:9', desc: 'Landscape' },
+                            { id: '3:2', label: '3:2', desc: 'DSLR' },
+                            { id: 'auto', label: 'Auto', desc: 'Original' },
+                          ].map(ratio => {
+                            const isSelected = ((storySettings as any)[imageAspectRatioKey] || '1:1') === ratio.id;
+                            return (
+                              <button
+                                key={ratio.id}
+                                type="button"
+                                onClick={() => setStorySettings(prev => ({ ...prev, [imageAspectRatioKey]: ratio.id }))}
+                                className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                                  isSelected 
+                                    ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
+                                    : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
+                                }`}
+                              >
+                                <span className={`font-mono text-xs font-bold ${isSelected ? 'text-white' : 'text-warm-dark'}`}>
+                                  {ratio.label}
+                                </span>
+                                <span className={`text-[10px] uppercase font-sans tracking-wider ${isSelected ? 'text-white/80' : 'text-warm-dark/50'}`}>
+                                  {ratio.desc}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
 
-                  {/* Section 2 Desktop / Laptop Width */}
-                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">
-                        💻 Laptop / Desktop Width
-                      </label>
-                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
-                        {storySettings.section2ImageWidthPx || 448}px
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-mono text-warm-dark/40">200px</span>
-                      <input 
-                        type="range"
-                        min="200"
-                        max="650"
-                        step="10"
-                        value={storySettings.section2ImageWidthPx || 448}
-                        onChange={e => setStorySettings(prev => ({ ...prev, section2ImageWidthPx: Number(e.target.value) }))}
-                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
-                      />
-                      <span className="text-[10px] font-mono text-warm-dark/40">650px</span>
-                    </div>
-                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 pt-1">
-                      {[
-                        { px: 320, label: '320px' },
-                        { px: 384, label: '384px' },
-                        { px: 448, label: '448px' },
-                        { px: 512, label: '512px' },
-                        { px: 576, label: '576px' },
-                        { px: 650, label: '650px' },
-                      ].map(preset => (
-                        <button
-                          key={preset.px}
-                          type="button"
-                          onClick={() => setStorySettings(prev => ({ ...prev, section2ImageWidthPx: preset.px }))}
-                          className={`py-1 px-2 rounded-lg text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
-                            (storySettings.section2ImageWidthPx || 448) === preset.px
-                              ? 'bg-warm-accent text-white border-warm-accent'
-                              : 'bg-white text-warm-dark/70 border-warm-dark/10 hover:bg-warm-accent/5'
-                          }`}
-                        >
-                          {preset.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                      {/* Desktop / Laptop Width */}
+                      <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">
+                            💻 Laptop / Desktop Width
+                          </label>
+                          <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                            {(storySettings as any)[imageWidthPxKey] || 448}px
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[10px] font-mono text-warm-dark/40">200px</span>
+                          <input 
+                            type="range"
+                            min="200"
+                            max="650"
+                            step="10"
+                            value={(storySettings as any)[imageWidthPxKey] || 448}
+                            onChange={e => setStorySettings(prev => ({ ...prev, [imageWidthPxKey]: Number(e.target.value) }))}
+                            className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                          />
+                          <span className="text-[10px] font-mono text-warm-dark/40">650px</span>
+                        </div>
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 pt-1">
+                          {[
+                            { px: 320, label: '320px' },
+                            { px: 384, label: '384px' },
+                            { px: 448, label: '448px' },
+                            { px: 512, label: '512px' },
+                            { px: 576, label: '576px' },
+                            { px: 650, label: '650px' },
+                          ].map(preset => (
+                            <button
+                              key={preset.px}
+                              type="button"
+                              onClick={() => setStorySettings(prev => ({ ...prev, [imageWidthPxKey]: preset.px }))}
+                              className={`py-1 px-2 rounded-lg text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+                                ((storySettings as any)[imageWidthPxKey] || 448) === preset.px
+                                  ? 'bg-warm-accent text-white border-warm-accent'
+                                  : 'bg-white text-warm-dark/70 border-warm-dark/10 hover:bg-warm-accent/5'
+                              }`}
+                            >
+                              {preset.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
 
-                  {/* Section 2 Mobile Width */}
-                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">
-                        📱 Mobile Screen Width
-                      </label>
-                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
-                        {storySettings.section2ImageMobileWidthPx || 320}px
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-mono text-warm-dark/40">140px</span>
-                      <input 
-                        type="range"
-                        min="140"
-                        max="450"
-                        step="10"
-                        value={storySettings.section2ImageMobileWidthPx || 320}
-                        onChange={e => setStorySettings(prev => ({ ...prev, section2ImageMobileWidthPx: Number(e.target.value) }))}
-                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
-                      />
-                      <span className="text-[10px] font-mono text-warm-dark/40">450px</span>
-                    </div>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5 pt-1">
-                      {[
-                        { px: 200, label: '200px' },
-                        { px: 260, label: '260px' },
-                        { px: 300, label: '300px' },
-                        { px: 340, label: '340px' },
-                        { px: 380, label: '380px' },
-                      ].map(preset => (
-                        <button
-                          key={preset.px}
-                          type="button"
-                          onClick={() => setStorySettings(prev => ({ ...prev, section2ImageMobileWidthPx: preset.px }))}
-                          className={`py-1 px-2 rounded-lg text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
-                            (storySettings.section2ImageMobileWidthPx || 320) === preset.px
-                              ? 'bg-warm-accent text-white border-warm-accent'
-                              : 'bg-white text-warm-dark/70 border-warm-dark/10 hover:bg-warm-accent/5'
-                          }`}
-                        >
-                          {preset.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                      {/* Mobile Width */}
+                      <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">
+                            📱 Mobile Screen Width
+                          </label>
+                          <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                            {(storySettings as any)[imageMobileWidthPxKey] || 320}px
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[10px] font-mono text-warm-dark/40">140px</span>
+                          <input 
+                            type="range"
+                            min="140"
+                            max="450"
+                            step="10"
+                            value={(storySettings as any)[imageMobileWidthPxKey] || 320}
+                            onChange={e => setStorySettings(prev => ({ ...prev, [imageMobileWidthPxKey]: Number(e.target.value) }))}
+                            className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                          />
+                          <span className="text-[10px] font-mono text-warm-dark/40">450px</span>
+                        </div>
+                        <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5 pt-1">
+                          {[
+                            { px: 200, label: '200px' },
+                            { px: 260, label: '260px' },
+                            { px: 300, label: '300px' },
+                            { px: 340, label: '340px' },
+                            { px: 380, label: '380px' },
+                          ].map(preset => (
+                            <button
+                              key={preset.px}
+                              type="button"
+                              onClick={() => setStorySettings(prev => ({ ...prev, [imageMobileWidthPxKey]: preset.px }))}
+                              className={`py-1 px-2 rounded-lg text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+                                ((storySettings as any)[imageMobileWidthPxKey] || 320) === preset.px
+                                  ? 'bg-warm-accent text-white border-warm-accent'
+                                  : 'bg-white text-warm-dark/70 border-warm-dark/10 hover:bg-warm-accent/5'
+                              }`}
+                            >
+                              {preset.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
 
-                  {/* Section 2 Corner Rounding */}
-                  <div className="space-y-2 pt-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
-                      Corner Border Radius
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      {[
-                        { id: 'rounded-2xl', label: 'Curved (16px)' },
-                        { id: 'rounded-3xl', label: 'Deep Curve (24px)' },
-                        { id: 'rounded-xl', label: 'Soft (12px)' },
-                        { id: 'rounded-none', label: 'Sharp Heritage (0px)' },
-                      ].map(r => {
-                        const isSelected = (storySettings.section2ImageRadius || 'rounded-2xl') === r.id;
-                        return (
-                          <button
-                            key={r.id}
-                            type="button"
-                            onClick={() => setStorySettings(prev => ({ ...prev, section2ImageRadius: r.id }))}
-                            className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer text-xs font-bold ${
-                              isSelected 
-                                ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
-                                : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
-                            }`}
-                          >
-                            {r.label}
-                          </button>
-                        );
-                      })}
+                      {/* Corner Rounding */}
+                      <div className="space-y-2 pt-2">
+                        <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
+                          Corner Border Radius
+                        </label>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                          {[
+                            { id: 'rounded-2xl', label: 'Curved (16px)' },
+                            { id: 'rounded-3xl', label: 'Deep Curve (24px)' },
+                            { id: 'rounded-xl', label: 'Soft (12px)' },
+                            { id: 'rounded-none', label: 'Sharp Heritage (0px)' },
+                          ].map(r => {
+                            const isSelected = ((storySettings as any)[imageRadiusKey] || 'rounded-2xl') === r.id;
+                            return (
+                              <button
+                                key={r.id}
+                                type="button"
+                                onClick={() => setStorySettings(prev => ({ ...prev, [imageRadiusKey]: r.id }))}
+                                className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer text-xs font-bold ${
+                                  isSelected 
+                                    ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
+                                    : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
+                                }`}
+                              >
+                                {r.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              );
+            })}
 
             {/* Bottom Quote */}
             <div className="bg-white border border-warm-dark/5 rounded-[24px] overflow-hidden shadow-sm">
