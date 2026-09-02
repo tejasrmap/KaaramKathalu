@@ -155,12 +155,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Centered Desktop Menu */}
-            <nav className="hidden lg:flex items-center gap-8 font-heading text-xs tracking-[0.2em] uppercase font-bold text-warm-dark/80 absolute left-1/2 -translate-x-1/2">
-              <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Home</Link>
-              <Link to="/shop" className={`${location.pathname === '/shop' && !location.search ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Shop All</Link>
-              <Link to="/shop?category=pickle" className={`${location.pathname === '/shop' && location.search.includes('category=pickle') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Pickles</Link>
-              <Link to="/shop?category=podi" className={`${location.pathname === '/shop' && location.search.includes('category=podi') ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Podis</Link>
-              <Link to="/about" className={`${location.pathname === '/about' ? 'text-warm-accent font-semibold' : ''} hover:text-warm-accent transition-colors`}>Our Story</Link>
+            <nav className="hidden lg:flex items-center gap-6 xl:gap-9 font-heading text-sm xl:text-[15px] tracking-[0.16em] uppercase font-bold text-warm-dark absolute left-1/2 -translate-x-1/2">
+              <Link to="/" className={`${location.pathname === '/' ? 'text-warm-accent font-black' : 'text-warm-dark/85'} hover:text-warm-accent transition-colors`}>Home</Link>
+              <Link to="/shop" className={`${location.pathname === '/shop' && !location.search ? 'text-warm-accent font-black' : 'text-warm-dark/85'} hover:text-warm-accent transition-colors`}>Shop All</Link>
+              <Link to="/shop?category=pickle" className={`${location.pathname === '/shop' && location.search.includes('category=pickle') ? 'text-warm-accent font-black' : 'text-warm-dark/85'} hover:text-warm-accent transition-colors`}>Pickles</Link>
+              <Link to="/shop?category=podi" className={`${location.pathname === '/shop' && location.search.includes('category=podi') ? 'text-warm-accent font-black' : 'text-warm-dark/85'} hover:text-warm-accent transition-colors`}>Podis</Link>
+              <Link to="/about" className={`${location.pathname === '/about' ? 'text-warm-accent font-black' : 'text-warm-dark/85'} hover:text-warm-accent transition-colors`}>Our Story</Link>
             </nav>
 
             {/* Desktop & Mobile Actions (Right side) */}
