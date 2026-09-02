@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Loader2, CheckCircle2, Globe, Phone, Mail, Bell, ShieldCheck, Image as ImageIcon, Trash2, BookOpen } from 'lucide-react';
+import { Save, Loader2, CheckCircle2, Globe, Phone, Mail, Bell, ShieldCheck, Image as ImageIcon, Trash2, BookOpen, Crop } from 'lucide-react';
 import { db } from '../../firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { supabase } from '../../supabase';
 import { usePopups } from '../../context/PopupContext';
+import { ImageCropModal } from '../../components/ImageCropModal';
 
 export default function Settings() {
   const { showAlert, showToast } = usePopups();
@@ -326,9 +327,134 @@ export default function Settings() {
 
   const [sec5File, setSec5File] = useState<File | null>(null);
   const [sec5Preview, setSec5Preview] = useState<string | null>(null);
-  const [sec5Tab, setSec5Tab] = useState<'upload' | 'url'>('upload');
-
   const [isUploading, setIsUploading] = useState(false);
+
+  // Image Cropper & Framing Modal State
+  const [cropModalConfig, setCropModalConfig] = useState<{
+    isOpen: boolean;
+    imageSrc: string;
+    imageName: string;
+    targetField: string;
+    targetTitle: string;
+    aspectRatioType: 'desktop-hero' | 'mobile-hero' | 'square' | 'free';
+    originalFile?: File | null;
+  }>({
+    isOpen: false,
+    imageSrc: '',
+    imageName: '',
+    targetField: '',
+    targetTitle: '',
+    aspectRatioType: 'desktop-hero',
+    originalFile: null
+  });
+
+  const handleSelectFileToCrop = (
+    file: File,
+    targetField: string,
+    targetTitle: string,
+    aspectRatioType: 'desktop-hero' | 'mobile-hero' | 'square' | 'free' = 'desktop-hero'
+  ) => {
+    const objectUrl = URL.createObjectURL(file);
+    setCropModalConfig({
+      isOpen: true,
+      imageSrc: objectUrl,
+      imageName: file.name,
+      targetField,
+      targetTitle,
+      aspectRatioType,
+      originalFile: file
+    });
+  };
+
+  const handleOpenExistingImageToCrop = (
+    imageSrc: string,
+    targetField: string,
+    targetTitle: string,
+    aspectRatioType: 'desktop-hero' | 'mobile-hero' | 'square' | 'free' = 'desktop-hero'
+  ) => {
+    setCropModalConfig({
+      isOpen: true,
+      imageSrc,
+      imageName: `${targetField}_cropped.jpg`,
+      targetField,
+      targetTitle,
+      aspectRatioType,
+      originalFile: null
+    });
+  };
+
+  const handleApplyCroppedImage = (croppedBlob: Blob, previewUrl: string) => {
+    const fileName = cropModalConfig.originalFile?.name 
+      ? `cropped_${cropModalConfig.originalFile.name.replace(/\.[^/.]+$/, "")}.jpg` 
+      : `${cropModalConfig.targetField}_cropped.jpg`;
+    
+    const croppedFile = new File([croppedBlob], fileName, { type: 'image/jpeg' });
+    const target = cropModalConfig.targetField;
+
+    if (target === 'hero1') {
+      setHero1File(croppedFile);
+      setHero1Preview(previewUrl);
+    } else if (target === 'hero2') {
+      setHero2File(croppedFile);
+      setHero2Preview(previewUrl);
+    } else if (target === 'hero3') {
+      setHero3File(croppedFile);
+      setHero3Preview(previewUrl);
+    } else if (target === 'heroMobile1') {
+      setHeroMobile1File(croppedFile);
+      setHeroMobile1Preview(previewUrl);
+    } else if (target === 'heroMobile2') {
+      setHeroMobile2File(croppedFile);
+      setHeroMobile2Preview(previewUrl);
+    } else if (target === 'heroMobile3') {
+      setHeroMobile3File(croppedFile);
+      setHeroMobile3Preview(previewUrl);
+    } else if (target === 'banner') {
+      setBannerFile(croppedFile);
+      setBannerPreview(previewUrl);
+    } else if (target === 'storyPhoto') {
+      setStoryPhotoFile(croppedFile);
+      setStoryPhotoPreview(previewUrl);
+    } else if (target === 'sec1') {
+      setSec1File(croppedFile);
+      setSec1Preview(previewUrl);
+    } else if (target === 'sec2') {
+      setSec2File(croppedFile);
+      setSec2Preview(previewUrl);
+    } else if (target === 'sec3') {
+      setSec3File(croppedFile);
+      setSec3Preview(previewUrl);
+    } else if (target === 'sec4') {
+      setSec4File(croppedFile);
+      setSec4Preview(previewUrl);
+    } else if (target === 'sec5') {
+      setSec5File(croppedFile);
+      setSec5Preview(previewUrl);
+    }
+  };
+
+  const handleUseOriginalImage = () => {
+    if (cropModalConfig.originalFile) {
+      const file = cropModalConfig.originalFile;
+      const previewUrl = URL.createObjectURL(file);
+      const target = cropModalConfig.targetField;
+
+      if (target === 'hero1') { setHero1File(file); setHero1Preview(previewUrl); }
+      else if (target === 'hero2') { setHero2File(file); setHero2Preview(previewUrl); }
+      else if (target === 'hero3') { setHero3File(file); setHero3Preview(previewUrl); }
+      else if (target === 'heroMobile1') { setHeroMobile1File(file); setHeroMobile1Preview(previewUrl); }
+      else if (target === 'heroMobile2') { setHeroMobile2File(file); setHeroMobile2Preview(previewUrl); }
+      else if (target === 'heroMobile3') { setHeroMobile3File(file); setHeroMobile3Preview(previewUrl); }
+      else if (target === 'banner') { setBannerFile(file); setBannerPreview(previewUrl); }
+      else if (target === 'storyPhoto') { setStoryPhotoFile(file); setStoryPhotoPreview(previewUrl); }
+      else if (target === 'sec1') { setSec1File(file); setSec1Preview(previewUrl); }
+      else if (target === 'sec2') { setSec2File(file); setSec2Preview(previewUrl); }
+      else if (target === 'sec3') { setSec3File(file); setSec3Preview(previewUrl); }
+      else if (target === 'sec4') { setSec4File(file); setSec4Preview(previewUrl); }
+      else if (target === 'sec5') { setSec5File(file); setSec5Preview(previewUrl); }
+    }
+    setCropModalConfig(prev => ({ ...prev, isOpen: false }));
+  };
 
   useEffect(() => {
     const fetchAllSettings = async () => {
@@ -976,12 +1102,24 @@ export default function Settings() {
                   {hero1Tab === 'upload' ? (
                     <div className="space-y-4">
                       {hero1Preview || (settings.heroBgImage1 && !hero1File && settings.heroBgImage1 !== '') ? (
-                        <div className="relative w-full aspect-[21/9] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                        <div className="relative w-full aspect-[21/9] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center group">
                           <img src={hero1Preview || settings.heroBgImage1} alt="Hero 1 Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                          
+                          {/* Crop & Adjust View Button */}
+                          <button 
+                            type="button"
+                            onClick={() => handleOpenExistingImageToCrop(hero1Preview || settings.heroBgImage1, 'hero1', 'Desktop Hero Photo 1', 'desktop-hero')}
+                            className="absolute top-3 right-14 px-3 py-1.5 bg-white/95 hover:bg-white text-warm-dark hover:text-warm-accent rounded-full shadow-md transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold font-sans z-10"
+                            title="Crop & Move Position / Adjust View"
+                          >
+                            <Crop className="w-3.5 h-3.5 text-warm-accent" />
+                            <span>Crop & Adjust View</span>
+                          </button>
+
                           <button 
                             type="button"
                             onClick={() => { setHero1File(null); setHero1Preview(null); setSettings(prev => ({ ...prev, heroBgImage1: '' })); }}
-                            className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                            className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer z-10"
                           >
                             <Trash2 className="w-4.5 h-4.5" />
                           </button>
@@ -992,7 +1130,7 @@ export default function Settings() {
                           className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
                         >
                           <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
-                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Hero Image 1</span>
+                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Hero Image 1 (With Interactive Crop & Frame)</span>
                           <input 
                             id="hero1-upload"
                             type="file" 
@@ -1000,7 +1138,10 @@ export default function Settings() {
                             className="hidden" 
                             onChange={(e) => {
                               const file = e.target.files?.[0];
-                              if (file) { setHero1File(file); setHero1Preview(URL.createObjectURL(file)); }
+                              if (file) {
+                                handleSelectFileToCrop(file, 'hero1', 'Desktop Hero Photo 1', 'desktop-hero');
+                                e.target.value = '';
+                              }
                             }}
                           />
                         </div>
@@ -1043,12 +1184,24 @@ export default function Settings() {
                   {hero2Tab === 'upload' ? (
                     <div className="space-y-4">
                       {hero2Preview || (settings.heroBgImage2 && !hero2File && settings.heroBgImage2 !== '') ? (
-                        <div className="relative w-full aspect-[21/9] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                        <div className="relative w-full aspect-[21/9] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center group">
                           <img src={hero2Preview || settings.heroBgImage2} alt="Hero 2 Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                          
+                          {/* Crop & Adjust View Button */}
+                          <button 
+                            type="button"
+                            onClick={() => handleOpenExistingImageToCrop(hero2Preview || settings.heroBgImage2, 'hero2', 'Desktop Hero Photo 2', 'desktop-hero')}
+                            className="absolute top-3 right-14 px-3 py-1.5 bg-white/95 hover:bg-white text-warm-dark hover:text-warm-accent rounded-full shadow-md transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold font-sans z-10"
+                            title="Crop & Move Position / Adjust View"
+                          >
+                            <Crop className="w-3.5 h-3.5 text-warm-accent" />
+                            <span>Crop & Adjust View</span>
+                          </button>
+
                           <button 
                             type="button"
                             onClick={() => { setHero2File(null); setHero2Preview(null); setSettings(prev => ({ ...prev, heroBgImage2: '' })); }}
-                            className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                            className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer z-10"
                           >
                             <Trash2 className="w-4.5 h-4.5" />
                           </button>
@@ -1059,7 +1212,7 @@ export default function Settings() {
                           className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
                         >
                           <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
-                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Hero Image 2</span>
+                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Hero Image 2 (With Interactive Crop & Frame)</span>
                           <input 
                             id="hero2-upload"
                             type="file" 
@@ -1067,7 +1220,10 @@ export default function Settings() {
                             className="hidden" 
                             onChange={(e) => {
                               const file = e.target.files?.[0];
-                              if (file) { setHero2File(file); setHero2Preview(URL.createObjectURL(file)); }
+                              if (file) {
+                                handleSelectFileToCrop(file, 'hero2', 'Desktop Hero Photo 2', 'desktop-hero');
+                                e.target.value = '';
+                              }
                             }}
                           />
                         </div>
@@ -1110,12 +1266,24 @@ export default function Settings() {
                   {hero3Tab === 'upload' ? (
                     <div className="space-y-4">
                       {hero3Preview || (settings.heroBgImage3 && !hero3File && settings.heroBgImage3 !== '') ? (
-                        <div className="relative w-full aspect-[21/9] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                        <div className="relative w-full aspect-[21/9] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center group">
                           <img src={hero3Preview || settings.heroBgImage3} alt="Hero 3 Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                          
+                          {/* Crop & Adjust View Button */}
+                          <button 
+                            type="button"
+                            onClick={() => handleOpenExistingImageToCrop(hero3Preview || settings.heroBgImage3, 'hero3', 'Desktop Hero Photo 3', 'desktop-hero')}
+                            className="absolute top-3 right-14 px-3 py-1.5 bg-white/95 hover:bg-white text-warm-dark hover:text-warm-accent rounded-full shadow-md transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold font-sans z-10"
+                            title="Crop & Move Position / Adjust View"
+                          >
+                            <Crop className="w-3.5 h-3.5 text-warm-accent" />
+                            <span>Crop & Adjust View</span>
+                          </button>
+
                           <button 
                             type="button"
                             onClick={() => { setHero3File(null); setHero3Preview(null); setSettings(prev => ({ ...prev, heroBgImage3: '' })); }}
-                            className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                            className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer z-10"
                           >
                             <Trash2 className="w-4.5 h-4.5" />
                           </button>
@@ -1126,7 +1294,7 @@ export default function Settings() {
                           className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
                         >
                           <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
-                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Hero Image 3</span>
+                          <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Hero Image 3 (With Interactive Crop & Frame)</span>
                           <input 
                             id="hero3-upload"
                             type="file" 
@@ -1134,7 +1302,10 @@ export default function Settings() {
                             className="hidden" 
                             onChange={(e) => {
                               const file = e.target.files?.[0];
-                              if (file) { setHero3File(file); setHero3Preview(URL.createObjectURL(file)); }
+                              if (file) {
+                                handleSelectFileToCrop(file, 'hero3', 'Desktop Hero Photo 3', 'desktop-hero');
+                                e.target.value = '';
+                              }
                             }}
                           />
                         </div>
@@ -1181,12 +1352,23 @@ export default function Settings() {
                     {heroMobile1Tab === 'upload' ? (
                       <div className="space-y-4">
                         {heroMobile1Preview || (settings.heroMobileBgImage1 && !heroMobile1File && settings.heroMobileBgImage1 !== '') ? (
-                          <div className="relative w-44 aspect-[3/4] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                          <div className="relative w-48 aspect-[3/4] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center group">
                             <img src={heroMobile1Preview || settings.heroMobileBgImage1} alt="Hero Mobile 1 Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                            
+                            {/* Crop & Adjust View Button */}
+                            <button 
+                              type="button"
+                              onClick={() => handleOpenExistingImageToCrop(heroMobile1Preview || settings.heroMobileBgImage1, 'heroMobile1', 'Mobile Background Photo 1', 'mobile-hero')}
+                              className="absolute top-2 right-10 p-1.5 bg-white/95 hover:bg-white text-warm-dark hover:text-warm-accent rounded-full shadow-md transition-all cursor-pointer z-10"
+                              title="Crop & Move Position / Adjust View"
+                            >
+                              <Crop className="w-3.5 h-3.5 text-warm-accent" />
+                            </button>
+
                             <button 
                               type="button"
                               onClick={() => { setHeroMobile1File(null); setHeroMobile1Preview(null); setSettings(prev => ({ ...prev, heroMobileBgImage1: '' })); }}
-                              className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                              className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer z-10"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -1197,7 +1379,7 @@ export default function Settings() {
                             className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[120px]"
                           >
                             <ImageIcon className="w-6 h-6 text-warm-dark/30 mb-2" />
-                            <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Mobile Image 1</span>
+                            <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Mobile Image 1 (With Crop Tool)</span>
                             <input 
                               id="heromobile1-upload"
                               type="file" 
@@ -1205,7 +1387,10 @@ export default function Settings() {
                               className="hidden" 
                               onChange={(e) => {
                                 const file = e.target.files?.[0];
-                                if (file) { setHeroMobile1File(file); setHeroMobile1Preview(URL.createObjectURL(file)); }
+                                if (file) {
+                                  handleSelectFileToCrop(file, 'heroMobile1', 'Mobile Background Photo 1', 'mobile-hero');
+                                  e.target.value = '';
+                                }
                               }}
                             />
                           </div>
@@ -1248,12 +1433,23 @@ export default function Settings() {
                     {heroMobile2Tab === 'upload' ? (
                       <div className="space-y-4">
                         {heroMobile2Preview || (settings.heroMobileBgImage2 && !heroMobile2File && settings.heroMobileBgImage2 !== '') ? (
-                          <div className="relative w-44 aspect-[3/4] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                          <div className="relative w-48 aspect-[3/4] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center group">
                             <img src={heroMobile2Preview || settings.heroMobileBgImage2} alt="Hero Mobile 2 Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                            
+                            {/* Crop & Adjust View Button */}
+                            <button 
+                              type="button"
+                              onClick={() => handleOpenExistingImageToCrop(heroMobile2Preview || settings.heroMobileBgImage2, 'heroMobile2', 'Mobile Background Photo 2', 'mobile-hero')}
+                              className="absolute top-2 right-10 p-1.5 bg-white/95 hover:bg-white text-warm-dark hover:text-warm-accent rounded-full shadow-md transition-all cursor-pointer z-10"
+                              title="Crop & Move Position / Adjust View"
+                            >
+                              <Crop className="w-3.5 h-3.5 text-warm-accent" />
+                            </button>
+
                             <button 
                               type="button"
                               onClick={() => { setHeroMobile2File(null); setHeroMobile2Preview(null); setSettings(prev => ({ ...prev, heroMobileBgImage2: '' })); }}
-                              className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                              className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer z-10"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -1264,7 +1460,7 @@ export default function Settings() {
                             className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[120px]"
                           >
                             <ImageIcon className="w-6 h-6 text-warm-dark/30 mb-2" />
-                            <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Mobile Image 2</span>
+                            <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Mobile Image 2 (With Crop Tool)</span>
                             <input 
                               id="heromobile2-upload"
                               type="file" 
@@ -1272,7 +1468,10 @@ export default function Settings() {
                               className="hidden" 
                               onChange={(e) => {
                                 const file = e.target.files?.[0];
-                                if (file) { setHeroMobile2File(file); setHeroMobile2Preview(URL.createObjectURL(file)); }
+                                if (file) {
+                                  handleSelectFileToCrop(file, 'heroMobile2', 'Mobile Background Photo 2', 'mobile-hero');
+                                  e.target.value = '';
+                                }
                               }}
                             />
                           </div>
@@ -1315,12 +1514,23 @@ export default function Settings() {
                     {heroMobile3Tab === 'upload' ? (
                       <div className="space-y-4">
                         {heroMobile3Preview || (settings.heroMobileBgImage3 && !heroMobile3File && settings.heroMobileBgImage3 !== '') ? (
-                          <div className="relative w-44 aspect-[3/4] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                          <div className="relative w-48 aspect-[3/4] rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center group">
                             <img src={heroMobile3Preview || settings.heroMobileBgImage3} alt="Hero Mobile 3 Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                            
+                            {/* Crop & Adjust View Button */}
+                            <button 
+                              type="button"
+                              onClick={() => handleOpenExistingImageToCrop(heroMobile3Preview || settings.heroMobileBgImage3, 'heroMobile3', 'Mobile Background Photo 3', 'mobile-hero')}
+                              className="absolute top-2 right-10 p-1.5 bg-white/95 hover:bg-white text-warm-dark hover:text-warm-accent rounded-full shadow-md transition-all cursor-pointer z-10"
+                              title="Crop & Move Position / Adjust View"
+                            >
+                              <Crop className="w-3.5 h-3.5 text-warm-accent" />
+                            </button>
+
                             <button 
                               type="button"
                               onClick={() => { setHeroMobile3File(null); setHeroMobile3Preview(null); setSettings(prev => ({ ...prev, heroMobileBgImage3: '' })); }}
-                              className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                              className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer z-10"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -1331,7 +1541,7 @@ export default function Settings() {
                             className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[120px]"
                           >
                             <ImageIcon className="w-6 h-6 text-warm-dark/30 mb-2" />
-                            <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Mobile Image 3</span>
+                            <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Mobile Image 3 (With Crop Tool)</span>
                             <input 
                               id="heromobile3-upload"
                               type="file" 
@@ -1339,7 +1549,10 @@ export default function Settings() {
                               className="hidden" 
                               onChange={(e) => {
                                 const file = e.target.files?.[0];
-                                if (file) { setHeroMobile3File(file); setHeroMobile3Preview(URL.createObjectURL(file)); }
+                                if (file) {
+                                  handleSelectFileToCrop(file, 'heroMobile3', 'Mobile Background Photo 3', 'mobile-hero');
+                                  e.target.value = '';
+                                }
                               }}
                             />
                           </div>
@@ -2070,14 +2283,26 @@ export default function Settings() {
                     {storyPhotoTab === 'upload' ? (
                       <div className="space-y-4">
                         {storyPhotoPreview || (storySettings.storyPhoto && !storyPhotoFile && storySettings.storyPhoto !== '') ? (
-                          <div className="relative w-full aspect-[16/9] max-w-md mx-auto rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                          <div className="relative w-full aspect-[16/9] max-w-md mx-auto rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center group">
                             <img src={storyPhotoPreview || storySettings.storyPhoto} alt="Story Photo Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                            
+                            {/* Crop & Adjust View Button */}
+                            <button 
+                              type="button"
+                              onClick={() => handleOpenExistingImageToCrop(storyPhotoPreview || storySettings.storyPhoto, 'storyPhoto', 'Our Story Photo', 'desktop-hero')}
+                              className="absolute top-3 right-12 px-2.5 py-1 bg-white/95 hover:bg-white text-warm-dark hover:text-warm-accent rounded-full shadow-md transition-all cursor-pointer flex items-center gap-1 text-[11px] font-bold font-sans z-10"
+                              title="Crop & Move Position / Adjust View"
+                            >
+                              <Crop className="w-3.5 h-3.5 text-warm-accent" />
+                              <span>Adjust</span>
+                            </button>
+
                             <button 
                               type="button"
                               onClick={() => { setStoryPhotoFile(null); setStoryPhotoPreview(null); setStorySettings(prev => ({ ...prev, storyPhoto: '' })); }}
-                              className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                              className="absolute top-3 right-3 p-1.5 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer z-10"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         ) : (
@@ -2086,7 +2311,7 @@ export default function Settings() {
                             className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
                           >
                             <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
-                            <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Story Photo</span>
+                            <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Story Photo (With Crop Tool)</span>
                             <input 
                               id="story-photo-upload"
                               type="file" 
@@ -2094,7 +2319,10 @@ export default function Settings() {
                               className="hidden" 
                               onChange={(e) => {
                                 const file = e.target.files?.[0];
-                                if (file) { setStoryPhotoFile(file); setStoryPhotoPreview(URL.createObjectURL(file)); }
+                                if (file) {
+                                  handleSelectFileToCrop(file, 'storyPhoto', 'Our Story Photo', 'desktop-hero');
+                                  e.target.value = '';
+                                }
                               }}
                             />
                           </div>
@@ -2509,14 +2737,26 @@ export default function Settings() {
                       {tab === 'upload' ? (
                         <div className="space-y-4">
                           {preview || (currentImage && !file && currentImage !== '') ? (
-                            <div className="relative w-full aspect-square max-w-xs rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center">
+                            <div className="relative w-full aspect-square max-w-xs rounded-xl overflow-hidden border border-warm-dark/10 shadow-sm bg-warm-light flex items-center justify-center group">
                               <img src={preview || currentImage} alt={`Section ${num} Preview`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                              
+                              {/* Crop & Adjust View Button */}
+                              <button 
+                                type="button"
+                                onClick={() => handleOpenExistingImageToCrop(preview || currentImage, `sec${num}`, `Section ${num} Side Photo`, 'square')}
+                                className="absolute top-3 right-12 px-2.5 py-1 bg-white/95 hover:bg-white text-warm-dark hover:text-warm-accent rounded-full shadow-md transition-all cursor-pointer flex items-center gap-1 text-[11px] font-bold font-sans z-10"
+                                title="Crop & Move Position / Adjust View"
+                              >
+                                <Crop className="w-3.5 h-3.5 text-warm-accent" />
+                                <span>Adjust</span>
+                              </button>
+
                               <button 
                                 type="button"
                                 onClick={() => { setFile(null); setPreview(null); setStorySettings(prev => ({ ...prev, [imageKey]: '' })); }}
-                                className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer"
+                                className="absolute top-3 right-3 p-1.5 bg-white/90 hover:bg-white text-warm-accent rounded-full shadow-md transition-colors cursor-pointer z-10"
                               >
-                                <Trash2 className="w-4.5 h-4.5" />
+                                <Trash2 className="w-4 h-4" />
                               </button>
                             </div>
                           ) : (
@@ -2525,7 +2765,7 @@ export default function Settings() {
                               className="border-2 border-dashed border-warm-dark/15 bg-warm-bg/5 hover:bg-warm-accent/5 hover:border-warm-accent transition-all rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer min-h-[140px]"
                             >
                               <ImageIcon className="w-8 h-8 text-warm-dark/30 mb-2" />
-                              <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Side Photo</span>
+                              <span className="text-xs font-bold uppercase tracking-wider text-warm-dark/50">Upload Side Photo (With Crop Tool)</span>
                               <input 
                                 id={`sec${num}-upload`}
                                 type="file" 
@@ -2533,7 +2773,10 @@ export default function Settings() {
                                 className="hidden" 
                                 onChange={(e) => {
                                   const f = e.target.files?.[0];
-                                  if (f) { setFile(f); setPreview(URL.createObjectURL(f)); }
+                                  if (f) {
+                                    handleSelectFileToCrop(f, `sec${num}`, `Section ${num} Side Photo`, 'square');
+                                    e.target.value = '';
+                                  }
                                 }}
                               />
                             </div>
@@ -2819,6 +3062,18 @@ export default function Settings() {
           </button>
         </div>
       </form>
+
+      {/* Interactive Image Crop & Framing Viewfinder Modal */}
+      <ImageCropModal
+        isOpen={cropModalConfig.isOpen}
+        imageSrc={cropModalConfig.imageSrc}
+        imageName={cropModalConfig.imageName}
+        targetTitle={cropModalConfig.targetTitle}
+        aspectRatioType={cropModalConfig.aspectRatioType}
+        onClose={() => setCropModalConfig(prev => ({ ...prev, isOpen: false }))}
+        onCropComplete={handleApplyCroppedImage}
+        onUseOriginal={cropModalConfig.originalFile ? handleUseOriginalImage : undefined}
+      />
     </div>
   );
 }
