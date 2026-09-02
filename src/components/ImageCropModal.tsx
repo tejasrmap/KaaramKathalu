@@ -7,6 +7,10 @@ interface ImageCropModalProps {
   imageName?: string;
   aspectRatioType?: 'desktop-hero' | 'mobile-hero' | 'square' | 'free';
   targetTitle?: string;
+  heroTag?: string;
+  heroTitle?: string;
+  heroDescription?: string;
+  heroButtonText?: string;
   onClose: () => void;
   onCropComplete: (croppedBlob: Blob, previewUrl: string) => void;
   onUseOriginal?: () => void;
@@ -18,6 +22,10 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
   imageName = 'hero_image.jpg',
   aspectRatioType = 'desktop-hero',
   targetTitle = 'Cover Photo',
+  heroTag,
+  heroTitle,
+  heroDescription,
+  heroButtonText,
   onClose,
   onCropComplete,
   onUseOriginal
@@ -231,17 +239,17 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
   const getAspectClass = () => {
     switch (aspectRatio) {
       case '21:9':
-        return 'aspect-[21/9] max-w-4xl h-[280px] sm:h-[360px] md:h-[420px]';
+        return 'w-full aspect-[21/9] max-w-4xl max-h-[65vh]';
       case '16:9':
-        return 'aspect-[16/9] max-w-3xl h-[280px] sm:h-[360px] md:h-[400px]';
+        return 'w-full aspect-[16/9] max-w-3xl max-h-[65vh]';
       case '3:4':
-        return 'aspect-[3/4] max-w-sm h-[380px] sm:h-[460px]';
+        return 'w-full aspect-[3/4] max-w-sm max-h-[65vh]';
       case '9:16':
-        return 'aspect-[9/16] max-w-xs h-[420px] sm:h-[500px]';
+        return 'w-full aspect-[9/16] max-w-xs max-h-[65vh]';
       case '1:1':
-        return 'aspect-square max-w-md h-[320px] sm:h-[400px]';
+        return 'w-full aspect-square max-w-md max-h-[65vh]';
       default:
-        return 'aspect-[21/9] max-w-4xl h-[320px] sm:h-[400px]';
+        return 'w-full aspect-[21/9] max-w-4xl max-h-[65vh]';
     }
   };
 
@@ -372,7 +380,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className={`relative w-full ${getAspectClass()} rounded-2xl overflow-hidden shadow-2xl border-2 border-warm-accent/70 bg-[#121110] cursor-grab active:cursor-grabbing flex items-center justify-center transition-all duration-150`}
+            className={`relative ${getAspectClass()} rounded-2xl overflow-hidden shadow-2xl border-2 border-warm-accent/70 bg-[#121110] cursor-grab active:cursor-grabbing flex items-center justify-center transition-all duration-150`}
           >
             {/* Movable & Zoomable Image - Initial Fit-to-Container */}
             <img
@@ -409,20 +417,20 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
               <div className="absolute inset-0 pointer-events-none flex items-center justify-start p-6 sm:p-10 md:p-14 bg-gradient-to-r from-black/40 via-black/10 to-transparent">
                 <div className="max-w-md text-left flex flex-col items-start drop-shadow-md">
                   <span className="font-sans tracking-[0.2em] text-[10px] sm:text-xs uppercase font-bold text-warm-accent mb-1 bg-black/40 px-2 py-0.5 rounded">
-                    Handmade Traditions
+                    {heroTag || 'ROOTED IN TRADITION'}
                   </span>
                   <h1 className="font-serif leading-[1.15] text-white text-base sm:text-xl md:text-2xl font-bold mb-1">
-                    Savour the Heritage.
+                    {heroTitle || 'Flavours of our Heritage'}
                   </h1>
                   
                   <div className="text-warm-accent text-xs my-0.5">✻</div>
 
                   <p className="font-serif italic text-[11px] sm:text-xs text-white/90 leading-relaxed max-w-xs mb-3 line-clamp-3">
-                    Handcrafted Andhra pickles, Gongura, Avakaya, and aromatic spice podis made with pure ingredients, cold-pressed oils, and zero preservatives.
+                    {heroDescription || 'From generations of Andhra kitchens to your table, Kaaram Kathalu brings you handcrafted pickles and aromatic podis made with pure ingredients, cold-pressed oils, and time-honored recipes.'}
                   </p>
 
                   <div className="px-4 py-1.5 bg-warm-accent text-white font-sans uppercase text-[10px] font-bold tracking-wider rounded shadow-md">
-                    Shop Pickles & Podis
+                    {heroButtonText || 'EXPLORE OUR FLAVOURS'}
                   </div>
                 </div>
               </div>

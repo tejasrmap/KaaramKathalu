@@ -381,7 +381,13 @@ export default function Home() {
       />
 
       {/* HERO BANNER SECTION */}
-      <section className="relative w-full overflow-hidden py-16 md:py-24 border-b border-warm-dark/5 min-h-[50vh] sm:min-h-[60vh] flex items-center bg-warm-bg">
+      <section className={`relative w-full overflow-hidden border-b border-warm-dark/5 flex items-center bg-warm-bg ${
+        hasCustomImages
+          ? isMobile
+            ? 'aspect-[3/4] min-h-[460px] py-8'
+            : 'aspect-[21/9] min-h-[460px] max-h-[85vh] py-12 md:py-0'
+          : 'py-16 md:py-24 min-h-[50vh] sm:min-h-[60vh]'
+      }`}>
         
         {/* Background Slideshow / Fallback Image */}
         {hasCustomImages ? (
@@ -398,7 +404,7 @@ export default function Home() {
                 <img
                   src={activeHeroImages[currentHeroSlide]}
                   alt="Hero Background"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-bottom md:object-center"
                   referrerPolicy="no-referrer"
                 />
               </motion.div>
