@@ -291,22 +291,24 @@ export default function Orders() {
   useEffect(() => {
     const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const ordersData = snapshot.docs.map(doc => {
-        const d = doc.data();
-        let displayDate = 'Recent';
-        if (d.createdAt?.toDate) {
-          displayDate = d.createdAt.toDate().toLocaleDateString('en-GB');
-        } else if (d.createdAt?.seconds) {
-          displayDate = new Date(d.createdAt.seconds * 1000).toLocaleDateString('en-GB');
-        } else if (typeof d.createdAt === 'string') {
-          displayDate = new Date(d.createdAt).toLocaleDateString('en-GB');
-        }
-        return {
-          id: doc.id,
-          ...d,
-          date: displayDate
-        };
-      });
+      const ordersData = snapshot.docs
+        .map(doc => {
+          const d = doc.data();
+          let displayDate = 'Recent';
+          if (d.createdAt?.toDate) {
+            displayDate = d.createdAt.toDate().toLocaleDateString('en-GB');
+          } else if (d.createdAt?.seconds) {
+            displayDate = new Date(d.createdAt.seconds * 1000).toLocaleDateString('en-GB');
+          } else if (typeof d.createdAt === 'string') {
+            displayDate = new Date(d.createdAt).toLocaleDateString('en-GB');
+          }
+          return {
+            id: doc.id,
+            ...d,
+            date: displayDate
+          };
+        })
+        .filter(o => !o.isDeleted && !o.deleted && o.status !== 'DELETED');
       setOrders(ordersData);
       setIsLoading(false);
     });
@@ -336,7 +338,15 @@ export default function Orders() {
       return;
     }
     try {
-      await deleteDoc(doc(db, 'orders', id));
+      try {
+        await deleteDoc(doc(db, 'orders', id));
+      } catch {
+        await updateDoc(doc(db, 'orders', id), {
+          isDeleted: true,
+          deleted: true,
+          status: 'DELETED'
+        });
+      }
       setOpenDropdown(null);
       if (selectedOrder?.id === id) setSelectedOrder(null);
       showToast("Order deleted successfully!", "success");
@@ -373,7 +383,15 @@ export default function Orders() {
     try {
       let count = 0;
       for (const order of oldOrders) {
-        await deleteDoc(doc(db, 'orders', order.id));
+        try {
+          await deleteDoc(doc(db, 'orders', order.id));
+        } catch {
+          await updateDoc(doc(db, 'orders', order.id), {
+            isDeleted: true,
+            deleted: true,
+            status: 'DELETED'
+          });
+        }
         count++;
       }
       showToast(`Successfully deleted ${count} orders placed before 01/09/2026!`, "success");

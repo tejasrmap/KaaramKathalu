@@ -20,7 +20,9 @@ export default function Dashboard() {
     // Listen to all orders for stats and chart
     const qAll = query(collection(db, 'orders'), orderBy('createdAt', 'asc'));
     const unsubscribeStats = onSnapshot(qAll, (snapshot) => {
-      const orders = snapshot.docs.map(doc => doc.data());
+      const orders = snapshot.docs
+        .map(doc => doc.data())
+        .filter(o => !o.isDeleted && !o.deleted && o.status !== 'DELETED');
       
       // Calculate Stats
       const revenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
@@ -69,13 +71,16 @@ export default function Dashboard() {
     });
 
     // Listen to recent orders
-    const qRecent = query(collection(db, 'orders'), orderBy('createdAt', 'desc'), limit(5));
+    const qRecent = query(collection(db, 'orders'), orderBy('createdAt', 'desc'), limit(15));
     const unsubscribeRecent = onSnapshot(qRecent, (snapshot) => {
-      const recent = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        date: doc.data().createdAt?.toDate ? doc.data().createdAt.toDate().toLocaleDateString() : 'Recent'
-      }));
+      const recent = snapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          date: doc.data().createdAt?.toDate ? doc.data().createdAt.toDate().toLocaleDateString() : 'Recent'
+        }))
+        .filter(o => !o.isDeleted && !o.deleted && o.status !== 'DELETED')
+        .slice(0, 5);
       setRecentOrders(recent);
       setIsLoading(false);
     });

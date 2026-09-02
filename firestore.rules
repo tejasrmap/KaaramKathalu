@@ -14,11 +14,12 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
     
-    // orders: anyone can read (for guest tracking), authenticated users can create, serverless callbacks can update
+    // orders: anyone can read (for guest tracking), authenticated users can create/delete, serverless callbacks can update
     match /orders/{order} {
       allow read: if true;
       allow create: if request.auth != null;
       allow update: if true;
+      allow delete: if request.auth != null;
     }
     
     // users: users can read and write their own profile records
