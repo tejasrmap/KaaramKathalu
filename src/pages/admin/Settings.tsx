@@ -221,6 +221,7 @@ export default function Settings() {
     introParagraphFontSize: 18,
     subtitle: 'Storytellers preserving the vibrant tapestry of Andhra\'s rich history, architectural marvels, and culinary traditions.',
     storySubtitleFontSize: 18,
+    storySubtitleFontFamily: 'font-serif-italic',
     legacyTitle: 'Our Heritage',
     bannerImage: '',
     
@@ -1832,6 +1833,43 @@ export default function Settings() {
                           className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
                         />
                         <span className="text-[10px] font-mono text-warm-dark/40">36px</span>
+                      </div>
+                    </div>
+
+                    {/* Subheading Font Family / Style Selector */}
+                    <div className="space-y-2 pt-1">
+                      <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
+                        Subheading Font Style & Family
+                      </label>
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                        {[
+                          { id: 'font-serif-italic', label: 'Playfair Italic', desc: 'Poetic' },
+                          { id: 'font-serif', label: 'Playfair Regular', desc: 'Classic' },
+                          { id: 'font-cormorant', label: 'Garamond', desc: 'Editorial' },
+                          { id: 'font-heading', label: 'Cinzel', desc: 'Heritage' },
+                          { id: 'font-sans', label: 'Modern Sans', desc: 'Clean' },
+                        ].map(font => {
+                          const isSelected = (storySettings.storySubtitleFontFamily || 'font-serif-italic') === font.id;
+                          return (
+                            <button
+                              key={font.id}
+                              type="button"
+                              onClick={() => setStorySettings(prev => ({ ...prev, storySubtitleFontFamily: font.id }))}
+                              className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                                isSelected 
+                                  ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
+                                  : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
+                              }`}
+                            >
+                              <span className={`text-xs font-bold ${isSelected ? 'text-white' : 'text-warm-dark'}`}>
+                                {font.label}
+                              </span>
+                              <span className={`text-[10px] uppercase font-sans tracking-wider ${isSelected ? 'text-white/80' : 'text-warm-dark/50'}`}>
+                                {font.desc}
+                              </span>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>

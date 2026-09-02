@@ -206,7 +206,13 @@ export default function About() {
             {/* Subheading under Our Story */}
             {storySettings.subtitle && (
               <p 
-                className="text-warm-dark/80 font-serif italic max-w-xl mx-auto leading-relaxed"
+                className={`text-warm-dark/80 max-w-xl mx-auto leading-relaxed ${
+                  storySettings.storySubtitleFontFamily === 'font-serif' ? 'font-serif' :
+                  storySettings.storySubtitleFontFamily === 'font-cormorant' ? 'font-serif italic font-light tracking-wide' :
+                  storySettings.storySubtitleFontFamily === 'font-heading' ? 'font-heading font-semibold uppercase tracking-wider' :
+                  storySettings.storySubtitleFontFamily === 'font-sans' ? 'font-sans font-medium' :
+                  'font-serif italic'
+                }`}
                 style={{
                   fontSize: storySettings.storySubtitleFontSize 
                     ? `${storySettings.storySubtitleFontSize}px` 
