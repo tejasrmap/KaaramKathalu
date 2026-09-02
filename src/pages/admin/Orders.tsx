@@ -79,19 +79,65 @@ export default function Orders() {
         return cleaned;
       })();
 
+      const items = order.items || [];
+      const totalWeightGrams = items.reduce((sum: number, item: any) => {
+        const itemWeight = Number(item.weightGrams) || Number(item.selectedWeight) || (item.product && (Number(item.product.weightGrams) || Number(item.product.selectedWeight))) || 500;
+        const qty = Number(item.quantity) || 1;
+        return sum + (itemWeight * qty);
+      }, 0) || 500;
+
+      const totalQuantity = items.reduce((sum: number, item: any) => sum + (Number(item.quantity) || 1), 0) || 1;
+      const totalAmount = Number(order.total) || 0;
+
+      const itemsDescription = items.map((item: any) => {
+        const itemWeight = Number(item.weightGrams) || Number(item.selectedWeight) || 500;
+        const qty = Number(item.quantity) || 1;
+        return `${item.name || 'Andhra Delicacy'} (${itemWeight}g x${qty})`;
+      }).join(', ') || "Andhra Pickles & Podis";
+
+      const orderItems = items.map((item: any, idx: number) => {
+        const itemWeight = Number(item.weightGrams) || Number(item.selectedWeight) || 500;
+        const itemQty = Number(item.quantity) || 1;
+        const itemPrice = Number(item.price) || 0;
+        const itemName = item.name || (item.product && item.product.name) || "Andhra Podi/Pickle";
+        return {
+          name: itemName,
+          sku: `KK-${item.id || item.docId || idx + 1}`,
+          item_description: `${itemName} (${itemWeight}g)`,
+          units: itemQty,
+          quantity: itemQty,
+          unit_price: itemPrice,
+          price: itemPrice,
+          total_amount: itemPrice * itemQty,
+          discount: 0,
+          tax: 0,
+          hsn_code: "21039090",
+          category_name: "Food Products",
+          commodity_value: itemPrice * itemQty
+        };
+      });
+
+      const orderDate = order.createdAt?.toDate 
+        ? order.createdAt.toDate().toISOString().replace('T', ' ').slice(0, 19) 
+        : (typeof order.createdAt === 'string' ? order.createdAt : new Date().toISOString().replace('T', ' ').slice(0, 19));
+
       const shipments = [
         {
           waybill: "",
-          order: order.id,
-          product: order.items?.map((item: any) => `${item.name} (x${item.quantity})`).join(', ') || "Andhra Pickles & Podis",
-          products_desc: order.items?.map((item: any) => `${item.name} (x${item.quantity})`).join(', ') || "Andhra Pickles & Podis",
-          package_desc: order.items?.map((item: any) => `${item.name} (x${item.quantity})`).join(', ') || "Andhra Pickles & Podis",
+          order: String(order.id),
+          product: itemsDescription,
+          products_desc: itemsDescription,
+          package_desc: itemsDescription,
+          category_of_goods: "Food Products",
+          order_type: "ESSENTIALS",
+          product_type: "B2C",
+          shipping_mode: "Surface",
           
           // Flat fields for standard/legacy CMU API
           name: order.customer?.name || "Customer",
           add: order.customer?.address || "",
-          city: order.customer?.city || "",
-          state: "Karnataka",
+          city: order.customer?.city || "Bangalore",
+          state: order.customer?.state || "Karnataka",
           pin: Number(order.customer?.pincode) || 560043,
           phone: consigneePhone,
           country: "India",
@@ -100,18 +146,59 @@ export default function Orders() {
           consignee: {
             name: order.customer?.name || "Customer",
             address: order.customer?.address || "",
-            city: order.customer?.city || "",
-            state: "Karnataka",
+            city: order.customer?.city || "Bangalore",
+            state: order.customer?.state || "Karnataka",
             pincode: Number(order.customer?.pincode) || 560043,
-            phone: consigneePhone
+            phone: consigneePhone,
+            country: "India"
           },
+
+          // Weight fields
+          weight: String(totalWeightGrams),
+          total_weight: totalWeightGrams,
+          actual_weight: totalWeightGrams,
+          volumetric_weight: totalWeightGrams,
+          chargeable_weight: totalWeightGrams,
+          gross_weight: totalWeightGrams,
+
+          // Dimensions (cm)
+          length: 15,
+          width: 15,
+          height: 10,
+          shipment_length: 15,
+          shipment_width: 15,
+          shipment_height: 10,
+          dimensions: "15x15x10",
+
+          // Quantities & Amounts
+          quantity: totalQuantity,
+          item_count: totalQuantity,
           payment_mode: "Pre-paid",
           package_type: "Prepaid",
-          weight: order.items?.reduce((sum: number, item: any) => sum + item.quantity * (item.weightGrams || 500), 0) || 500,
           cod_amount: 0,
-          order_date: order.createdAt?.toDate ? order.createdAt.toDate().toISOString() : new Date().toISOString(),
-          total_amount: Number(order.total) || 0,
-          quantity: order.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 1
+          total_amount: totalAmount,
+          sub_total: totalAmount,
+          declared_value: totalAmount,
+          commodity_value: totalAmount,
+          tax_value: 0,
+          order_date: orderDate,
+
+          // Line Items breakdown
+          order_items: orderItems,
+          products: orderItems,
+
+          // Seller / Return details
+          seller_name: "Kaaram Kathalu",
+          seller_add: "002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu",
+          seller_inv: String(order.id),
+          seller_inv_date: new Date().toISOString().split('T')[0],
+          return_name: warehouseName,
+          return_add: "002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu",
+          return_city: "Bangalore",
+          return_state: "Karnataka",
+          return_pin: 560043,
+          return_phone: "7676644366",
+          return_country: "India"
         }
       ];
 

@@ -177,8 +177,41 @@ export default async function handler(req, res) {
       // Book shipment in Delhivery
       if (delhiveryToken) {
         try {
-          const itemsList = items.map(item => `${item.name} (x${item.quantity})`).join(', ') || "Andhra Delicacies";
-          const totalWeightGrams = items.reduce((acc, item) => acc + (Number(item.weightGrams) || 500) * Number(item.quantity), 0);
+          const totalWeightGrams = items.reduce((acc, item) => {
+            const itemWeight = Number(item.weightGrams) || Number(item.selectedWeight) || (item.product && (Number(item.product.weightGrams) || Number(item.product.selectedWeight))) || 500;
+            const qty = Number(item.quantity) || 1;
+            return acc + (itemWeight * qty);
+          }, 0) || 500;
+
+          const totalQuantity = items.reduce((acc, item) => acc + (Number(item.quantity) || 1), 0) || 1;
+          
+          const itemsList = items.map(item => {
+            const itemWeight = Number(item.weightGrams) || Number(item.selectedWeight) || 500;
+            const qty = Number(item.quantity) || 1;
+            return `${item.name || 'Andhra Delicacy'} (${itemWeight}g x${qty})`;
+          }).join(', ') || "Andhra Delicacies";
+
+          const orderItems = items.map((item, idx) => {
+            const itemWeight = Number(item.weightGrams) || Number(item.selectedWeight) || 500;
+            const qty = Number(item.quantity) || 1;
+            const price = Number(item.price) || 0;
+            const name = item.name || (item.product && item.product.name) || "Andhra Podi/Pickle";
+            return {
+              name: name,
+              sku: `KK-${item.id || item.docId || idx + 1}`,
+              item_description: `${name} (${itemWeight}g)`,
+              units: qty,
+              quantity: qty,
+              unit_price: price,
+              price: price,
+              total_amount: price * qty,
+              discount: 0,
+              tax: 0,
+              hsn_code: "21039090",
+              category_name: "Food Products",
+              commodity_value: price * qty
+            };
+          });
           
           let cleanedPhone = (customer.phone || "7676644366").replace(/\D/g, '');
           if (cleanedPhone.length === 12 && cleanedPhone.startsWith('91')) cleanedPhone = cleanedPhone.substring(2);
@@ -199,40 +232,85 @@ export default async function handler(req, res) {
             console.warn("Failed to load settings in callback, using default warehouse name:", e);
           }
 
+          const orderDateStr = new Date().toISOString().replace('T', ' ').slice(0, 19);
+
           const delhiveryPayload = {
             format: 'json',
             data: JSON.stringify({
               shipments: [{
                 waybill: "",
-                order: orderId,
+                order: String(orderId),
                 product: itemsList,
                 products_desc: itemsList,
                 package_desc: itemsList,
+                category_of_goods: "Food Products",
+                order_type: "ESSENTIALS",
+                product_type: "B2C",
+                shipping_mode: "Surface",
+
                 name: customer.name || "Customer",
                 add: customer.address || "",
-                city: customer.city || "",
-                state: "Karnataka",
+                city: customer.city || "Bangalore",
+                state: customer.state || "Karnataka",
                 pin: Number(customer.pincode) || 560043,
                 phone: cleanedPhone,
                 country: "India",
                 consignee: {
                   name: customer.name || "Customer",
                   address: customer.address || "",
-                  city: customer.city || "",
-                  state: "Karnataka",
+                  city: customer.city || "Bangalore",
+                  state: customer.state || "Karnataka",
                   pincode: Number(customer.pincode) || 560043,
-                  phone: cleanedPhone
+                  phone: cleanedPhone,
+                  country: "India"
                 },
+
+                // Weight fields
+                weight: String(totalWeightGrams),
+                total_weight: totalWeightGrams,
+                actual_weight: totalWeightGrams,
+                volumetric_weight: totalWeightGrams,
+                chargeable_weight: totalWeightGrams,
+                gross_weight: totalWeightGrams,
+
+                // Dimensions (cm)
+                length: 15,
+                width: 15,
+                height: 10,
+                shipment_length: 15,
+                shipment_width: 15,
+                shipment_height: 10,
+                dimensions: "15x15x10",
+
+                // Amounts & Quantities
+                quantity: totalQuantity,
+                item_count: totalQuantity,
                 payment_mode: "Pre-paid",
                 package_type: "Prepaid",
                 cod_amount: 0,
                 total_amount: total,
+                sub_total: total,
                 declared_value: total,
-                actual_weight: totalWeightGrams,
-                volumetric_weight: totalWeightGrams,
-                length: 10,
-                width: 10,
-                height: 10
+                commodity_value: total,
+                tax_value: 0,
+                order_date: orderDateStr,
+
+                // Detailed item breakdowns
+                order_items: orderItems,
+                products: orderItems,
+
+                // Seller / Return details
+                seller_name: "Kaaram Kathalu",
+                seller_add: "002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu",
+                seller_inv: String(orderId),
+                seller_inv_date: new Date().toISOString().split('T')[0],
+                return_name: warehouseName,
+                return_add: "002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu",
+                return_city: "Bangalore",
+                return_state: "Karnataka",
+                return_pin: 560043,
+                return_phone: "7676644366",
+                return_country: "India"
               }],
               pickup_location: {
                 name: warehouseName,
