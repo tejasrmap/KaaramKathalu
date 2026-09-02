@@ -214,6 +214,8 @@ export default function Settings() {
     storyPhoto: '',
     storyPhotoAspectRatio: '16:9',
     storyPhotoWidth: 'max-w-2xl',
+    storyPhotoWidthPx: 672,
+    storyPhotoMobileWidthPx: 340,
     introParagraph1: "At Kaaram Kathalu, we are more than just a brand. We are storytellers preserving the vibrant tapestry of Andhra's rich history, architectural marvels, and culinary traditions.",
     introParagraph2: "Our roots return to the lush fields of coastal Andhra Pradesh, and our palates still crave those hearty meals at ancestral homes. What began in sun-kissed courtyards with hand-ground spices continues today with pure ingredients, cold-pressed oils, and zero preservatives.",
     introParagraphFontSize: 18,
@@ -227,6 +229,8 @@ export default function Settings() {
     section1ContentFontSize: 18,
     section1Image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&q=80',
     section1ImageSize: 'max-w-md',
+    section1ImageWidthPx: 448,
+    section1ImageMobileWidthPx: 320,
     section1ImageAspectRatio: '1:1',
     section1ImageRadius: 'rounded-2xl',
     
@@ -237,6 +241,8 @@ export default function Settings() {
     section2ContentFontSize: 18,
     section2Image: 'https://themanduvaproject.in/cdn/shop/files/Manduvawebsitepicture_1.png?v=1749711321&width=533',
     section2ImageSize: 'max-w-md',
+    section2ImageWidthPx: 448,
+    section2ImageMobileWidthPx: 320,
     section2ImageAspectRatio: '1:1',
     section2ImageRadius: 'rounded-2xl',
     
@@ -1660,9 +1666,9 @@ export default function Settings() {
                       <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/50">Part of Speech</label>
                       <input 
                         type="text"
-                        value={storySettings.dictPart1 || 'noun'}
+                        value={storySettings.dictPart1 ?? ''}
                         onChange={e => setStorySettings(prev => ({ ...prev, dictPart1: e.target.value }))}
-                        placeholder="noun"
+                        placeholder="e.g. noun"
                         className="w-full px-3 py-2 rounded-xl border border-warm-dark/10 bg-white font-serif italic text-sm outline-none focus:border-warm-accent"
                       />
                     </div>
@@ -1905,40 +1911,98 @@ export default function Settings() {
                         </div>
                       </div>
 
-                      {/* Display Width (Size on Page) */}
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
-                          Display Width (Size on Page)
-                        </label>
-                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                      {/* Desktop / Laptop Width */}
+                      <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">
+                            💻 Laptop / Desktop Width
+                          </label>
+                          <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                            {storySettings.storyPhotoWidthPx || 672}px
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[10px] font-mono text-warm-dark/40">280px</span>
+                          <input 
+                            type="range"
+                            min="280"
+                            max="1000"
+                            step="10"
+                            value={storySettings.storyPhotoWidthPx || 672}
+                            onChange={e => setStorySettings(prev => ({ ...prev, storyPhotoWidthPx: Number(e.target.value) }))}
+                            className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                          />
+                          <span className="text-[10px] font-mono text-warm-dark/40">1000px</span>
+                        </div>
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 pt-1">
                           {[
-                            { id: 'max-w-md', label: 'Compact', size: '~450px' },
-                            { id: 'max-w-xl', label: 'Medium', size: '~576px' },
-                            { id: 'max-w-2xl', label: 'Standard', size: '~672px' },
-                            { id: 'max-w-3xl', label: 'Wide', size: '~768px' },
-                            { id: 'max-w-4xl', label: 'Full Width', size: '~896px' },
-                          ].map(width => {
-                            const isSelected = (storySettings.storyPhotoWidth || 'max-w-2xl') === width.id;
-                            return (
-                              <button
-                                key={width.id}
-                                type="button"
-                                onClick={() => setStorySettings(prev => ({ ...prev, storyPhotoWidth: width.id }))}
-                                className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
-                                  isSelected 
-                                    ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
-                                    : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
-                                }`}
-                              >
-                                <span className={`font-sans text-xs font-bold ${isSelected ? 'text-white' : 'text-warm-dark'}`}>
-                                  {width.label}
-                                </span>
-                                <span className={`text-[10px] font-mono ${isSelected ? 'text-white/80' : 'text-warm-dark/50'}`}>
-                                  {width.size}
-                                </span>
-                              </button>
-                            );
-                          })}
+                            { px: 450, label: '450px' },
+                            { px: 576, label: '576px' },
+                            { px: 672, label: '672px' },
+                            { px: 768, label: '768px' },
+                            { px: 896, label: '896px' },
+                            { px: 1000, label: '1000px' },
+                          ].map(preset => (
+                            <button
+                              key={preset.px}
+                              type="button"
+                              onClick={() => setStorySettings(prev => ({ ...prev, storyPhotoWidthPx: preset.px }))}
+                              className={`py-1 px-2 rounded-lg text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+                                (storySettings.storyPhotoWidthPx || 672) === preset.px
+                                  ? 'bg-warm-accent text-white border-warm-accent'
+                                  : 'bg-white text-warm-dark/70 border-warm-dark/10 hover:bg-warm-accent/5'
+                              }`}
+                            >
+                              {preset.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Mobile Width */}
+                      <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">
+                            📱 Mobile Screen Width
+                          </label>
+                          <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                            {storySettings.storyPhotoMobileWidthPx || 340}px
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[10px] font-mono text-warm-dark/40">150px</span>
+                          <input 
+                            type="range"
+                            min="150"
+                            max="450"
+                            step="10"
+                            value={storySettings.storyPhotoMobileWidthPx || 340}
+                            onChange={e => setStorySettings(prev => ({ ...prev, storyPhotoMobileWidthPx: Number(e.target.value) }))}
+                            className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                          />
+                          <span className="text-[10px] font-mono text-warm-dark/40">450px</span>
+                        </div>
+                        <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5 pt-1">
+                          {[
+                            { px: 240, label: '240px' },
+                            { px: 280, label: '280px' },
+                            { px: 320, label: '320px' },
+                            { px: 360, label: '360px' },
+                            { px: 400, label: '400px' },
+                          ].map(preset => (
+                            <button
+                              key={preset.px}
+                              type="button"
+                              onClick={() => setStorySettings(prev => ({ ...prev, storyPhotoMobileWidthPx: preset.px }))}
+                              className={`py-1 px-2 rounded-lg text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+                                (storySettings.storyPhotoMobileWidthPx || 340) === preset.px
+                                  ? 'bg-warm-accent text-white border-warm-accent'
+                                  : 'bg-white text-warm-dark/70 border-warm-dark/10 hover:bg-warm-accent/5'
+                              }`}
+                            >
+                              {preset.label}
+                            </button>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -2175,41 +2239,98 @@ export default function Settings() {
                     </div>
                   </div>
 
-                  {/* Section 1 Photo Size Options */}
-                  <div className="space-y-2 pt-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
-                      Display Width (Size on Page)
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-6 gap-2">
+                  {/* Section 1 Desktop / Laptop Width */}
+                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">
+                        💻 Laptop / Desktop Width
+                      </label>
+                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                        {storySettings.section1ImageWidthPx || 448}px
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-mono text-warm-dark/40">200px</span>
+                      <input 
+                        type="range"
+                        min="200"
+                        max="650"
+                        step="10"
+                        value={storySettings.section1ImageWidthPx || 448}
+                        onChange={e => setStorySettings(prev => ({ ...prev, section1ImageWidthPx: Number(e.target.value) }))}
+                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                      />
+                      <span className="text-[10px] font-mono text-warm-dark/40">650px</span>
+                    </div>
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 pt-1">
                       {[
-                        { id: 'max-w-xs', label: 'Compact', size: '~320px' },
-                        { id: 'max-w-sm', label: 'Medium', size: '~384px' },
-                        { id: 'max-w-md', label: 'Standard', size: '~448px' },
-                        { id: 'max-w-lg', label: 'Large', size: '~512px' },
-                        { id: 'max-w-xl', label: 'Wide', size: '~576px' },
-                        { id: 'w-full', label: 'Full Column', size: '100%' },
-                      ].map(sz => {
-                        const isSelected = (storySettings.section1ImageSize || 'max-w-md') === sz.id;
-                        return (
-                          <button
-                            key={sz.id}
-                            type="button"
-                            onClick={() => setStorySettings(prev => ({ ...prev, section1ImageSize: sz.id }))}
-                            className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
-                              isSelected 
-                                ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
-                                : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
-                            }`}
-                          >
-                            <span className={`text-xs font-bold ${isSelected ? 'text-white' : 'text-warm-dark'}`}>
-                              {sz.label}
-                            </span>
-                            <span className={`text-[10px] font-mono ${isSelected ? 'text-white/80' : 'text-warm-dark/50'}`}>
-                              {sz.size}
-                            </span>
-                          </button>
-                        );
-                      })}
+                        { px: 320, label: '320px' },
+                        { px: 384, label: '384px' },
+                        { px: 448, label: '448px' },
+                        { px: 512, label: '512px' },
+                        { px: 576, label: '576px' },
+                        { px: 650, label: '650px' },
+                      ].map(preset => (
+                        <button
+                          key={preset.px}
+                          type="button"
+                          onClick={() => setStorySettings(prev => ({ ...prev, section1ImageWidthPx: preset.px }))}
+                          className={`py-1 px-2 rounded-lg text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+                            (storySettings.section1ImageWidthPx || 448) === preset.px
+                              ? 'bg-warm-accent text-white border-warm-accent'
+                              : 'bg-white text-warm-dark/70 border-warm-dark/10 hover:bg-warm-accent/5'
+                          }`}
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Section 1 Mobile Width */}
+                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">
+                        📱 Mobile Screen Width
+                      </label>
+                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                        {storySettings.section1ImageMobileWidthPx || 320}px
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-mono text-warm-dark/40">140px</span>
+                      <input 
+                        type="range"
+                        min="140"
+                        max="450"
+                        step="10"
+                        value={storySettings.section1ImageMobileWidthPx || 320}
+                        onChange={e => setStorySettings(prev => ({ ...prev, section1ImageMobileWidthPx: Number(e.target.value) }))}
+                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                      />
+                      <span className="text-[10px] font-mono text-warm-dark/40">450px</span>
+                    </div>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5 pt-1">
+                      {[
+                        { px: 200, label: '200px' },
+                        { px: 260, label: '260px' },
+                        { px: 300, label: '300px' },
+                        { px: 340, label: '340px' },
+                        { px: 380, label: '380px' },
+                      ].map(preset => (
+                        <button
+                          key={preset.px}
+                          type="button"
+                          onClick={() => setStorySettings(prev => ({ ...prev, section1ImageMobileWidthPx: preset.px }))}
+                          className={`py-1 px-2 rounded-lg text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+                            (storySettings.section1ImageMobileWidthPx || 320) === preset.px
+                              ? 'bg-warm-accent text-white border-warm-accent'
+                              : 'bg-white text-warm-dark/70 border-warm-dark/10 hover:bg-warm-accent/5'
+                          }`}
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
                     </div>
                   </div>
 
@@ -2439,41 +2560,98 @@ export default function Settings() {
                     </div>
                   </div>
 
-                  {/* Section 2 Photo Size Options */}
-                  <div className="space-y-2 pt-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/70 block">
-                      Display Width (Size on Page)
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-6 gap-2">
+                  {/* Section 2 Desktop / Laptop Width */}
+                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">
+                        💻 Laptop / Desktop Width
+                      </label>
+                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                        {storySettings.section2ImageWidthPx || 448}px
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-mono text-warm-dark/40">200px</span>
+                      <input 
+                        type="range"
+                        min="200"
+                        max="650"
+                        step="10"
+                        value={storySettings.section2ImageWidthPx || 448}
+                        onChange={e => setStorySettings(prev => ({ ...prev, section2ImageWidthPx: Number(e.target.value) }))}
+                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                      />
+                      <span className="text-[10px] font-mono text-warm-dark/40">650px</span>
+                    </div>
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 pt-1">
                       {[
-                        { id: 'max-w-xs', label: 'Compact', size: '~320px' },
-                        { id: 'max-w-sm', label: 'Medium', size: '~384px' },
-                        { id: 'max-w-md', label: 'Standard', size: '~448px' },
-                        { id: 'max-w-lg', label: 'Large', size: '~512px' },
-                        { id: 'max-w-xl', label: 'Wide', size: '~576px' },
-                        { id: 'w-full', label: 'Full Column', size: '100%' },
-                      ].map(sz => {
-                        const isSelected = (storySettings.section2ImageSize || 'max-w-md') === sz.id;
-                        return (
-                          <button
-                            key={sz.id}
-                            type="button"
-                            onClick={() => setStorySettings(prev => ({ ...prev, section2ImageSize: sz.id }))}
-                            className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
-                              isSelected 
-                                ? 'bg-warm-accent text-white border-warm-accent shadow-sm' 
-                                : 'bg-white hover:bg-warm-accent/5 text-warm-dark border-warm-dark/10'
-                            }`}
-                          >
-                            <span className={`text-xs font-bold ${isSelected ? 'text-white' : 'text-warm-dark'}`}>
-                              {sz.label}
-                            </span>
-                            <span className={`text-[10px] font-mono ${isSelected ? 'text-white/80' : 'text-warm-dark/50'}`}>
-                              {sz.size}
-                            </span>
-                          </button>
-                        );
-                      })}
+                        { px: 320, label: '320px' },
+                        { px: 384, label: '384px' },
+                        { px: 448, label: '448px' },
+                        { px: 512, label: '512px' },
+                        { px: 576, label: '576px' },
+                        { px: 650, label: '650px' },
+                      ].map(preset => (
+                        <button
+                          key={preset.px}
+                          type="button"
+                          onClick={() => setStorySettings(prev => ({ ...prev, section2ImageWidthPx: preset.px }))}
+                          className={`py-1 px-2 rounded-lg text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+                            (storySettings.section2ImageWidthPx || 448) === preset.px
+                              ? 'bg-warm-accent text-white border-warm-accent'
+                              : 'bg-white text-warm-dark/70 border-warm-dark/10 hover:bg-warm-accent/5'
+                          }`}
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Section 2 Mobile Width */}
+                  <div className="bg-warm-light/40 p-3.5 rounded-xl border border-warm-dark/5 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-warm-dark/70">
+                        📱 Mobile Screen Width
+                      </label>
+                      <span className="text-xs font-mono font-bold bg-warm-accent/10 text-warm-accent px-2 py-0.5 rounded-md">
+                        {storySettings.section2ImageMobileWidthPx || 320}px
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-mono text-warm-dark/40">140px</span>
+                      <input 
+                        type="range"
+                        min="140"
+                        max="450"
+                        step="10"
+                        value={storySettings.section2ImageMobileWidthPx || 320}
+                        onChange={e => setStorySettings(prev => ({ ...prev, section2ImageMobileWidthPx: Number(e.target.value) }))}
+                        className="w-full accent-warm-accent cursor-pointer h-2 bg-warm-dark/10 rounded-lg appearance-none"
+                      />
+                      <span className="text-[10px] font-mono text-warm-dark/40">450px</span>
+                    </div>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5 pt-1">
+                      {[
+                        { px: 200, label: '200px' },
+                        { px: 260, label: '260px' },
+                        { px: 300, label: '300px' },
+                        { px: 340, label: '340px' },
+                        { px: 380, label: '380px' },
+                      ].map(preset => (
+                        <button
+                          key={preset.px}
+                          type="button"
+                          onClick={() => setStorySettings(prev => ({ ...prev, section2ImageMobileWidthPx: preset.px }))}
+                          className={`py-1 px-2 rounded-lg text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+                            (storySettings.section2ImageMobileWidthPx || 320) === preset.px
+                              ? 'bg-warm-accent text-white border-warm-accent'
+                              : 'bg-white text-warm-dark/70 border-warm-dark/10 hover:bg-warm-accent/5'
+                          }`}
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
                     </div>
                   </div>
 

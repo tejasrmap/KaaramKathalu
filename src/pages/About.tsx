@@ -205,14 +205,19 @@ export default function About() {
 
             {/* Story Photo between headline and matter */}
             {storySettings.storyPhoto && (
-              <div className={`mx-auto overflow-hidden rounded-2xl border border-warm-dark/10 shadow-md ${
-                storySettings.storyPhotoWidth === 'max-w-md' ? 'max-w-md' :
-                storySettings.storyPhotoWidth === 'max-w-xl' ? 'max-w-xl' :
-                storySettings.storyPhotoWidth === 'max-w-3xl' ? 'max-w-3xl' :
-                storySettings.storyPhotoWidth === 'max-w-4xl' ? 'max-w-4xl' :
-                storySettings.storyPhotoWidth === 'w-full' ? 'w-full' :
-                'max-w-2xl'
-              }`}>
+              <div 
+                style={{
+                  '--m-w': storySettings.storyPhotoMobileWidthPx ? `${storySettings.storyPhotoMobileWidthPx}px` : '100%',
+                  '--d-w': storySettings.storyPhotoWidthPx ? `${storySettings.storyPhotoWidthPx}px` : (
+                    storySettings.storyPhotoWidth === 'max-w-md' ? '450px' :
+                    storySettings.storyPhotoWidth === 'max-w-xl' ? '576px' :
+                    storySettings.storyPhotoWidth === 'max-w-3xl' ? '768px' :
+                    storySettings.storyPhotoWidth === 'max-w-4xl' ? '896px' :
+                    storySettings.storyPhotoWidth === 'w-full' ? '100%' : '672px'
+                  )
+                } as React.CSSProperties}
+                className="w-full max-w-[var(--m-w)] md:max-w-[var(--d-w)] mx-auto overflow-hidden rounded-2xl border border-warm-dark/10 shadow-md"
+              >
                 <div className={`w-full overflow-hidden bg-warm-light/40 flex items-center justify-center ${
                   storySettings.storyPhotoAspectRatio === '16:9' ? 'aspect-[16/9]' :
                   storySettings.storyPhotoAspectRatio === '4:3' ? 'aspect-[4/3]' :
@@ -262,20 +267,24 @@ export default function About() {
         {/* Heritage Flower Divider on top of Essence of South Indian Heritage */}
         <div className="heritage-divider text-warm-accent w-full max-w-[160px] mx-auto !my-4 md:!my-6">✻</div>
 
-        {/* Narrative Section 1 (1:1 Photo on Left, Text on Right) */}
+        {/* Narrative Section 1 (Photo on Left, Text on Right) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center mb-20 md:mb-28 max-w-6xl mx-auto px-4">
           {/* Left Side Photo */}
           {storySettings.section1Image && (
-            <div className={`lg:col-span-5 w-full mx-auto ${
-              storySettings.section1ImageSize === 'max-w-xs' ? 'max-w-xs' :
-              storySettings.section1ImageSize === 'max-w-sm' ? 'max-w-sm' :
-              storySettings.section1ImageSize === 'max-w-md' ? 'max-w-md' :
-              storySettings.section1ImageSize === 'max-w-lg' ? 'max-w-lg' :
-              storySettings.section1ImageSize === 'max-w-xl' ? 'max-w-xl' :
-              storySettings.section1ImageSize === 'w-full' ? 'w-full' :
-              'max-w-md lg:max-w-none'
-            }`}>
-              <div className={`overflow-hidden shadow-md border border-warm-dark/10 bg-warm-light/40 ${
+            <div 
+              style={{
+                '--m-w': storySettings.section1ImageMobileWidthPx ? `${storySettings.section1ImageMobileWidthPx}px` : '100%',
+                '--d-w': storySettings.section1ImageWidthPx ? `${storySettings.section1ImageWidthPx}px` : (
+                  storySettings.section1ImageSize === 'max-w-xs' ? '320px' :
+                  storySettings.section1ImageSize === 'max-w-sm' ? '384px' :
+                  storySettings.section1ImageSize === 'max-w-md' ? '448px' :
+                  storySettings.section1ImageSize === 'max-w-lg' ? '512px' :
+                  storySettings.section1ImageSize === 'max-w-xl' ? '576px' : '100%'
+                )
+              } as React.CSSProperties}
+              className="lg:col-span-5 w-full max-w-[var(--m-w)] lg:max-w-[var(--d-w)] mx-auto"
+            >
+              <div className={`overflow-hidden shadow-md border border-warm-dark/10 bg-warm-light/40 w-full ${
                 storySettings.section1ImageRadius === 'rounded-none' ? 'rounded-none' :
                 storySettings.section1ImageRadius === 'rounded-xl' ? 'rounded-xl' :
                 storySettings.section1ImageRadius === 'rounded-3xl' ? 'rounded-3xl' :
@@ -364,16 +373,20 @@ export default function About() {
 
           {/* Right Side Photo */}
           {storySettings.section2Image && (
-            <div className={`lg:col-span-5 w-full mx-auto order-1 lg:order-2 ${
-              storySettings.section2ImageSize === 'max-w-xs' ? 'max-w-xs' :
-              storySettings.section2ImageSize === 'max-w-sm' ? 'max-w-sm' :
-              storySettings.section2ImageSize === 'max-w-md' ? 'max-w-md' :
-              storySettings.section2ImageSize === 'max-w-lg' ? 'max-w-lg' :
-              storySettings.section2ImageSize === 'max-w-xl' ? 'max-w-xl' :
-              storySettings.section2ImageSize === 'w-full' ? 'w-full' :
-              'max-w-md lg:max-w-none'
-            }`}>
-              <div className={`overflow-hidden shadow-md border border-warm-dark/10 bg-warm-light/40 ${
+            <div 
+              style={{
+                '--m-w': storySettings.section2ImageMobileWidthPx ? `${storySettings.section2ImageMobileWidthPx}px` : '100%',
+                '--d-w': storySettings.section2ImageWidthPx ? `${storySettings.section2ImageWidthPx}px` : (
+                  storySettings.section2ImageSize === 'max-w-xs' ? '320px' :
+                  storySettings.section2ImageSize === 'max-w-sm' ? '384px' :
+                  storySettings.section2ImageSize === 'max-w-md' ? '448px' :
+                  storySettings.section2ImageSize === 'max-w-lg' ? '512px' :
+                  storySettings.section2ImageSize === 'max-w-xl' ? '576px' : '100%'
+                )
+              } as React.CSSProperties}
+              className="lg:col-span-5 w-full max-w-[var(--m-w)] lg:max-w-[var(--d-w)] mx-auto order-1 lg:order-2"
+            >
+              <div className={`overflow-hidden shadow-md border border-warm-dark/10 bg-warm-light/40 w-full ${
                 storySettings.section2ImageRadius === 'rounded-none' ? 'rounded-none' :
                 storySettings.section2ImageRadius === 'rounded-xl' ? 'rounded-xl' :
                 storySettings.section2ImageRadius === 'rounded-3xl' ? 'rounded-3xl' :
