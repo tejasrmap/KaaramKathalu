@@ -403,9 +403,14 @@ export default function Home() {
                 />
               </motion.div>
             </AnimatePresence>
-            {/* Soft overlay */}
+            {/* Soft overlay matching admin settings */}
             <div 
-              className="absolute inset-0 z-[1] bg-white/20"
+              className="absolute inset-0 z-[1] transition-opacity duration-300 pointer-events-none"
+              style={{
+                backgroundColor: Number(heroSettings.heroOverlayOpacity || 0) > 0 
+                  ? `rgba(0, 0, 0, ${Number(heroSettings.heroOverlayOpacity) / 100})` 
+                  : 'rgba(255, 255, 255, 0.15)'
+              }}
             />
             {/* Slide Indicators */}
             {activeHeroImages.length > 1 && (
