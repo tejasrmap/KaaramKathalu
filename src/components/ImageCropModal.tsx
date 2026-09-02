@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { X, ZoomIn, ZoomOut, RotateCcw, Check, Move, Eye, EyeOff, Crop, Sparkles, Smartphone, Monitor } from 'lucide-react';
+import { X, ZoomIn, ZoomOut, RotateCcw, Check, Move, Eye, EyeOff, Crop, Sparkles, Smartphone, Monitor, LayoutTemplate } from 'lucide-react';
 
 interface ImageCropModalProps {
   isOpen: boolean;
@@ -9,8 +9,10 @@ interface ImageCropModalProps {
   targetTitle?: string;
   heroTag?: string;
   heroTitle?: string;
+  heroTitleFontSize?: number;
   heroDescription?: string;
   heroButtonText?: string;
+  heroOverlayOpacity?: string;
   onClose: () => void;
   onCropComplete: (croppedBlob: Blob, previewUrl: string) => void;
   onUseOriginal?: () => void;
@@ -22,10 +24,12 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
   imageName = 'hero_image.jpg',
   aspectRatioType = 'desktop-hero',
   targetTitle = 'Cover Photo',
-  heroTag,
-  heroTitle,
-  heroDescription,
-  heroButtonText,
+  heroTag = 'ROOTED IN TRADITION',
+  heroTitle = 'Flavours of our Heritage',
+  heroTitleFontSize = 48,
+  heroDescription = 'From generations of Andhra kitchens to your table, Kaaram Kathalu brings you handcrafted pickles and aromatic podis made with pure ingredients, cold-pressed oils, and time-honored recipes. Every bite carries a little taste of home.',
+  heroButtonText = 'EXPLORE OUR FLAVOURS',
+  heroOverlayOpacity = '0',
   onClose,
   onCropComplete,
   onUseOriginal
@@ -36,13 +40,14 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [showLiveCoverOverlay, setShowLiveCoverOverlay] = useState<boolean>(true);
+  const [previewMode, setPreviewMode] = useState<'framed' | 'storefront'>('framed');
   const [imgNaturalDim, setImgNaturalDim] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
   const [containerDim, setContainerDim] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 
   const [aspectRatio, setAspectRatio] = useState<'21:9' | '16:9' | '3:4' | '9:16' | '1:1'>(
     aspectRatioType === 'desktop-hero' ? '21:9' :
     aspectRatioType === 'mobile-hero' ? '3:4' :
-    aspectRatioType === 'square' ? '1:1' : '16:9'
+    aspectRatioType === 'square' ? '1:1' : '21:9'
   );
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -64,7 +69,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
       setAspectRatio(
         aspectRatioType === 'desktop-hero' ? '21:9' :
         aspectRatioType === 'mobile-hero' ? '3:4' :
-        aspectRatioType === 'square' ? '1:1' : '16:9'
+        aspectRatioType === 'square' ? '1:1' : '21:9'
       );
     }
   }, [isOpen, imageSrc, aspectRatioType]);
@@ -72,7 +77,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
   // Update container dimensions on window resize or ratio change
   useEffect(() => {
     if (isOpen) {
-      const timer = setTimeout(updateContainerDimensions, 50);
+      const timer = setTimeout(updateContainerDimensions, 60);
       window.addEventListener('resize', updateContainerDimensions);
       return () => {
         clearTimeout(timer);
@@ -187,7 +192,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
     const sWidth = Math.min(naturalWidth - sx, visibleWOnScreen * scale);
     const sHeight = Math.min(naturalHeight - sy, visibleHOnScreen * scale);
 
-    // Target Canvas Output Dimensions (Ultra-crisp Full HD)
+    // Target Canvas Output Dimensions (Ultra-crisp 2.4K HD export)
     let outWidth = 2400;
     let outHeight = Math.round(2400 * (containerRect.height / containerRect.width));
 
@@ -239,9 +244,9 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
   const getAspectClass = () => {
     switch (aspectRatio) {
       case '21:9':
-        return 'w-full aspect-[21/9] max-w-4xl max-h-[65vh]';
+        return 'w-full aspect-[21/9] max-w-5xl max-h-[65vh]';
       case '16:9':
-        return 'w-full aspect-[16/9] max-w-3xl max-h-[65vh]';
+        return 'w-full aspect-[16/9] max-w-4xl max-h-[65vh]';
       case '3:4':
         return 'w-full aspect-[3/4] max-w-sm max-h-[65vh]';
       case '9:16':
@@ -249,13 +254,13 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
       case '1:1':
         return 'w-full aspect-square max-w-md max-h-[65vh]';
       default:
-        return 'w-full aspect-[21/9] max-w-4xl max-h-[65vh]';
+        return 'w-full aspect-[21/9] max-w-5xl max-h-[65vh]';
     }
   };
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-6 overflow-y-auto">
-      <div className="bg-[#191714] border border-white/10 rounded-3xl w-full max-w-5xl shadow-2xl flex flex-col max-h-[95vh] overflow-hidden text-warm-bg animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-[#191714] border border-white/10 rounded-3xl w-full max-w-6xl shadow-2xl flex flex-col max-h-[96vh] overflow-hidden text-warm-bg animate-in fade-in zoom-in-95 duration-200">
         
         {/* Modal Header */}
         <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-black/40">
@@ -285,7 +290,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
 
         {/* Modal Body: Interactive Viewfinder */}
         <div 
-          className="flex-1 p-3 sm:p-6 flex flex-col items-center justify-center bg-black/60 overflow-hidden relative select-none min-h-[380px]"
+          className="flex-1 p-3 sm:p-6 flex flex-col items-center justify-center bg-black/60 overflow-hidden relative select-none min-h-[400px]"
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
         >
@@ -373,14 +378,14 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
             </button>
           </div>
 
-          {/* Viewfinder Crop Box */}
+          {/* Viewfinder Crop Box - Exact Mirror of Home.tsx Hero Banner */}
           <div
             ref={containerRef}
             onMouseDown={handleMouseDown}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className={`relative ${getAspectClass()} rounded-2xl overflow-hidden shadow-2xl border-2 border-warm-accent/70 bg-[#121110] cursor-grab active:cursor-grabbing flex items-center justify-center transition-all duration-150`}
+            className={`relative ${getAspectClass()} rounded-2xl overflow-hidden shadow-2xl border-2 border-warm-accent/70 bg-warm-bg cursor-grab active:cursor-grabbing flex items-center justify-center transition-all duration-150`}
           >
             {/* Movable & Zoomable Image - Initial Fit-to-Container */}
             <img
@@ -390,7 +395,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
               onLoad={handleImageLoaded}
               draggable={false}
               crossOrigin="anonymous"
-              className="max-w-none transition-transform duration-75 pointer-events-none"
+              className="max-w-none transition-transform duration-75 pointer-events-none absolute inset-0 m-auto"
               style={{
                 width: baseDims.width,
                 height: baseDims.height,
@@ -400,44 +405,66 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
             />
 
             {/* Grid overlay for rule-of-thirds composition */}
-            <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none border border-white/20">
-              <div className="border-r border-b border-white/15"></div>
-              <div className="border-r border-b border-white/15"></div>
-              <div className="border-b border-white/15"></div>
-              <div className="border-r border-b border-white/15"></div>
-              <div className="border-r border-b border-white/15"></div>
-              <div className="border-b border-white/15"></div>
-              <div className="border-r border-b border-white/15"></div>
-              <div className="border-r border-b border-white/15"></div>
-              <div></div>
-            </div>
-
-            {/* Live Homepage Cover Overlay Mockup (Accurately mirrors Home.tsx layout) */}
-            {showLiveCoverOverlay && (
-              <div className="absolute inset-0 pointer-events-none flex items-center justify-start p-6 sm:p-10 md:p-14 bg-gradient-to-r from-black/40 via-black/10 to-transparent">
-                <div className="max-w-md text-left flex flex-col items-start drop-shadow-md">
-                  <span className="font-sans tracking-[0.2em] text-[10px] sm:text-xs uppercase font-bold text-warm-accent mb-1 bg-black/40 px-2 py-0.5 rounded">
-                    {heroTag || 'ROOTED IN TRADITION'}
-                  </span>
-                  <h1 className="font-serif leading-[1.15] text-white text-base sm:text-xl md:text-2xl font-bold mb-1">
-                    {heroTitle || 'Flavours of our Heritage'}
-                  </h1>
-                  
-                  <div className="text-warm-accent text-xs my-0.5">✻</div>
-
-                  <p className="font-serif italic text-[11px] sm:text-xs text-white/90 leading-relaxed max-w-xs mb-3 line-clamp-3">
-                    {heroDescription || 'From generations of Andhra kitchens to your table, Kaaram Kathalu brings you handcrafted pickles and aromatic podis made with pure ingredients, cold-pressed oils, and time-honored recipes.'}
-                  </p>
-
-                  <div className="px-4 py-1.5 bg-warm-accent text-white font-sans uppercase text-[10px] font-bold tracking-wider rounded shadow-md">
-                    {heroButtonText || 'EXPLORE OUR FLAVOURS'}
-                  </div>
-                </div>
+            {!showLiveCoverOverlay && (
+              <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none border border-white/20 z-[2]">
+                <div className="border-r border-b border-white/15"></div>
+                <div className="border-r border-b border-white/15"></div>
+                <div className="border-b border-white/15"></div>
+                <div className="border-r border-b border-white/15"></div>
+                <div className="border-r border-b border-white/15"></div>
+                <div className="border-b border-white/15"></div>
+                <div className="border-r border-b border-white/15"></div>
+                <div className="border-r border-b border-white/15"></div>
+                <div></div>
               </div>
             )}
 
+            {/* Live Homepage Cover Overlay - 100% Exact Replica of Home.tsx */}
+            {showLiveCoverOverlay && (
+              <>
+                {/* Soft overlay matching admin settings */}
+                <div 
+                  className="absolute inset-0 z-[1] transition-opacity duration-300 pointer-events-none"
+                  style={{
+                    backgroundColor: Number(heroOverlayOpacity || 0) > 0 
+                      ? `rgba(0, 0, 0, ${Number(heroOverlayOpacity) / 100})` 
+                      : 'rgba(255, 255, 255, 0.10)'
+                  }}
+                />
+
+                {/* Content Container Matching Home.tsx max-w-7xl and left padding */}
+                <div className="max-w-7xl mx-auto px-6 sm:px-10 md:px-16 relative z-10 w-full pointer-events-none flex items-center justify-start h-full">
+                  <div className="max-w-lg flex flex-col items-start text-left md:max-w-md lg:max-w-lg mx-0 drop-shadow-xs">
+                    <span className="font-sans tracking-[0.2em] text-[10px] sm:text-xs uppercase font-bold text-warm-accent mb-1.5">
+                      {heroTag || 'ROOTED IN TRADITION'}
+                    </span>
+                    
+                    <h1 
+                      className="font-serif leading-[1.15] text-warm-accent whitespace-pre-line mb-1 text-left font-bold"
+                      style={{
+                        fontSize: `clamp(18px, 3.5vw, ${Math.min(heroTitleFontSize, 38)}px)`
+                      }}
+                    >
+                      {heroTitle || 'Flavours of our Heritage'}
+                    </h1>
+                    
+                    {/* Heritage Divider Line */}
+                    <div className="heritage-divider text-warm-accent w-full max-w-[100px] !my-0.5 !mx-0 justify-start">✻</div>
+
+                    <p className="font-serif italic text-xs sm:text-sm leading-relaxed text-warm-dark/85 whitespace-pre-line mt-1 mb-3 text-left max-w-sm line-clamp-3">
+                      {heroDescription || 'From generations of Andhra kitchens to your table, Kaaram Kathalu brings you handcrafted pickles and aromatic podis made with pure ingredients, cold-pressed oils, and time-honored recipes. Every bite carries a little taste of home.'}
+                    </p>
+
+                    <div className="w-fit px-5 sm:px-7 py-2 sm:py-2.5 bg-warm-accent text-white font-sans uppercase text-[10px] sm:text-xs tracking-wider font-bold rounded shadow-md">
+                      {heroButtonText || 'EXPLORE OUR FLAVOURS'}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
             {/* Drag Hint badge */}
-            <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm text-white/80 text-[10px] font-mono px-2.5 py-1 rounded-md pointer-events-none flex items-center gap-1 border border-white/10">
+            <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm text-white/80 text-[10px] font-mono px-2.5 py-1 rounded-md pointer-events-none flex items-center gap-1 border border-white/10 z-20">
               <Move className="w-3 h-3 text-warm-accent" /> Drag to move
             </div>
           </div>

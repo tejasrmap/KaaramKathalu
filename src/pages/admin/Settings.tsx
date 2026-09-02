@@ -3073,8 +3073,10 @@ export default function Settings() {
         aspectRatioType={cropModalConfig.aspectRatioType}
         heroTag={settings.heroTag}
         heroTitle={settings.heroTitle}
+        heroTitleFontSize={settings.heroTitleFontSize}
         heroDescription={settings.heroDescription}
         heroButtonText={settings.heroButtonText}
+        heroOverlayOpacity={settings.heroOverlayOpacity}
         onClose={() => setCropModalConfig(prev => ({ ...prev, isOpen: false }))}
         onCropComplete={handleApplyCroppedImage}
         onUseOriginal={cropModalConfig.originalFile ? handleUseOriginalImage : undefined}
