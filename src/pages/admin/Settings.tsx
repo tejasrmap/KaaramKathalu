@@ -18,7 +18,6 @@ export default function Settings() {
     supportPhone: '+91 76766 44366',
     address: '002 Ground Floor Spoorthi Vaibhava Apartment, 6th A Cross Trinity Enclave, Banjara Layout, Horamavu, Bangalore, Karnataka - 560043',
     announcementText: '🔥 New Season Avakaya Pickles Are Here! Free Shipping on Orders Above ₹999.',
-    isMaintenanceMode: false,
     heroTag: 'Handmade Traditions',
     heroTitle: 'Savour the Heritage.',
     heroTitleFontSize: 48,
@@ -694,23 +693,6 @@ export default function Settings() {
                     onChange={e => setSettings(prev => ({ ...prev, announcementText: e.target.value }))}
                     className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-serif resize-none focus:border-warm-accent transition-colors"
                   />
-                </div>
-                
-                <div className="flex items-center justify-between p-5 bg-warm-light rounded-2xl border border-dashed border-warm-dark/10">
-                  <div className="flex items-center gap-3">
-                    <ShieldCheck className="w-6 h-6 text-warm-dark/40" />
-                    <div>
-                      <h4 className="font-serif font-bold text-warm-dark">Maintenance Mode</h4>
-                      <p className="text-[10px] uppercase font-bold tracking-widest text-warm-dark/45">Disable storefront for visitors</p>
-                    </div>
-                  </div>
-                  <button 
-                    type="button"
-                    onClick={() => setSettings(prev => ({ ...prev, isMaintenanceMode: !prev.isMaintenanceMode }))}
-                    className={`w-12 h-6 rounded-full relative transition-colors cursor-pointer ${settings.isMaintenanceMode ? 'bg-warm-accent' : 'bg-warm-dark/20'}`}
-                  >
-                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${settings.isMaintenanceMode ? 'right-1' : 'left-1'}`} />
-                  </button>
                 </div>
               </div>
             </div>

@@ -101,25 +101,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen relative overflow-x-hidden flex flex-col max-w-[100vw] bg-warm-bg font-sans">
-      {settings.isMaintenanceMode && !location.pathname.startsWith('/admin') ? (
-        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-warm-bg">
-          <div className="max-w-md bg-white p-8 md:p-12 rounded-[32px] shadow-xl border border-warm-dark/5 flex flex-col items-center">
-            <img src="/logo_icon.jpg" alt={settings.companyName} className="h-24 md:h-32 object-contain rounded-full mb-8 animate-pulse" />
-            <h1 className="font-serif text-3xl font-bold text-warm-dark mb-4">Store Under Maintenance</h1>
-            <p className="text-sm font-serif italic text-warm-dark/60 mb-6">
-              Our digital courtyard is temporarily closed for maintenance while we restock our jars and refresh our pages. We'll be back shortly!
-            </p>
-            <p className="text-[10px] uppercase font-bold tracking-widest text-warm-dark/40">
-              For urgent inquiries: {settings.supportEmail}
-            </p>
-          </div>
-        </div>
-      ) : (
-        <>
-          {/* TOP NAVIGATION WRAPPER */}
-          <div className="fixed top-0 left-0 right-0 z-50">
-            {/* Announcement Bar */}
-            <div className="bg-warm-accent text-warm-bg py-2 px-4 overflow-hidden relative w-full text-[10px] uppercase font-bold tracking-[0.2em] border-b border-warm-bg/10 select-none">
+      {/* TOP NAVIGATION WRAPPER */}
+      <div className="fixed top-0 left-0 right-0 z-50">
+        {/* Announcement Bar */}
+        <div className="bg-warm-accent text-warm-bg py-2 px-4 overflow-hidden relative w-full text-[10px] uppercase font-bold tracking-[0.2em] border-b border-warm-bg/10 select-none">
               {/* Mobile Single-Lined Scrolling Ticker */}
               <div className="md:hidden flex whitespace-nowrap overflow-hidden">
                 <div className="animate-marquee flex gap-8 whitespace-nowrap">
@@ -578,7 +563,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </AnimatePresence>
 
           {/* MOBILE BOTTOM DOWNBAR NAVIGATION */}
-          {!location.pathname.startsWith('/admin') && !settings.isMaintenanceMode && (
+          {!location.pathname.startsWith('/admin') && (
             <nav
               aria-label="Mobile Navigation Bar"
               className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-warm-bg/95 backdrop-blur-md border-t border-warm-dark/10 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] px-2 py-1.5 flex items-center justify-around"
@@ -656,8 +641,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Link>
             </nav>
           )}
-        </>
-      )}
     </div>
   );
 }
