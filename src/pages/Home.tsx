@@ -470,6 +470,118 @@ export default function Home() {
         </div>
       </section>
 
+      {/* HERITAGE GREEN PAPERCUT TRUST BADGES STRIP */}
+      <section className="relative w-full overflow-hidden select-none">
+        {/* Torn / Papercut Top Edge SVG */}
+        <div className="w-full overflow-hidden leading-none select-none pointer-events-none -mb-[1px]">
+          <svg 
+            viewBox="0 0 1440 38" 
+            preserveAspectRatio="none" 
+            className="w-full h-5 sm:h-7 md:h-9 text-[#233d32] fill-current block drop-shadow-[0_-2px_4px_rgba(0,0,0,0.06)]"
+          >
+            <path d="M0,38 L0,16 L12,18 L24,13 L38,20 L54,14 L72,19 L90,12 L108,18 L126,13 L144,21 L165,15 L186,22 L210,14 L232,19 L255,12 L278,20 L302,15 L328,22 L352,14 L375,19 L400,11 L425,18 L450,13 L476,21 L502,15 L528,22 L554,14 L580,19 L605,12 L630,20 L655,14 L680,21 L705,15 L730,22 L755,13 L780,19 L805,12 L830,20 L855,14 L880,22 L905,15 L930,19 L955,12 L980,21 L1005,14 L1030,20 L1055,13 L1080,22 L1105,15 L1130,19 L1155,12 L1180,21 L1205,14 L1230,20 L1255,13 L1280,22 L1305,15 L1330,19 L1355,12 L1380,21 L1405,14 L1425,18 L1440,15 L1440,38 Z" />
+          </svg>
+        </div>
+
+        {/* Main Green Patch Body */}
+        <div className="bg-[#233d32] text-[#fbf8f2] py-5 sm:py-7 md:py-9 px-2 sm:px-4 md:px-8 relative w-full">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-5 divide-x divide-white/15 items-center">
+              {/* 1. HANDMADE IN SMALL BATCHES */}
+              <div className="flex flex-col items-center justify-start text-center px-1 sm:px-2 md:px-4">
+                <div className="mb-2 sm:mb-3 flex items-center justify-center h-8 sm:h-10 md:h-11">
+                  <svg className="w-6 h-6 sm:w-8 sm:h-8 md:w-9 md:h-9 text-warm-bg/95" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M7 19 C7 28 13 33 20 33 C27 33 33 28 33 19 Z" />
+                    <line x1="5" y1="19" x2="35" y2="19" strokeWidth="1.8" />
+                    <path d="M14 19 C14 13 17 9 24 6" />
+                    <path d="M19 12 C21 9 25 7 28 8" />
+                    <circle cx="16" cy="14" r="1.2" fill="currentColor" />
+                    <circle cx="22" cy="15" r="1.2" fill="currentColor" />
+                    <circle cx="28" cy="13" r="1.2" fill="currentColor" />
+                    <line x1="12" y1="36" x2="28" y2="36" strokeWidth="1.8" />
+                  </svg>
+                </div>
+                <p className="font-heading text-[7.5px] xs:text-[9px] sm:text-xs md:text-sm font-bold uppercase tracking-wider text-warm-bg/95 leading-tight">
+                  Handmade <br className="hidden sm:inline" />in Small <br className="hidden sm:inline" />Batches
+                </p>
+              </div>
+
+              {/* 2. 100% NATURAL INGREDIENTS */}
+              <div className="flex flex-col items-center justify-start text-center px-1 sm:px-2 md:px-4">
+                <div className="mb-2 sm:mb-3 flex items-center justify-center h-8 sm:h-10 md:h-11">
+                  <svg className="w-6 h-6 sm:w-8 sm:h-8 md:w-9 md:h-9 text-warm-bg/95" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10 32 C10 32 9 20 20 13 C29 8 34 6 34 6 C34 6 32 15 25 22 C17 30 10 32 10 32 Z" />
+                    <path d="M10 32 C15 25 22 18 31 9" />
+                    <path d="M12 23 C12 23 7 16 12 10 C17 5 22 6 22 6 C22 6 20 13 15 18 Z" />
+                    <path d="M12 16 C15 13 18 10 22 6" />
+                  </svg>
+                </div>
+                <p className="font-heading text-[7.5px] xs:text-[9px] sm:text-xs md:text-sm font-bold uppercase tracking-wider text-warm-bg/95 leading-tight">
+                  100% <br className="hidden sm:inline" />Natural <br className="hidden sm:inline" />Ingredients
+                </p>
+              </div>
+
+              {/* 3. COLD PRESSED OILS */}
+              <div className="flex flex-col items-center justify-start text-center px-1 sm:px-2 md:px-4">
+                <div className="mb-2 sm:mb-3 flex items-center justify-center h-8 sm:h-10 md:h-11">
+                  <svg className="w-6 h-6 sm:w-8 sm:h-8 md:w-9 md:h-9 text-warm-bg/95" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 7 L23 7 L23 12 L28 18 C30 21 31 24 31 28 C31 33 26.5 36 20 36 C13.5 36 9 33 9 28 C9 24 10 21 12 18 L17 12 Z" />
+                    <line x1="15" y1="5" x2="25" y2="5" strokeWidth="1.8" />
+                    <line x1="17" y1="12" x2="23" y2="12" strokeWidth="1.4" />
+                    <circle cx="20" cy="27" r="3" strokeWidth="1.4" />
+                    <path d="M20 22 C20 22 18 25 18 27 C18 28.1 18.9 29 20 29 C21.1 29 22 28.1 22 27 C22 25 20 22 20 22 Z" fill="currentColor" stroke="none" />
+                  </svg>
+                </div>
+                <p className="font-heading text-[7.5px] xs:text-[9px] sm:text-xs md:text-sm font-bold uppercase tracking-wider text-warm-bg/95 leading-tight">
+                  Cold Pressed <br className="hidden sm:inline" />Oils
+                </p>
+              </div>
+
+              {/* 4. ZERO PRESERVATIVES */}
+              <div className="flex flex-col items-center justify-start text-center px-1 sm:px-2 md:px-4">
+                <div className="mb-2 sm:mb-3 flex items-center justify-center h-8 sm:h-10 md:h-11">
+                  <svg className="w-6 h-6 sm:w-8 sm:h-8 md:w-9 md:h-9 text-warm-bg/95" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="20" cy="20" r="15" strokeWidth="1.7" />
+                    <line x1="9" y1="9" x2="31" y2="31" strokeWidth="1.7" />
+                    <path d="M17 13 L23 13" strokeWidth="1.5" />
+                    <path d="M18 13 L18 17 L13 26 C12 28 13.5 29.5 15.5 29.5 L24.5 29.5 C26.5 29.5 28 28 27 26 L22 17 L22 13" strokeWidth="1.5" />
+                  </svg>
+                </div>
+                <p className="font-heading text-[7.5px] xs:text-[9px] sm:text-xs md:text-sm font-bold uppercase tracking-wider text-warm-bg/95 leading-tight">
+                  Zero <br className="hidden sm:inline" />Preservatives
+                </p>
+              </div>
+
+              {/* 5. MADE WITH LOVE */}
+              <div className="flex flex-col items-center justify-start text-center px-1 sm:px-2 md:px-4">
+                <div className="mb-2 sm:mb-3 flex items-center justify-center h-8 sm:h-10 md:h-11">
+                  <svg className="w-6 h-6 sm:w-8 sm:h-8 md:w-9 md:h-9 text-warm-bg/95" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 13 C18.5 10.5 15 8.5 12.5 10.5 C9.5 13 9.5 17.5 13 21 L20 27.5 L27 21 C30.5 17.5 30.5 13 27.5 10.5 C25 8.5 21.5 10.5 20 13 Z" strokeWidth="1.7" />
+                    <path d="M6 26 C9.5 24.5 13 25.5 16 29 L20 32.5 C21 33.5 22.5 33.5 23.5 32.5 L32 25.5 C33.5 24 36 25 37 26.5 C38 28.5 37 31 34.5 32.5 L27 37 C23.5 39 18.5 39 15 36.5 L6 30 C4.5 28.5 4.5 27 6 26 Z" strokeWidth="1.6" />
+                  </svg>
+                </div>
+                <p className="font-heading text-[7.5px] xs:text-[9px] sm:text-xs md:text-sm font-bold uppercase tracking-wider text-warm-bg/95 leading-tight">
+                  Made With <br className="hidden sm:inline" />Love
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Traditional Heritage Border Motif */}
+        <div className="w-full h-3 sm:h-4 bg-[#1b3127] flex items-center justify-center overflow-hidden border-t border-white/10 opacity-75">
+          <svg className="w-full h-full text-warm-accent/40" preserveAspectRatio="repeat" viewBox="0 0 80 12" fill="currentColor">
+            <pattern id="heritageBorderStrip" x="0" y="0" width="20" height="12" patternUnits="userSpaceOnUse">
+              <path d="M10 1 L19 6 L10 11 L1 6 Z" fill="none" stroke="currentColor" strokeWidth="0.75" />
+              <circle cx="10" cy="6" r="1.5" />
+              <circle cx="0" cy="6" r="0.8" />
+              <circle cx="20" cy="6" r="0.8" />
+            </pattern>
+            <rect width="100%" height="100%" fill="url(#heritageBorderStrip)" />
+          </svg>
+        </div>
+      </section>
+
       {/* BESTSELLERS SECTION */}
       <section className="pt-10 pb-6 md:pt-14 md:pb-8 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
         <div className="text-center mb-8 max-w-2xl mx-auto flex flex-col items-center">
