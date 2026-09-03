@@ -8,6 +8,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { formatRichText } from '../utils/richText';
+import { ScrollProgressIndicator } from './ScrollProgressIndicator';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { cart, isCartOpen, setIsCartOpen, updateQuantity, cartTotal, cartCount } = useCart();
@@ -656,6 +657,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Link>
             </nav>
           )}
+
+      {/* Floating Terracotta Page Position Point */}
+      <ScrollProgressIndicator />
     </div>
   );
 }

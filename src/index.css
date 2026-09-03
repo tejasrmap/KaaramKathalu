@@ -36,32 +36,18 @@
   }
 }
 
-/* Custom Sleek Transparent Scrollbar with Terracotta Indicator */
-html {
-  scrollbar-color: var(--color-warm-accent, #8B2E0F) transparent;
-  scrollbar-width: thin;
+/* Hide native browser scrollbar gutter so only floating terracotta point is displayed */
+html, body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent !important;
-  border: none !important;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-warm-accent, #8B2E0F) !important;
-  border-radius: 9999px !important;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #6D230B !important;
-}
-
-::-webkit-scrollbar-corner {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
   background: transparent !important;
 }
 
