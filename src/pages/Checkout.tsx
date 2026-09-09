@@ -50,6 +50,7 @@ export default function Checkout() {
       phone: '',
       address: '',
       city: '',
+      state: 'Karnataka',
       pincode: ''
     };
   });
@@ -111,12 +112,15 @@ export default function Checkout() {
               setIsCalculating(false);
               return;
             } else {
-              // Auto-fill city if the user hasn't explicitly customized it yet
-              const info = serviceabilityData.delivery_codes[0];
-              if (info.district) {
+              // Auto-fill city and state from postal_code if available
+              const postalCode = serviceabilityData.delivery_codes[0]?.postal_code;
+              if (postalCode) {
+                const detectedCity = postalCode.city || postalCode.district || '';
+                const detectedState = postalCode.state_code || '';
                 setFormData(prev => ({
                   ...prev,
-                  city: prev.city || info.district
+                  city: prev.city || detectedCity,
+                  state: prev.state || detectedState || 'Karnataka'
                 }));
               }
             }
@@ -238,6 +242,7 @@ export default function Checkout() {
               phone: defaultAddr.phone || data.phone || prev.phone,
               address: defaultAddr.address || data.address || prev.address,
               city: defaultAddr.city || data.city || prev.city,
+              state: defaultAddr.state || data.state || prev.state || 'Karnataka',
               pincode: defaultAddr.pincode || data.pincode || prev.pincode
             }));
           } else {
@@ -248,6 +253,7 @@ export default function Checkout() {
               phone: data.phone || prev.phone,
               address: data.address || prev.address,
               city: data.city || prev.city,
+              state: data.state || prev.state || 'Karnataka',
               pincode: data.pincode || prev.pincode
             }));
           }
@@ -471,6 +477,7 @@ export default function Checkout() {
               phone: formData.phone,
               address: formData.address,
               city: formData.city,
+              state: formData.state || 'Karnataka',
               pincode: formData.pincode,
               isDefault: currentAddresses.length === 0
             };
@@ -482,6 +489,7 @@ export default function Checkout() {
                 phone: formData.phone,
                 address: formData.address,
                 city: formData.city,
+                state: formData.state || 'Karnataka',
                 pincode: formData.pincode
               } : {})
             }, { merge: true });
@@ -724,6 +732,7 @@ export default function Checkout() {
                               phone: addr.phone || '',
                               address: addr.address || '',
                               city: addr.city || '',
+                              state: addr.state || 'Karnataka',
                               pincode: addr.pincode || ''
                             }));
                           }}
@@ -787,6 +796,7 @@ export default function Checkout() {
                             phone: defaultAddr.phone || '',
                             address: defaultAddr.address || '',
                             city: defaultAddr.city || '',
+                            state: defaultAddr.state || 'Karnataka',
                             pincode: defaultAddr.pincode || ''
                           }));
                         }

@@ -19,6 +19,7 @@ export default function Profile() {
     phone: '',
     address: '',
     city: '',
+    state: '',
     pincode: ''
   });
 
@@ -30,6 +31,7 @@ export default function Profile() {
     phone: '',
     address: '',
     city: '',
+    state: 'Karnataka',
     pincode: '',
     isDefault: false
   });
@@ -49,6 +51,7 @@ export default function Profile() {
             phone: data.phone || '',
             address: data.address || '',
             city: data.city || '',
+            state: data.state || 'Karnataka',
             pincode: data.pincode || ''
           });
           setAddresses(data.addresses || []);
@@ -83,6 +86,7 @@ export default function Profile() {
         phone: profileData.phone,
         address: profileData.address,
         city: profileData.city,
+        state: profileData.state || 'Karnataka',
         pincode: profileData.pincode,
         isDefault: true
       };
@@ -130,6 +134,7 @@ export default function Profile() {
         phone: '',
         address: '',
         city: '',
+        state: 'Karnataka',
         pincode: '',
         isDefault: false
       });
@@ -170,6 +175,7 @@ export default function Profile() {
         phone: defaultAddr.phone,
         address: defaultAddr.address,
         city: defaultAddr.city,
+        state: defaultAddr.state || 'Karnataka',
         pincode: defaultAddr.pincode
       });
     }
@@ -630,8 +636,8 @@ export default function Profile() {
                   />
                 </div>
 
-                {/* City and Pincode */}
-                <div className="grid grid-cols-2 gap-4">
+                {/* City, State and Pincode */}
+                <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1">
                     <label className="text-[10px] font-heading font-black tracking-widest uppercase text-warm-dark/50">City</label>
                     <input
@@ -639,8 +645,18 @@ export default function Profile() {
                       required
                       value={addressFormData.city}
                       onChange={e => setAddressFormData(prev => ({ ...prev, city: e.target.value }))}
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/10 focus:outline-none focus:border-warm-accent focus:bg-white transition-all font-serif text-sm font-semibold text-warm-dark"
-                      placeholder="e.g. Gudivada"
+                      className="w-full px-3 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/10 focus:outline-none focus:border-warm-accent focus:bg-white transition-all font-serif text-sm font-semibold text-warm-dark"
+                      placeholder="e.g. Bangalore"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-heading font-black tracking-widest uppercase text-warm-dark/50">State</label>
+                    <input
+                      type="text"
+                      value={addressFormData.state || ''}
+                      onChange={e => setAddressFormData(prev => ({ ...prev, state: e.target.value }))}
+                      className="w-full px-3 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/10 focus:outline-none focus:border-warm-accent focus:bg-white transition-all font-serif text-sm font-semibold text-warm-dark"
+                      placeholder="Karnataka"
                     />
                   </div>
                   <div className="space-y-1">
@@ -650,8 +666,8 @@ export default function Profile() {
                       required
                       value={addressFormData.pincode}
                       onChange={e => setAddressFormData(prev => ({ ...prev, pincode: e.target.value }))}
-                      className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/10 focus:outline-none focus:border-warm-accent focus:bg-white transition-all font-serif text-sm font-semibold text-warm-dark"
-                      placeholder="6-digit PIN"
+                      className="w-full px-3 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/10 focus:outline-none focus:border-warm-accent focus:bg-white transition-all font-serif text-sm font-semibold text-warm-dark"
+                      placeholder="560066"
                       pattern="[0-9]{6}"
                     />
                   </div>

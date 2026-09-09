@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Eye, MoreVertical, X, Truck, AlertTriangle, Check, Loader2, Send, Trash2 } from 'lucide-react';
+import { Search, Filter, Eye, MoreVertical, X, Truck, AlertTriangle, Check, Loader2, Send, Trash2, Edit3, Save } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { db } from '../../firebase';
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
@@ -7,6 +7,31 @@ import { collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, getD
 const STATUSES = ['All', 'Pending', 'Processing', 'Shipped', 'Delivered'];
 
 import { usePopups } from '../../context/PopupContext';
+
+const formatFullDeliveryAddress = (address?: string, city?: string, state?: string, pin?: string | number) => {
+  let addr = (address || "").trim();
+  const c = (city || "").trim();
+  const s = (state || "").trim();
+  const p = (pin ? String(pin).trim() : "");
+
+  if (!addr) {
+    return [c, s, p].filter(Boolean).join(', ');
+  }
+
+  if (c && !new RegExp(`\\b${c.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'i').test(addr)) {
+    addr += `, ${c}`;
+  }
+
+  if (s && !new RegExp(`\\b${s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'i').test(addr)) {
+    addr += `, ${s}`;
+  }
+
+  if (p && !addr.includes(p)) {
+    addr += ` - ${p}`;
+  }
+
+  return addr;
+};
 
 export default function Orders() {
   const { showAlert, showToast } = usePopups();
@@ -21,11 +46,108 @@ export default function Orders() {
   const [shippingError, setShippingError] = useState<string | null>(null);
   const [shippingSuccess, setShippingSuccess] = useState<string | null>(null);
 
+  const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [editAddressForm, setEditAddressForm] = useState({
+    name: '',
+    phone: '',
+    address: '',
+    city: '',
+    state: '',
+    pincode: ''
+  });
+  const [isUpdatingDelivery, setIsUpdatingDelivery] = useState(false);
+
   const openOrderDetails = (order: any) => {
     setShippingError(null);
     setShippingSuccess(null);
     setIsShipping(false);
+    setIsEditingAddress(false);
     setSelectedOrder(order);
+    if (order?.customer) {
+      setEditAddressForm({
+        name: order.customer.name || '',
+        phone: order.customer.phone || '',
+        address: order.customer.address || '',
+        city: order.customer.city || '',
+        state: order.customer.state || 'Karnataka',
+        pincode: order.customer.pincode || ''
+      });
+    }
+  };
+
+  const handleUpdateDelhiveryAddress = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedOrder) return;
+
+    setIsUpdatingDelivery(true);
+    setShippingError(null);
+    setShippingSuccess(null);
+
+    try {
+      const fullAddr = formatFullDeliveryAddress(
+        editAddressForm.address,
+        editAddressForm.city || "Bangalore",
+        editAddressForm.state || "Karnataka",
+        editAddressForm.pincode || "560043"
+      );
+
+      let cleanedPhone = (editAddressForm.phone || "").replace(/\D/g, '');
+      if (cleanedPhone.length === 12 && cleanedPhone.startsWith('91')) cleanedPhone = cleanedPhone.substring(2);
+      if (cleanedPhone.length === 11 && cleanedPhone.startsWith('0')) cleanedPhone = cleanedPhone.substring(1);
+      if (cleanedPhone.length !== 10) cleanedPhone = "7676644366";
+
+      if (selectedOrder.waybill) {
+        const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? 'https://kaaramkathalu.in'
+          : '';
+
+        const response = await fetch(`${host}/api/shipping`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'edit_shipment',
+            data: {
+              waybill: selectedOrder.waybill,
+              name: editAddressForm.name || selectedOrder.customer?.name || "Customer",
+              add: fullAddr,
+              phone: cleanedPhone
+            }
+          })
+        });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || `Delhivery update returned status ${response.status}`);
+        }
+      }
+
+      // Update Firestore order document customer field
+      const updatedCustomer = {
+        ...(selectedOrder.customer || {}),
+        name: editAddressForm.name,
+        phone: editAddressForm.phone,
+        address: editAddressForm.address,
+        city: editAddressForm.city,
+        state: editAddressForm.state,
+        pincode: editAddressForm.pincode
+      };
+
+      await updateDoc(doc(db, 'orders', selectedOrder.id), {
+        customer: updatedCustomer
+      });
+
+      setSelectedOrder((prev: any) => prev ? { ...prev, customer: updatedCustomer } : null);
+      setShippingSuccess(selectedOrder.waybill 
+        ? "Successfully updated address with Delhivery and Firestore!" 
+        : "Successfully updated address in order record!"
+      );
+      setIsEditingAddress(false);
+    } catch (err: any) {
+      console.error("Failed to update Delhivery details:", err);
+      setShippingError(err.message || "Failed to update package details.");
+    } finally {
+      setIsUpdatingDelivery(false);
+    }
   };
 
   const createDelhiveryShipment = async (order: any) => {
@@ -121,6 +243,16 @@ export default function Orders() {
         ? order.createdAt.toDate().toISOString().replace('T', ' ').slice(0, 19) 
         : (typeof order.createdAt === 'string' ? order.createdAt : new Date().toISOString().replace('T', ' ').slice(0, 19));
 
+      const customerCity = order.customer?.city || "Bangalore";
+      const customerState = order.customer?.state || "Karnataka";
+      const customerPin = order.customer?.pincode || 560043;
+      const fullDeliveryAddress = formatFullDeliveryAddress(
+        order.customer?.address,
+        customerCity,
+        customerState,
+        customerPin
+      );
+
       const shipments = [
         {
           waybill: "",
@@ -135,20 +267,20 @@ export default function Orders() {
           
           // Flat fields for standard/legacy CMU API
           name: order.customer?.name || "Customer",
-          add: order.customer?.address || "",
-          city: order.customer?.city || "Bangalore",
-          state: order.customer?.state || "Karnataka",
-          pin: Number(order.customer?.pincode) || 560043,
+          add: fullDeliveryAddress,
+          city: customerCity,
+          state: customerState,
+          pin: Number(customerPin) || 560043,
           phone: consigneePhone,
           country: "India",
 
           // Nested fields for newer Unified/Direct APIs
           consignee: {
             name: order.customer?.name || "Customer",
-            address: order.customer?.address || "",
-            city: order.customer?.city || "Bangalore",
-            state: order.customer?.state || "Karnataka",
-            pincode: Number(order.customer?.pincode) || 560043,
+            address: fullDeliveryAddress,
+            city: customerCity,
+            state: customerState,
+            pincode: Number(customerPin) || 560043,
             phone: consigneePhone,
             country: "India"
           },
@@ -680,18 +812,115 @@ export default function Orders() {
                   <div className="space-y-4">
                     <h3 className="text-xs font-bold uppercase tracking-widest text-warm-accent border-b border-dashed border-warm-accent/20 pb-2">Customer Details</h3>
                     <div className="bg-warm-light p-5 rounded-2xl border border-warm-dark/5">
-                      <p className="font-serif font-bold text-xl text-warm-dark">{selectedOrder.customer?.name}</p>
-                      <p className="text-sm text-warm-dark/60 mt-1">{selectedOrder.customer?.email}</p>
-                      <p className="text-sm text-warm-dark/60 mt-0.5">{selectedOrder.customer?.phone}</p>
+                      <p className="font-serif font-bold text-xl text-warm-dark">{selectedOrder.customer?.name || "Customer"}</p>
+                      <p className="text-sm text-warm-dark/60 mt-1">{selectedOrder.customer?.email || "No email"}</p>
+                      <p className="text-sm text-warm-dark/60 mt-0.5">{selectedOrder.customer?.phone || "No phone"}</p>
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-warm-accent border-b border-dashed border-warm-accent/20 pb-2">Delivery Address</h3>
-                    <div className="bg-warm-light p-5 rounded-2xl border border-warm-dark/5">
-                      <p className="text-sm font-serif italic text-warm-dark/80 whitespace-pre-wrap">{selectedOrder.customer?.address}</p>
-                      <p className="text-xs font-bold text-warm-dark uppercase tracking-widest mt-3">{selectedOrder.customer?.city}</p>
+                    <div className="flex justify-between items-center border-b border-dashed border-warm-accent/20 pb-2">
+                      <h3 className="text-xs font-bold uppercase tracking-widest text-warm-accent">Delivery Address</h3>
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingAddress(!isEditingAddress)}
+                        className="text-[10px] font-heading font-black text-warm-accent hover:text-warm-dark uppercase tracking-wider transition-colors flex items-center gap-1 cursor-pointer"
+                      >
+                        <Edit3 className="w-3 h-3" /> {isEditingAddress ? 'Cancel' : 'Edit Address'}
+                      </button>
                     </div>
+                    
+                    {isEditingAddress ? (
+                      <form onSubmit={handleUpdateDelhiveryAddress} className="bg-warm-light p-5 rounded-2xl border border-warm-accent/20 space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[9px] uppercase font-bold text-warm-dark/60 mb-1">Name</label>
+                            <input
+                              type="text"
+                              value={editAddressForm.name}
+                              onChange={e => setEditAddressForm(prev => ({ ...prev, name: e.target.value }))}
+                              className="w-full bg-white border border-warm-dark/10 rounded-lg p-2 text-xs font-serif focus:border-warm-accent outline-none"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[9px] uppercase font-bold text-warm-dark/60 mb-1">Phone</label>
+                            <input
+                              type="tel"
+                              value={editAddressForm.phone}
+                              onChange={e => setEditAddressForm(prev => ({ ...prev, phone: e.target.value }))}
+                              className="w-full bg-white border border-warm-dark/10 rounded-lg p-2 text-xs font-serif focus:border-warm-accent outline-none"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-[9px] uppercase font-bold text-warm-dark/60 mb-1">Street Address</label>
+                          <textarea
+                            rows={2}
+                            value={editAddressForm.address}
+                            onChange={e => setEditAddressForm(prev => ({ ...prev, address: e.target.value }))}
+                            className="w-full bg-white border border-warm-dark/10 rounded-lg p-2 text-xs font-serif focus:border-warm-accent outline-none resize-none"
+                            required
+                          />
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div>
+                            <label className="block text-[9px] uppercase font-bold text-warm-dark/60 mb-1">City</label>
+                            <input
+                              type="text"
+                              value={editAddressForm.city}
+                              onChange={e => setEditAddressForm(prev => ({ ...prev, city: e.target.value }))}
+                              className="w-full bg-white border border-warm-dark/10 rounded-lg p-2 text-xs font-serif focus:border-warm-accent outline-none"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[9px] uppercase font-bold text-warm-dark/60 mb-1">State</label>
+                            <input
+                              type="text"
+                              value={editAddressForm.state}
+                              onChange={e => setEditAddressForm(prev => ({ ...prev, state: e.target.value }))}
+                              className="w-full bg-white border border-warm-dark/10 rounded-lg p-2 text-xs font-serif focus:border-warm-accent outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[9px] uppercase font-bold text-warm-dark/60 mb-1">Pincode</label>
+                            <input
+                              type="text"
+                              value={editAddressForm.pincode}
+                              onChange={e => setEditAddressForm(prev => ({ ...prev, pincode: e.target.value }))}
+                              className="w-full bg-white border border-warm-dark/10 rounded-lg p-2 text-xs font-serif focus:border-warm-accent outline-none"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div className="pt-2 flex justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setIsEditingAddress(false)}
+                            className="px-3 py-1.5 rounded-lg border border-warm-dark/10 text-warm-dark text-[10px] font-bold uppercase tracking-wider"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            disabled={isUpdatingDelivery}
+                            className="px-4 py-1.5 rounded-lg bg-warm-accent hover:bg-warm-dark text-white text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                          >
+                            {isUpdatingDelivery ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                            {selectedOrder.waybill ? 'Save & Push to Delhivery' : 'Save Changes'}
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                      <div className="bg-warm-light p-5 rounded-2xl border border-warm-dark/5 space-y-1.5">
+                        <p className="text-sm font-serif italic text-warm-dark/80 whitespace-pre-wrap">{selectedOrder.customer?.address || "No address provided"}</p>
+                        <p className="text-xs font-bold text-warm-dark tracking-wide">
+                          {[selectedOrder.customer?.city, selectedOrder.customer?.state || "Karnataka"].filter(Boolean).join(', ')} - <span className="font-mono">{selectedOrder.customer?.pincode}</span>
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
 

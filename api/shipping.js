@@ -76,6 +76,34 @@ export default async function handler(req, res) {
       }
       const data = await response.json();
       return res.status(200).json(data);
+    } else if (type === 'edit_shipment') {
+      const payloadData = req.body?.data || req.body;
+      if (!payloadData || !payloadData.waybill) {
+        return res.status(400).json({ error: 'Missing waybill in edit payload' });
+      }
+
+      const targetUrl = `https://track.delhivery.com/api/p/edit`;
+      const response = await fetch(targetUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Token ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payloadData)
+      });
+
+      const resText = await response.text();
+      let resJson;
+      try {
+        resJson = JSON.parse(resText);
+      } catch {
+        resJson = { raw: resText, success: response.ok };
+      }
+
+      if (!response.ok) {
+        return res.status(response.status).json(resJson);
+      }
+      return res.status(200).json(resJson);
     } else if (type === 'track') {
       const waybill = req.query.waybill;
       if (!waybill) {

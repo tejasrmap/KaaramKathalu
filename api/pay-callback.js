@@ -17,6 +17,32 @@ function getFieldValue(field) {
   return null;
 }
 
+// Helper to ensure full complete address is formatted for courier labels and sorting
+function formatFullDeliveryAddress(address, city, state, pin) {
+  let addr = (address || "").trim();
+  const c = (city || "").trim();
+  const s = (state || "").trim();
+  const p = (pin ? String(pin).trim() : "");
+
+  if (!addr) {
+    return [c, s, p].filter(Boolean).join(', ');
+  }
+
+  if (c && !new RegExp(`\\b${c.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'i').test(addr)) {
+    addr += `, ${c}`;
+  }
+
+  if (s && !new RegExp(`\\b${s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'i').test(addr)) {
+    addr += `, ${s}`;
+  }
+
+  if (p && !addr.includes(p)) {
+    addr += ` - ${p}`;
+  }
+
+  return addr;
+}
+
 // Fetch PhonePe OAuth Token helper
 async function getOAuthToken(clientId, clientSecret, clientVersion, env) {
   const postData = new URLSearchParams({
@@ -249,7 +275,12 @@ export default async function handler(req, res) {
                 shipping_mode: "Surface",
 
                 name: customer.name || "Customer",
-                add: customer.address || "",
+                add: formatFullDeliveryAddress(
+                  customer.address,
+                  customer.city || "Bangalore",
+                  customer.state || "Karnataka",
+                  customer.pincode || 560043
+                ),
                 city: customer.city || "Bangalore",
                 state: customer.state || "Karnataka",
                 pin: Number(customer.pincode) || 560043,
@@ -257,7 +288,12 @@ export default async function handler(req, res) {
                 country: "India",
                 consignee: {
                   name: customer.name || "Customer",
-                  address: customer.address || "",
+                  address: formatFullDeliveryAddress(
+                    customer.address,
+                    customer.city || "Bangalore",
+                    customer.state || "Karnataka",
+                    customer.pincode || 560043
+                  ),
                   city: customer.city || "Bangalore",
                   state: customer.state || "Karnataka",
                   pincode: Number(customer.pincode) || 560043,

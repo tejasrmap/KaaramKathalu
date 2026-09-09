@@ -316,25 +316,6 @@ export default function ProductDetail() {
             {!selectedWeightInStock ? 'Sold Out' : 'Buy it now'}
           </button>
 
-          {/* Value Badges */}
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            <div className="bg-warm-light/40 border border-warm-dark/5 p-4 rounded-xl flex items-center gap-3 shadow-sm">
-              <div className="w-8 h-8 rounded-full bg-warm-dark/5 flex items-center justify-center text-warm-dark">
-                <svg className="w-4 h-4 text-warm-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                </svg>
-              </div>
-              <span className="text-[11px] font-semibold text-warm-dark/80 tracking-wide">Free Shipping</span>
-            </div>
-            <div className="bg-warm-light/40 border border-warm-dark/5 p-4 rounded-xl flex items-center gap-3 shadow-sm">
-              <div className="w-8 h-8 rounded-full bg-warm-dark/5 flex items-center justify-center text-warm-dark">
-                <svg className="w-4 h-4 text-warm-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <span className="text-[11px] font-semibold text-warm-dark/80 tracking-wide">3% Off On Prepaid Orders</span>
-            </div>
-          </div>
 
           {/* Mobile Sticky Bottom Bar */}
           <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-warm-dark/15 p-3 flex gap-2.5 shadow-[0_-6px_16px_rgba(0,0,0,0.12)]">
