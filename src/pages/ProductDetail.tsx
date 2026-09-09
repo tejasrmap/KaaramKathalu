@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Flame, Plus, Minus, Info, Loader2, Check, Heart } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Flame, Plus, Minus, Info, Loader2, Check, Heart, Leaf } from 'lucide-react';
 import { Product } from '../data/products';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -103,19 +103,19 @@ export default function ProductDetail() {
   };
 
   return (
-    <div className="pt-8 md:pt-12 pb-24 px-4 sm:px-6 md:px-12 max-w-[100vw] overflow-x-hidden md:max-w-7xl mx-auto">
+    <div className="pt-6 md:pt-10 pb-24 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
       <SEO title={product.name} description={product.description} image={activeImage} />
       
-      <div className="mb-8">
-        <Link to="/shop" className="inline-flex items-center gap-2 text-warm-dark font-bold uppercase tracking-widest text-xs hover:text-warm-accent transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to Shop
+      <div className="mb-6">
+        <Link to="/shop" className="inline-flex items-center gap-2 text-warm-dark/70 hover:text-warm-accent font-heading font-bold uppercase tracking-widest text-xs transition-colors">
+          <ArrowLeft className="w-3.5 h-3.5" /> Back to Shop
         </Link>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 w-full max-w-[95vw] mx-auto relative z-10">
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-14 w-full relative z-10 items-start">
         {/* Product Image & Gallery */}
-        <div className="w-full lg:w-1/2 flex flex-col">
-          <div className="relative aspect-square bg-white overflow-hidden rounded-[24px] border border-warm-dark/5 shadow-sm">
+        <div className="w-full lg:w-1/2 flex flex-col lg:sticky lg:top-28">
+          <div className="relative aspect-square bg-white overflow-hidden rounded-2xl border border-warm-dark/10 shadow-xs">
             <img 
               src={activeImage} 
               alt={product.name} 
@@ -133,7 +133,7 @@ export default function ProductDetail() {
                   key={idx}
                   type="button"
                   onClick={() => setActiveImageIndex(idx)}
-                  className={`w-20 h-20 rounded-2xl overflow-hidden border-2 transition-all flex-shrink-0 cursor-pointer shadow-xs ${
+                  className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 cursor-pointer shadow-xs ${
                     activeImageIndex === idx
                       ? 'border-warm-accent ring-2 ring-warm-accent/30 scale-105'
                       : 'border-warm-dark/10 hover:border-warm-dark/30 opacity-75 hover:opacity-100'
@@ -153,9 +153,9 @@ export default function ProductDetail() {
           )}
         </div>
 
-        {/* Product Info */}
+        {/* Product Info & Actions */}
         <div className="w-full lg:w-1/2 flex flex-col justify-start">
-          <div className="flex items-center gap-4 mb-4">
+          <div className="flex items-center gap-3 mb-3">
             <span className="bg-warm-light border border-warm-dark/10 px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-widest text-warm-dark">
               {product.type}
             </span>
@@ -173,19 +173,19 @@ export default function ProductDetail() {
             {formatRichText(product.name)}
           </h1>
 
-          {/* Clean, Unique, Straight & Highly Readable Price Presentation */}
-          <div className="flex flex-wrap items-center gap-3 mb-6">
-            <div className="inline-flex items-baseline gap-1 bg-white px-3.5 py-1.5 rounded-xl border border-warm-dark/15 shadow-2xs">
-              <span className="text-xs font-sans font-bold text-warm-accent">₹</span>
+          {/* Clean, Straight & Highly Readable Price Presentation */}
+          <div className="flex flex-wrap items-center gap-3 mb-5">
+            <div className="inline-flex items-baseline gap-1.5 bg-white px-4 py-2 rounded-xl border border-warm-dark/15 shadow-xs">
+              <span className="text-sm font-sans font-bold text-warm-accent">₹</span>
               <span className="text-2xl font-sans font-extrabold text-warm-dark tracking-tight leading-none">
                 {computedUnitPrice}
               </span>
-              <span className="text-xs font-sans font-medium text-warm-dark/60 ml-2 border-l border-warm-dark/15 pl-2">
+              <span className="text-xs font-sans font-medium text-warm-dark/60 ml-2 border-l border-warm-dark/15 pl-2.5">
                 Weight: {selectedWeight === 1000 ? '1000g (1kg)' : `${selectedWeight}g`}
               </span>
             </div>
             {isJar && (
-              <span className="inline-flex items-center gap-1 bg-warm-accent/10 border border-warm-accent/30 text-warm-accent px-2.5 py-1 rounded-lg text-xs font-bold font-sans">
+              <span className="inline-flex items-center gap-1 bg-warm-accent/10 border border-warm-accent/30 text-warm-accent px-3 py-2 rounded-xl text-xs font-bold font-sans">
                 🫙 Glass Jar (+₹100)
               </span>
             )}
@@ -194,29 +194,36 @@ export default function ProductDetail() {
             </span>
           </div>
           
-          <p className="text-base text-warm-dark/75 font-serif mb-8 leading-relaxed">
+          <p className="text-base text-warm-dark/75 font-serif mb-6 leading-relaxed">
             {formatRichText(product.description)}
           </p>
 
           {/* Weight Options Selector */}
-          <div className="mb-6">
-            <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-2.5">Select Weight</label>
-            <div className="flex flex-wrap gap-3">
+          <div className="mb-5">
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/50">Select Weight</label>
+              <span className="text-xs font-serif text-warm-dark/50 italic">
+                {selectedWeight === 1000 ? '1000g (1kg)' : `${selectedWeight}g`}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {getAvailableWeights(product).map(weight => {
                 const inStock = isWeightInStock(product, weight);
+                const isSelected = selectedWeight === weight;
                 return (
                   <button
                     key={weight}
                     type="button"
                     onClick={() => setSelectedWeight(weight)}
-                    className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border shadow-sm cursor-pointer ${
-                      selectedWeight === weight
-                        ? 'bg-warm-dark text-white border-warm-dark font-extrabold'
-                        : 'bg-white text-warm-dark/70 border-warm-dark/15 hover:bg-warm-light'
-                    } ${!inStock ? 'opacity-60 line-through' : ''}`}
+                    disabled={!inStock}
+                    className={`h-11 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border flex items-center justify-center gap-1.5 cursor-pointer shadow-xs ${
+                      isSelected
+                        ? 'bg-warm-dark text-white border-warm-dark font-extrabold shadow-sm'
+                        : 'bg-white text-warm-dark/75 border-warm-dark/15 hover:border-warm-dark/40 hover:bg-warm-light/40'
+                    } ${!inStock ? 'opacity-40 cursor-not-allowed line-through' : ''}`}
                   >
-                    {weight === 1000 ? '1000g (1kg)' : `${weight}g`}
-                    {!inStock && ' (Out of Stock)'}
+                    <span>{weight === 1000 ? '1000g (1kg)' : `${weight}g`}</span>
+                    {isSelected && <Check className="w-3.5 h-3.5 stroke-[2.5]" />}
                   </button>
                 );
               })}
@@ -225,25 +232,25 @@ export default function ProductDetail() {
 
           {/* Glass Jar Packaging Option (+₹100) */}
           {product.hasJarOption !== false && (
-            <div className="mb-6">
-              <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-2.5">Packaging Option</label>
+            <div className="mb-5">
+              <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-2">Packaging Option</label>
               <div 
                 onClick={() => setIsJar(!isJar)}
-                className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between shadow-sm ${
+                className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between shadow-xs ${
                   isJar 
                     ? 'bg-warm-accent/10 border-warm-accent ring-1 ring-warm-accent' 
                     : 'bg-white border-warm-dark/15 hover:border-warm-dark/40'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-6 h-6 rounded-lg border flex items-center justify-center transition-colors ${
+                  <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${
                     isJar ? 'bg-warm-accent border-warm-accent text-white' : 'bg-white border-warm-dark/20'
                   }`}>
-                    {isJar && <Check className="w-4 h-4 stroke-[3]" />}
+                    {isJar && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                   </div>
                   <div>
                     <span className="text-xs font-bold uppercase tracking-wider text-warm-dark block">
-                      🫙 Add Premium Glass Jar Packaging (+₹100)
+                      Add Premium Glass Jar Packaging (+₹100)
                     </span>
                     <span className="text-[11px] text-warm-dark/60 font-serif italic">
                       Preserves freshness in an authentic sealed glass jar
@@ -257,74 +264,80 @@ export default function ProductDetail() {
             </div>
           )}
 
-          {/* Quantity Selector */}
-          <div className="mb-6">
-            <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-2.5">Quantity</label>
-            <div className="flex items-center bg-white border border-warm-dark/15 rounded-xl w-32 h-12 shadow-sm">
-              <button 
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="flex-1 h-full flex items-center justify-center text-warm-dark/50 hover:text-warm-dark transition-colors cursor-pointer"
-              >
-                <Minus className="w-3.5 h-3.5" />
-              </button>
-              <span className="w-10 text-center font-bold text-warm-dark text-sm">{quantity}</span>
-              <button 
-                onClick={() => setQuantity(quantity + 1)}
-                className="flex-1 h-full flex items-center justify-center text-warm-dark/50 hover:text-warm-dark transition-colors cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
+          {/* Action Controls */}
+          <div className="space-y-3 mb-6">
+            <label className="block text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-1">Quantity & Add to Cart</label>
+            {/* Quantity, Add to Cart, Wishlist Row */}
+            <div className="flex items-center gap-3">
+              {/* Quantity Selector */}
+              <div className="flex items-center bg-white border border-warm-dark/15 rounded-xl w-32 h-12 shadow-xs shrink-0">
+                <button 
+                  type="button"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="flex-1 h-full flex items-center justify-center text-warm-dark/60 hover:text-warm-dark transition-colors cursor-pointer active:scale-90"
+                  title="Decrease quantity"
+                >
+                  <Minus className="w-3.5 h-3.5" />
+                </button>
+                <span className="w-8 text-center font-bold text-warm-dark text-sm">{quantity}</span>
+                <button 
+                  type="button"
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="flex-1 h-full flex items-center justify-center text-warm-dark/60 hover:text-warm-dark transition-colors cursor-pointer active:scale-90"
+                  title="Increase quantity"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+              </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3 mb-3.5">
-            <button 
-              onClick={handleAddToCart}
-              disabled={!selectedWeightInStock}
-              className="flex-1 bg-white hover:bg-warm-light/40 text-warm-dark h-12 border border-warm-dark rounded-xl font-heading tracking-widest uppercase text-xs font-bold transition-all duration-200 cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {!selectedWeightInStock ? 'Out of Stock' : 'Add to cart'}
-            </button>
-
-            {product && (
+              {/* Add to Cart Button */}
               <button 
                 type="button"
-                onClick={() => {
-                  isInWishlist(product.id) ? removeFromWishlist(product.id) : addToWishlist(product);
-                }}
-                className={`h-12 px-4 border rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm active:scale-95 ${
-                  isInWishlist(product.id)
-                    ? 'bg-warm-accent/10 border-warm-accent text-warm-accent font-bold'
-                    : 'bg-white border-warm-dark/20 text-warm-dark hover:border-warm-dark'
-                }`}
-                title={isInWishlist(product.id) ? "Remove from Wishlist" : "Save to Wishlist"}
+                onClick={handleAddToCart}
+                disabled={!selectedWeightInStock}
+                className="flex-1 bg-white hover:bg-warm-light/60 text-warm-dark h-12 border border-warm-dark/80 rounded-xl font-heading tracking-widest uppercase text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Heart className={`w-5 h-5 ${isInWishlist(product.id) ? 'fill-warm-accent text-warm-accent' : ''}`} />
-                <span className="text-xs font-heading uppercase font-bold tracking-wider hidden sm:inline">
-                  {isInWishlist(product.id) ? 'Saved' : 'Wishlist'}
-                </span>
+                {!selectedWeightInStock ? 'Out of Stock' : 'Add to cart'}
               </button>
-            )}
-          </div>
-          
-          <button 
-            onClick={handleAddToCart}
-            disabled={!selectedWeightInStock}
-            className="w-full bg-warm-dark hover:bg-warm-dark/95 text-white h-12 rounded-xl font-heading tracking-widest uppercase text-xs font-bold transition-all duration-200 cursor-pointer mb-8 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {!selectedWeightInStock ? 'Sold Out' : 'Buy it now'}
-          </button>
 
+              {/* Wishlist Button */}
+              {product && (
+                <button 
+                  type="button"
+                  onClick={() => {
+                    isInWishlist(product.id) ? removeFromWishlist(product.id) : addToWishlist(product);
+                  }}
+                  className={`w-12 h-12 border rounded-xl flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 shrink-0 ${
+                    isInWishlist(product.id)
+                      ? 'bg-warm-accent/10 border-warm-accent text-warm-accent'
+                      : 'bg-white border-warm-dark/15 text-warm-dark/70 hover:border-warm-dark hover:text-warm-dark'
+                  }`}
+                  title={isInWishlist(product.id) ? "Remove from Wishlist" : "Save to Wishlist"}
+                >
+                  <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-warm-accent text-warm-accent' : ''}`} />
+                </button>
+              )}
+            </div>
+
+            {/* Buy It Now Button */}
+            <button 
+              type="button"
+              onClick={handleAddToCart}
+              disabled={!selectedWeightInStock}
+              className="w-full bg-warm-dark hover:bg-warm-dark/95 text-white h-12 rounded-xl font-heading tracking-widest uppercase text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {!selectedWeightInStock ? 'Sold Out' : 'Buy it now'}
+            </button>
+          </div>
 
           {/* Mobile Sticky Bottom Bar */}
           <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-warm-dark/15 p-3 flex gap-2.5 shadow-[0_-6px_16px_rgba(0,0,0,0.12)]">
-             <div className="flex items-center bg-warm-light/60 border border-warm-dark/15 rounded-xl w-28 h-11">
-                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="flex-1 h-full flex items-center justify-center text-warm-dark/60 cursor-pointer active:scale-90"><Minus className="w-3.5 h-3.5" /></button>
-                <span className="w-8 text-center font-bold text-warm-dark text-xs">{quantity}</span>
-                <button onClick={() => setQuantity(quantity + 1)} className="flex-1 h-full flex items-center justify-center text-warm-dark/60 cursor-pointer active:scale-90"><Plus className="w-3.5 h-3.5" /></button>
-             </div>
-             <button 
+            <div className="flex items-center bg-warm-light/60 border border-warm-dark/15 rounded-xl w-28 h-11">
+              <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="flex-1 h-full flex items-center justify-center text-warm-dark/60 cursor-pointer active:scale-90"><Minus className="w-3.5 h-3.5" /></button>
+              <span className="w-8 text-center font-bold text-warm-dark text-xs">{quantity}</span>
+              <button onClick={() => setQuantity(quantity + 1)} className="flex-1 h-full flex items-center justify-center text-warm-dark/60 cursor-pointer active:scale-90"><Plus className="w-3.5 h-3.5" /></button>
+            </div>
+            <button 
               onClick={handleAddToCart}
               disabled={product.stock <= 0}
               className="flex-1 bg-warm-accent hover:bg-warm-dark active:scale-[0.98] text-white h-11 rounded-xl font-heading tracking-wider uppercase text-xs font-bold transition-all cursor-pointer shadow-md disabled:opacity-50"
@@ -333,32 +346,56 @@ export default function ProductDetail() {
             </button>
           </div>
 
-          {/* Description sections */}
-          <div className="pt-6 border-t border-warm-dark/10 mt-6">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-3 flex items-center gap-2">
-              <Info className="w-4 h-4" /> The Story
-            </h3>
-            <p className="text-warm-dark/70 font-serif leading-relaxed text-base italic">
-              {product.longDescription || product.description}
-            </p>
+        </div>
+      </div>
+
+      {/* Product Story & Ingredients Details - Symmetric 2-Column Section */}
+      <div className="mt-14 pt-10 border-t border-warm-dark/10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
+          {/* The Story & Heritage */}
+          <div className="bg-warm-light/35 border border-warm-dark/10 rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-2xs">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-warm-accent mb-4 flex items-center gap-2 font-heading">
+                <Info className="w-4 h-4" /> The Story & Heritage
+              </h3>
+              <p className="text-warm-dark/80 font-serif leading-relaxed text-base italic">
+                {product.longDescription || product.description}
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-warm-dark/10 flex items-center gap-2 text-xs text-warm-dark/60 font-serif">
+              <span className="w-2 h-2 rounded-full bg-warm-accent"></span>
+              Authentic traditional Andhra recipe prepared in small artisanal batches
+            </div>
           </div>
 
-          {product.ingredients && (
-            <div className="pt-6 mt-6 border-t border-dashed border-warm-dark/10">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-warm-dark/50 mb-3">Pure Ingredients</h3>
-              <div className="flex flex-wrap gap-2">
-                {product.ingredients.map((ingredient, idx) => (
-                  <span 
-                    key={idx} 
-                    className="bg-warm-light/50 border border-warm-dark/5 rounded-full px-4 py-1.5 font-serif italic text-xs shadow-sm"
-                  >
-                    {ingredient}
-                  </span>
-                ))}
-              </div>
+          {/* Pure Ingredients */}
+          <div className="bg-warm-light/35 border border-warm-dark/10 rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-2xs">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-warm-accent mb-4 flex items-center gap-2 font-heading">
+                <Leaf className="w-4 h-4" /> Pure Ingredients
+              </h3>
+              {product.ingredients && product.ingredients.length > 0 ? (
+                <div className="flex flex-wrap gap-2.5">
+                  {product.ingredients.map((ingredient, idx) => (
+                    <span 
+                      key={idx} 
+                      className="bg-white border border-warm-dark/10 rounded-xl px-3.5 py-2 font-serif text-xs text-warm-dark/80 shadow-2xs font-medium"
+                    >
+                      {ingredient}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-warm-dark/70 font-serif text-sm italic">
+                  Made with 100% natural, farm-fresh ingredients and traditional spices. No artificial additives or chemical preservatives.
+                </p>
+              )}
             </div>
-          )}
-
+            <div className="mt-6 pt-4 border-t border-warm-dark/10 flex items-center gap-2 text-xs text-warm-dark/60 font-serif">
+              <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+              100% Natural • Zero Preservatives • Traditional Sun-Dried Spices
+            </div>
+          </div>
         </div>
       </div>
     </div>
