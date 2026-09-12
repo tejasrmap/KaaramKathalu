@@ -201,12 +201,14 @@ export default function Orders() {
         return cleaned;
       })();
 
+      const BOX_WEIGHT_GRAMS = 100;
       const items = order.items || [];
-      const totalWeightGrams = items.reduce((sum: number, item: any) => {
+      const itemsWeightGrams = items.reduce((sum: number, item: any) => {
         const itemWeight = Number(item.weightGrams) || Number(item.selectedWeight) || (item.product && (Number(item.product.weightGrams) || Number(item.product.selectedWeight))) || 500;
         const qty = Number(item.quantity) || 1;
         return sum + (itemWeight * qty);
-      }, 0) || 500;
+      }, 0);
+      const totalWeightGrams = Number(order.totalWeightGrams) || (itemsWeightGrams > 0 ? itemsWeightGrams + BOX_WEIGHT_GRAMS : 500);
 
       const totalQuantity = items.reduce((sum: number, item: any) => sum + (Number(item.quantity) || 1), 0) || 1;
       const totalAmount = Number(order.total) || 0;
@@ -440,7 +442,7 @@ export default function Orders() {
             date: displayDate
           };
         })
-        .filter(o => !o.isDeleted && !o.deleted && o.status !== 'DELETED');
+        .filter((o: any) => !o.isDeleted && !o.deleted && o.status !== 'DELETED');
       setOrders(ordersData);
       setIsLoading(false);
     });
@@ -956,9 +958,9 @@ export default function Orders() {
                       </tbody>
                       <tfoot className="bg-warm-light/50 border-t border-warm-dark/10">
                         <tr className="border-b border-warm-dark/5">
-                          <td colSpan={2} className="px-4 py-3 text-xs font-bold uppercase tracking-widest text-warm-dark/50">Est. Parcel Weight</td>
+                          <td colSpan={2} className="px-4 py-3 text-xs font-bold uppercase tracking-widest text-warm-dark/50">Est. Parcel Weight <span className="normal-case text-[10px] text-warm-dark/40 font-normal">(incl. 100g box)</span></td>
                           <td className="px-4 py-3 text-right font-bold text-sm text-warm-dark/70">
-                            {selectedOrder.items?.reduce((sum: number, item: any) => sum + item.quantity * (item.weightGrams || 500), 0) || 0}g
+                            {selectedOrder.totalWeightGrams || (selectedOrder.items?.length ? (selectedOrder.items.reduce((sum: number, item: any) => sum + item.quantity * (item.weightGrams || 500), 0) + 100) : 0)}g
                           </td>
                         </tr>
                         <tr>

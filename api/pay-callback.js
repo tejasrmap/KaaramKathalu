@@ -194,6 +194,8 @@ export default async function handler(req, res) {
       }
     }
 
+    const orderTotalWeight = getFieldValue(fields.totalWeightGrams);
+
     if (isSuccess) {
       // ── PAYMENT SUCCESS FLOW ──
       console.log(`V2 Payment successful for order: ${orderId}. Starting shipment booking...`);
@@ -203,11 +205,13 @@ export default async function handler(req, res) {
       // Book shipment in Delhivery
       if (delhiveryToken) {
         try {
-          const totalWeightGrams = items.reduce((acc, item) => {
+          const BOX_WEIGHT_GRAMS = 100;
+          const itemsWeightGrams = items.reduce((acc, item) => {
             const itemWeight = Number(item.weightGrams) || Number(item.selectedWeight) || (item.product && (Number(item.product.weightGrams) || Number(item.product.selectedWeight))) || 500;
             const qty = Number(item.quantity) || 1;
             return acc + (itemWeight * qty);
-          }, 0) || 500;
+          }, 0);
+          const totalWeightGrams = orderTotalWeight ? Number(orderTotalWeight) : (itemsWeightGrams > 0 ? itemsWeightGrams + BOX_WEIGHT_GRAMS : 500);
 
           const totalQuantity = items.reduce((acc, item) => acc + (Number(item.quantity) || 1), 0) || 1;
           

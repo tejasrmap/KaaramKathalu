@@ -79,7 +79,7 @@ export default function Dashboard() {
           ...doc.data(),
           date: doc.data().createdAt?.toDate ? doc.data().createdAt.toDate().toLocaleDateString() : 'Recent'
         }))
-        .filter(o => !o.isDeleted && !o.deleted && o.status !== 'DELETED')
+        .filter((o: any) => !o.isDeleted && !o.deleted && o.status !== 'DELETED')
         .slice(0, 5);
       setRecentOrders(recent);
       setIsLoading(false);

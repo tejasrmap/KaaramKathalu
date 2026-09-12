@@ -59,7 +59,9 @@ export default function Checkout() {
   const [isCalculating, setIsCalculating] = useState<boolean>(false);
   const [pincodeError, setPincodeError] = useState<string | null>(null);
 
-  const totalWeightGrams = cart.reduce((acc, item) => acc + (item.quantity * (item.selectedWeight || item.product.weightGrams || 500)), 0);
+  const BOX_WEIGHT_GRAMS = 100;
+  const itemsWeightGrams = cart.reduce((acc, item) => acc + (item.quantity * (item.selectedWeight || item.product.weightGrams || 500)), 0);
+  const totalWeightGrams = itemsWeightGrams > 0 ? itemsWeightGrams + BOX_WEIGHT_GRAMS : 0;
 
   React.useEffect(() => {
     let active = true;
@@ -446,6 +448,7 @@ export default function Checkout() {
           }),
           total: cartTotal + (shippingCost ?? 0),
           shippingCost: shippingCost ?? 0,
+          totalWeightGrams: totalWeightGrams,
           status: 'payment_pending',
           createdAt: serverTimestamp()
         };
@@ -985,7 +988,7 @@ export default function Checkout() {
                 )}
               </div>
               <div className="flex justify-between text-warm-dark/50 text-xs font-semibold uppercase tracking-wider">
-                <span>Total Weight</span>
+                <span>Total Weight <span className="normal-case text-[10px] text-warm-dark/40 font-normal">(incl. 100g box)</span></span>
                 <span className="text-warm-dark/70 font-bold font-sans">{totalWeightGrams}g</span>
               </div>
               <div className="flex justify-between items-center pt-5 border-t border-warm-dark/10">
