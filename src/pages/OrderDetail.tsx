@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
+import { isDeliveredStatus, isCancelledStatus } from '../utils/trackingUtils';
 import { 
   ArrowLeft, Package, MapPin, Calendar, Clock, Truck, 
   CheckCircle, ShieldCheck, Loader2, FileText, Printer, AlertCircle, CornerDownRight 
@@ -128,6 +129,31 @@ export default function OrderDetail() {
               }
             ]
           });
+
+          const liveStatus = shipment.Status?.Status || '';
+          const liveStatusType = shipment.Status?.StatusType || '';
+
+          if (isDeliveredStatus(liveStatus, liveStatusType) && order.status !== 'Delivered') {
+            try {
+              await updateDoc(doc(db, 'orders', order.id), {
+                status: 'Delivered',
+                deliveredAt: new Date()
+              });
+              setOrder((prev: any) => prev ? { ...prev, status: 'Delivered' } : null);
+            } catch (e) {
+              console.warn("Failed to auto-update delivered status on OrderDetail:", e);
+            }
+          } else if (isCancelledStatus(liveStatus, liveStatusType) && order.status !== 'Cancelled') {
+            try {
+              await updateDoc(doc(db, 'orders', order.id), {
+                status: 'Cancelled',
+                cancelledAt: new Date()
+              });
+              setOrder((prev: any) => prev ? { ...prev, status: 'Cancelled' } : null);
+            } catch (e) {
+              console.warn("Failed to auto-update cancelled status on OrderDetail:", e);
+            }
+          }
         } else {
           setTrackingError("No tracking log updates found on Delhivery.");
         }

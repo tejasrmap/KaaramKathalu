@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Filter, Eye, MoreVertical, X, Truck, AlertTriangle, Check, Loader2, Send, Trash2, Edit3, Save } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, Filter, Eye, MoreVertical, X, Truck, AlertTriangle, Check, Loader2, Send, Trash2, Edit3, Save, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { db } from '../../firebase';
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
+import { syncOrderTrackingStatus } from '../../utils/trackingUtils';
 
 const STATUSES = ['All', 'Pending', 'Processing', 'Shipped', 'Delivered'];
 
@@ -56,6 +57,50 @@ export default function Orders() {
     pincode: ''
   });
   const [isUpdatingDelivery, setIsUpdatingDelivery] = useState(false);
+  const [isSyncingTracking, setIsSyncingTracking] = useState(false);
+  const hasAutoSyncedRef = useRef(false);
+
+  const handleSyncTrackingStatuses = async (isManual = true, currentOrdersList?: any[]) => {
+    const listToSync = currentOrdersList || orders;
+    const shippedOrders = listToSync.filter(
+      (o: any) => o.waybill && o.status !== 'Delivered' && o.status !== 'Cancelled' && o.status !== 'DELETED'
+    );
+
+    if (shippedOrders.length === 0) {
+      if (isManual) {
+        showToast("No active shipped packages to sync.", "info");
+      }
+      return;
+    }
+
+    setIsSyncingTracking(true);
+    let deliveredCount = 0;
+    let cancelledCount = 0;
+
+    try {
+      for (const order of shippedOrders) {
+        const result = await syncOrderTrackingStatus(order.id, order.waybill, order.status);
+        if (result === 'Delivered') deliveredCount++;
+        else if (result === 'Cancelled') cancelledCount++;
+      }
+
+      if (deliveredCount > 0 || cancelledCount > 0) {
+        const msg = [];
+        if (deliveredCount > 0) msg.push(`${deliveredCount} updated to Delivered`);
+        if (cancelledCount > 0) msg.push(`${cancelledCount} updated to Cancelled`);
+        showToast(`Tracking sync complete: ${msg.join(', ')}!`, "success");
+      } else if (isManual) {
+        showToast(`Checked ${shippedOrders.length} active parcel(s). All statuses are up to date.`, "info");
+      }
+    } catch (err: any) {
+      console.error("Tracking status sync error:", err);
+      if (isManual) {
+        showAlert("Error syncing tracking statuses.", "Error");
+      }
+    } finally {
+      setIsSyncingTracking(false);
+    }
+  };
 
   const openOrderDetails = (order: any) => {
     setShippingError(null);
@@ -445,6 +490,11 @@ export default function Orders() {
         .filter((o: any) => !o.isDeleted && !o.deleted && o.status !== 'DELETED');
       setOrders(ordersData);
       setIsLoading(false);
+
+      if (!hasAutoSyncedRef.current) {
+        hasAutoSyncedRef.current = true;
+        handleSyncTrackingStatuses(false, ordersData);
+      }
     });
     return unsubscribe;
   }, []);
@@ -579,7 +629,21 @@ export default function Orders() {
           ))}
         </div>
 
-        <div className="flex w-full lg:w-auto gap-3">
+        <div className="flex w-full lg:w-auto gap-3 flex-wrap sm:flex-nowrap">
+          <button 
+            type="button"
+            onClick={() => handleSyncTrackingStatuses(true)}
+            disabled={isSyncingTracking}
+            className="px-4 py-2 flex items-center justify-center gap-2 rounded-xl border border-warm-accent/20 bg-warm-accent/10 hover:bg-warm-accent hover:text-white text-[10px] font-bold uppercase tracking-widest text-warm-accent transition-colors cursor-pointer disabled:opacity-50 shadow-sm"
+            title="Automatically check Delhivery API for delivered packages and update status"
+          >
+            {isSyncingTracking ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <RefreshCw className="w-3.5 h-3.5" />
+            )}
+            {isSyncingTracking ? 'Syncing...' : 'Sync Live Delivery Status'}
+          </button>
           <div className="relative flex-1 lg:w-64">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-dark/40" />
             <input 

@@ -4,6 +4,7 @@ import { Search, Package, MapPin, Calendar, Clock, Truck, CheckCircle2, AlertCir
 import SEO from '../components/SEO';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { isDeliveredStatus, isCancelledStatus } from '../utils/trackingUtils';
 
 interface TrackingScan {
   time: string;
@@ -123,7 +124,25 @@ export default function TrackOrder() {
         });
 
         const liveStatus = shipment.Status?.Status || 'Registered';
-        if (liveStatus.toLowerCase() === 'cancelled' || liveStatus.toLowerCase() === 'canceled') {
+        const liveStatusType = shipment.Status?.StatusType || '';
+
+        if (isDeliveredStatus(liveStatus, liveStatusType)) {
+          try {
+            const ordersQ = query(collection(db, 'orders'), where('waybill', '==', shipment.AWB || searchVal));
+            const ordersSnap = await getDocs(ordersQ);
+            if (!ordersSnap.empty) {
+              const orderDoc = ordersSnap.docs[0];
+              if ((orderDoc.data() as any).status !== 'Delivered') {
+                await updateDoc(doc(db, 'orders', orderDoc.id), {
+                  status: 'Delivered',
+                  deliveredAt: new Date()
+                });
+              }
+            }
+          } catch (err) {
+            console.warn("Failed to auto-deliver order status:", err);
+          }
+        } else if (isCancelledStatus(liveStatus, liveStatusType)) {
           try {
             const ordersQ = query(collection(db, 'orders'), where('waybill', '==', shipment.AWB || searchVal));
             const ordersSnap = await getDocs(ordersQ);
@@ -131,7 +150,8 @@ export default function TrackOrder() {
               const orderDoc = ordersSnap.docs[0];
               if ((orderDoc.data() as any).status !== 'Cancelled') {
                 await updateDoc(doc(db, 'orders', orderDoc.id), {
-                  status: 'Cancelled'
+                  status: 'Cancelled',
+                  cancelledAt: new Date()
                 });
               }
             }
