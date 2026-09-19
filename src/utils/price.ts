@@ -29,7 +29,7 @@ export function getAvailableWeights(product: SimpleProduct): number[] {
     return [Number(product.weightGrams)];
   }
   
-  return [250, 500, 1000];
+  return [100, 250, 500, 1000];
 }
 
 /**

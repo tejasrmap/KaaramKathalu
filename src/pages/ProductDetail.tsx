@@ -206,7 +206,7 @@ export default function ProductDetail() {
                 {selectedWeight === 1000 ? '1000g (1kg)' : `${selectedWeight}g`}
               </span>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {getAvailableWeights(product).map(weight => {
                 const inStock = isWeightInStock(product, weight);
                 const isSelected = selectedWeight === weight;

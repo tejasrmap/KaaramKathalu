@@ -30,9 +30,10 @@ export default function ProductFormAdmin() {
   const [spiciness, setSpiciness] = useState<number>(2);
   const [isBestseller, setIsBestseller] = useState<boolean>(false);
   const [hasJarOption, setHasJarOption] = useState<boolean>(true);
-  const [availableWeights, setAvailableWeights] = useState<number[]>([250, 500, 1000]);
+  const [availableWeights, setAvailableWeights] = useState<number[]>([100, 250, 500, 1000]);
   const [variantPrices, setVariantPrices] = useState<Record<number, string>>({});
   const [variantStocks, setVariantStocks] = useState<Record<number, string>>({
+    100: '50',
     250: '50',
     500: '50',
     1000: '50'
@@ -88,11 +89,11 @@ export default function ProductFormAdmin() {
           setSpiciness(prod.spiciness || 1);
           setIsBestseller(!!prod.isBestseller);
           setHasJarOption(prod.hasJarOption !== false);
-          setAvailableWeights(prod.availableWeights || [250, 500, 1000]);
+          setAvailableWeights(prod.availableWeights || [100, 250, 500, 1000]);
 
           const pricesMap: Record<number, string> = {};
           const stocksMap: Record<number, string> = {};
-          const activeWeights = prod.availableWeights || (prod.weightGrams ? [Number(prod.weightGrams)] : [250, 500, 1000]);
+          const activeWeights = prod.availableWeights || (prod.weightGrams ? [Number(prod.weightGrams)] : [100, 250, 500, 1000]);
 
           activeWeights.forEach((w: number) => {
             if ((prod as any).weightPrices && (prod as any).weightPrices[w] !== undefined) {
@@ -216,7 +217,7 @@ export default function ProductFormAdmin() {
       }
 
       // Determine starting weight and starting price
-      const startingWeight = availableWeights.length > 0 ? Math.min(...availableWeights) : 250;
+      const startingWeight = availableWeights.length > 0 ? Math.min(...availableWeights) : 100;
       const startingWeightPrice = weightPricesMap[startingWeight] || 0;
 
       let totalStock = 0;
@@ -596,8 +597,8 @@ export default function ProductFormAdmin() {
             {/* Available Weight Options */}
             <div className="space-y-3">
               <label className="block text-xs font-bold uppercase tracking-wider text-warm-dark">Available Weight Variants</label>
-              <div className="flex gap-3">
-                {[250, 500, 1000].map(weight => {
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                {[100, 250, 500, 1000].map(weight => {
                   const isSelected = availableWeights.includes(weight);
                   return (
                     <button
@@ -620,20 +621,20 @@ export default function ProductFormAdmin() {
                           setVariantStocks(prev => ({ ...prev, [weight]: variantStocks[weight] || '50' }));
                         }
                       }}
-                      className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border flex items-center justify-center gap-1.5 cursor-pointer ${
+                      className={`py-3 px-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border flex items-center justify-center gap-1 cursor-pointer ${
                         isSelected
                           ? 'bg-warm-accent/10 border-warm-accent text-warm-accent ring-1 ring-warm-accent/30 font-black'
                           : 'bg-white text-warm-dark/60 border-warm-dark/15 hover:border-warm-dark/40 hover:bg-warm-light/40'
                       }`}
                     >
-                      {isSelected && <Check className="w-3.5 h-3.5 stroke-[3] text-warm-accent" />}
-                      <span>{weight === 1000 ? '1000g (1kg)' : `${weight}g`}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 stroke-[3] text-warm-accent shrink-0" />}
+                      <span className="truncate">{weight === 1000 ? '1000g (1kg)' : `${weight}g`}</span>
                     </button>
                   );
                 })}
               </div>
               <p className="text-[10px] text-warm-dark/50 font-serif italic">
-                Selected options will be available for customers on the storefront (250g = 0.5x, 500g = 1x, 1000g = 2x price multiplier).
+                Selected options will be available for customers on the storefront.
               </p>
             </div>
           </div>
