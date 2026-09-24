@@ -7,6 +7,7 @@ import SEO from '../components/SEO';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { usePopups } from '../context/PopupContext';
+import { fetchPincodeDetails } from '../utils/pincode';
 
 export default function Profile() {
   const { user, isLoading: authLoading, logout } = useAuth();
@@ -23,6 +24,22 @@ export default function Profile() {
     pincode: ''
   });
 
+  useEffect(() => {
+    const pin = profileData.pincode?.trim();
+    if (!pin || pin.length !== 6) return;
+    let active = true;
+    fetchPincodeDetails(pin).then(details => {
+      if (active && details) {
+        setProfileData(prev => ({
+          ...prev,
+          city: details.city || prev.city,
+          state: details.state || prev.state
+        }));
+      }
+    });
+    return () => { active = false; };
+  }, [profileData.pincode]);
+
   const [addresses, setAddresses] = useState<any[]>([]);
   const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<any | null>(null);
@@ -35,6 +52,22 @@ export default function Profile() {
     pincode: '',
     isDefault: false
   });
+
+  useEffect(() => {
+    const pin = addressFormData.pincode?.trim();
+    if (!pin || pin.length !== 6) return;
+    let active = true;
+    fetchPincodeDetails(pin).then(details => {
+      if (active && details) {
+        setAddressFormData(prev => ({
+          ...prev,
+          city: details.city || prev.city,
+          state: details.state || prev.state
+        }));
+      }
+    });
+    return () => { active = false; };
+  }, [addressFormData.pincode]);
 
   useEffect(() => {
     if (authLoading) return;

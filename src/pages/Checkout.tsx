@@ -8,6 +8,7 @@ import { ArrowLeft, Package, Send, CheckCircle2, AlertTriangle, Loader2 } from '
 import SEO from '../components/SEO';
 import { motion } from 'motion/react';
 import { usePopups } from '../context/PopupContext';
+import { fetchPincodeDetails } from '../utils/pincode';
 
 export default function Checkout() {
   const { cart, cartTotal, clearCart } = useCart();
@@ -50,7 +51,7 @@ export default function Checkout() {
       phone: '',
       address: '',
       city: '',
-      state: 'Karnataka',
+      state: '',
       pincode: ''
     };
   });
@@ -77,6 +78,21 @@ export default function Checkout() {
 
       setIsCalculating(true);
       setPincodeError(null);
+
+      // Auto-fill City and State from Pincode lookup
+      try {
+        const details = await fetchPincodeDetails(pin);
+        if (active && details) {
+          setFormData(prev => ({
+            ...prev,
+            city: details.city || prev.city,
+            state: details.state || prev.state
+          }));
+        }
+      } catch (err) {
+        console.warn("Error looking up pincode details:", err);
+      }
+
       const token = import.meta.env.VITE_DELHIVERY_API_TOKEN;
       
       if (!token || token === 'YOUR_DELHIVERY_API_TOKEN') {
@@ -114,15 +130,15 @@ export default function Checkout() {
               setIsCalculating(false);
               return;
             } else {
-              // Auto-fill city and state from postal_code if available
+              // Fallback auto-fill city and state from postal_code if available
               const postalCode = serviceabilityData.delivery_codes[0]?.postal_code;
               if (postalCode) {
                 const detectedCity = postalCode.city || postalCode.district || '';
-                const detectedState = postalCode.state_code || '';
+                const detectedState = postalCode.state_name || postalCode.state || postalCode.state_code || '';
                 setFormData(prev => ({
                   ...prev,
                   city: prev.city || detectedCity,
-                  state: prev.state || detectedState || 'Karnataka'
+                  state: prev.state || detectedState
                 }));
               }
             }
@@ -710,6 +726,7 @@ export default function Checkout() {
                           phone: '',
                           address: '',
                           city: '',
+                          state: '',
                           pincode: ''
                         }));
                       }}
@@ -750,7 +767,7 @@ export default function Checkout() {
                             {isSelected && <span className="w-2 h-2 rounded-full bg-warm-accent flex-shrink-0"></span>}
                           </h4>
                           <p className="text-xs font-serif text-warm-dark/70 truncate mt-1">{addr.address}</p>
-                          <p className="text-xs font-serif text-warm-dark/70">{addr.city}, {addr.pincode}</p>
+                          <p className="text-xs font-serif text-warm-dark/70">{addr.city}{addr.state ? `, ${addr.state}` : ''}, {addr.pincode}</p>
                           <p className="text-[10px] text-warm-dark/50 mt-1">Phone: {addr.phone}</p>
                         </button>
                       );
@@ -768,7 +785,7 @@ export default function Checkout() {
                     <div>
                       <h4 className="font-bold text-warm-dark text-base">{formData.name}</h4>
                       <p className="text-sm text-warm-dark/80 mt-1 leading-relaxed">{formData.address}</p>
-                      <p className="text-sm text-warm-dark/80">{formData.city}, {formData.pincode}</p>
+                      <p className="text-sm text-warm-dark/80">{formData.city}{formData.state ? `, ${formData.state}` : ''}, {formData.pincode}</p>
                     </div>
                     <div className="pt-2 border-t border-warm-dark/5 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between text-xs text-warm-dark/60 font-sans">
                       <div>
@@ -864,7 +881,7 @@ export default function Checkout() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                   <div>
                     <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">City</label>
                     <input 
@@ -878,6 +895,18 @@ export default function Checkout() {
                     />
                   </div>
                   <div>
+                    <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">State</label>
+                    <input 
+                      required
+                      type="text"
+                      name="state"
+                      value={formData.state}
+                      onChange={handleInputChange}
+                      className="w-full bg-white border border-warm-dark/10 rounded-xl p-3.5 font-serif focus:ring-0 focus:border-warm-accent outline-none focus:bg-white transition-all shadow-sm focus:shadow-md"
+                      placeholder="Telangana"
+                    />
+                  </div>
+                  <div>
                     <label className="block text-[10px] uppercase font-bold tracking-widest text-warm-dark/50 mb-2">Pincode</label>
                     <input 
                       required
@@ -885,6 +914,7 @@ export default function Checkout() {
                       name="pincode"
                       value={formData.pincode}
                       onChange={handleInputChange}
+                      maxLength={6}
                       className={`w-full bg-white border ${pincodeError ? 'border-red-500 focus:border-red-500' : 'border-warm-dark/10 focus:border-warm-accent'} rounded-xl p-3.5 font-serif focus:ring-0 outline-none focus:bg-white transition-all shadow-sm focus:shadow-md`}
                       placeholder="500001"
                     />
