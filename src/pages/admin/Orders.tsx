@@ -310,7 +310,7 @@ export default function Orders() {
           category_of_goods: "Food Products",
           order_type: "ESSENTIALS",
           product_type: "B2C",
-          shipping_mode: "Surface",
+          shipping_mode: order.shippingMode === 'Express' ? "Express" : "Surface",
           
           // Flat fields for standard/legacy CMU API
           name: order.customer?.name || "Customer",
@@ -697,10 +697,19 @@ export default function Orders() {
                       </td>
                       <td className="px-6 py-4 text-warm-dark/80 font-serif font-bold">{order.date}</td>
                       <td className="px-6 py-4 font-bold text-warm-dark text-lg text-right">₹{order.total}</td>
-                      <td className="px-6 py-4 text-center">
-                        <span className={`inline-block px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-warm-accent/10 text-warm-accent`}>
-                          {order.status}
-                        </span>
+                      <td className="px-6 py-4 text-center space-y-1">
+                        <div>
+                          <span className={`inline-block px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-warm-accent/10 text-warm-accent`}>
+                            {order.status}
+                          </span>
+                        </div>
+                        {order.shippingMode && (
+                          <div>
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${order.shippingMode === 'Express' ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-warm-dark/5 text-warm-dark/60'}`}>
+                              {order.shippingMode === 'Express' ? '⚡ Express' : '📦 Standard'}
+                            </span>
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4 relative">
                         <div className="flex items-center justify-center gap-2">
@@ -1021,6 +1030,14 @@ export default function Orders() {
                         ))}
                       </tbody>
                       <tfoot className="bg-warm-light/50 border-t border-warm-dark/10">
+                        <tr className="border-b border-warm-dark/5">
+                          <td colSpan={2} className="px-4 py-3 text-xs font-bold uppercase tracking-widest text-warm-dark/50">Shipping Method</td>
+                          <td className="px-4 py-3 text-right font-bold text-xs font-sans">
+                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded ${selectedOrder.shippingMode === 'Express' ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-warm-dark/5 text-warm-dark/70'}`}>
+                              {selectedOrder.shippingMode === 'Express' ? '⚡ Express Air' : '📦 Standard Surface'}
+                            </span>
+                          </td>
+                        </tr>
                         <tr className="border-b border-warm-dark/5">
                           <td colSpan={2} className="px-4 py-3 text-xs font-bold uppercase tracking-widest text-warm-dark/50">Est. Parcel Weight <span className="normal-case text-[10px] text-warm-dark/40 font-normal">(incl. 100g box)</span></td>
                           <td className="px-4 py-3 text-right font-bold text-sm text-warm-dark/70">

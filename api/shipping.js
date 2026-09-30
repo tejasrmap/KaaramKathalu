@@ -35,11 +35,12 @@ export default async function handler(req, res) {
       const data = await response.json();
       return res.status(200).json(data);
     } else if (type === 'charges') {
-      const { o_pin, d_pin, cgm } = req.query;
+      const { o_pin, d_pin, cgm, md } = req.query;
       if (!o_pin || !d_pin || !cgm) {
         return res.status(400).json({ error: 'Missing required parameters: o_pin, d_pin, cgm' });
       }
-      const targetUrl = `https://track.delhivery.com/api/kinko/v1/invoice/charges/.json?md=E&ss=Delivered&o_pin=${o_pin}&d_pin=${d_pin}&cgm=${cgm}`;
+      const mode = md || 'S';
+      const targetUrl = `https://track.delhivery.com/api/kinko/v1/invoice/charges/.json?md=${mode}&ss=Delivered&o_pin=${o_pin}&d_pin=${d_pin}&cgm=${cgm}`;
       const response = await fetch(targetUrl, {
         method: 'GET',
         headers: {

@@ -289,6 +289,12 @@ export default function OrderDetail() {
                     <span className="font-bold text-warm-dark">Pre-paid</span>
                   </div>
                   <div className="flex justify-between border-b border-warm-dark/5 pb-1.5">
+                    <span className="text-warm-dark/50">Shipping Speed:</span>
+                    <span className="font-bold text-warm-dark flex items-center gap-1">
+                      {order.shippingMode === 'Express' ? '⚡ Express Air (1-2 Days)' : '📦 Standard Ground (3-5 Days)'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between border-b border-warm-dark/5 pb-1.5">
                     <span className="text-warm-dark/50">Shipping Carrier:</span>
                     <span className="font-bold text-warm-dark">{order.carrier || 'Delhivery'}</span>
                   </div>

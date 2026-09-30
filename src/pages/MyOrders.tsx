@@ -300,7 +300,14 @@ export default function MyOrders() {
                           {statusInfo.label}
                         </div>
                       </div>
-                      <p className="font-bold text-warm-dark font-serif text-base break-all tracking-tight">#{order.id.toUpperCase()}</p>
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-bold text-warm-dark font-serif text-base break-all tracking-tight">#{order.id.toUpperCase()}</p>
+                        {order.shippingMode && (
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-heading font-black uppercase tracking-wider ${order.shippingMode === 'Express' ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-warm-dark/5 text-warm-dark/60'}`}>
+                            {order.shippingMode === 'Express' ? '⚡ Express' : '📦 Standard'}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex flex-col sm:flex-row md:flex-col gap-3 w-full pt-1">

@@ -37,7 +37,11 @@ const sections = [
       },
       {
         subtitle: 'Free Shipping',
-        text: 'Free shipping is available on orders above ₹999. Orders below this threshold will incur a standard shipping charge displayed at checkout.',
+        text: 'Free standard shipping is available on orders above ₹999. Orders below this threshold will incur a standard shipping charge displayed at checkout.',
+      },
+      {
+        subtitle: 'Express Air Shipping ⚡',
+        text: 'For fast priority delivery (1–2 business days), customers can select Express Air Shipping at checkout. Express rates are dynamically calculated based on package weight and destination pincode via Delhivery.',
       },
     ],
   },

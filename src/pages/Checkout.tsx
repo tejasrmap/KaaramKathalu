@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp, runTransaction, doc, getDoc, query, where, limit, getDocs, updateDoc, onSnapshot, setDoc } from 'firebase/firestore';
-import { ArrowLeft, Package, Send, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
+import { ArrowLeft, Package, Send, CheckCircle2, AlertTriangle, Loader2, Truck, Zap } from 'lucide-react';
 import SEO from '../components/SEO';
 import { motion } from 'motion/react';
 import { usePopups } from '../context/PopupContext';
@@ -56,9 +56,13 @@ export default function Checkout() {
     };
   });
 
-  const [shippingCost, setShippingCost] = useState<number | null>(null);
+  const [shippingMode, setShippingMode] = useState<'standard' | 'express'>('standard');
+  const [standardShippingCost, setStandardShippingCost] = useState<number | null>(null);
+  const [expressShippingCost, setExpressShippingCost] = useState<number | null>(null);
   const [isCalculating, setIsCalculating] = useState<boolean>(false);
   const [pincodeError, setPincodeError] = useState<string | null>(null);
+
+  const shippingCost = shippingMode === 'express' ? expressShippingCost : standardShippingCost;
 
   const BOX_WEIGHT_GRAMS = 100;
   const itemsWeightGrams = cart.reduce((acc, item) => acc + (item.quantity * (item.selectedWeight || item.product.weightGrams || 500)), 0);
@@ -70,7 +74,8 @@ export default function Checkout() {
       const pin = formData.pincode.trim();
       if (!/^\d{6}$/.test(pin)) {
         if (active) {
-          setShippingCost(null);
+          setStandardShippingCost(null);
+          setExpressShippingCost(null);
           setPincodeError(null);
         }
         return;
@@ -93,44 +98,25 @@ export default function Checkout() {
         console.warn("Error looking up pincode details:", err);
       }
 
-      const token = import.meta.env.VITE_DELHIVERY_API_TOKEN;
-      
-      if (!token || token === 'YOUR_DELHIVERY_API_TOKEN') {
-        console.warn("Delhivery API token is not configured. Using fallback shipping cost.");
-        if (active) {
-          setShippingCost(null);
-          setIsCalculating(false);
-        }
-        return;
-      }
-
       try {
-        // Determine backend API host for local dev compatibility (use live endpoint when running on localhost)
         const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
           ? 'https://kaaramkathalu.in' 
           : '';
 
         // 1. Verify Pincode Serviceability
         const serviceabilityUrl = `${host}/api/shipping?type=serviceability&pin=${pin}`;
-        const serviceabilityRes = await fetch(serviceabilityUrl, {
-          method: 'GET'
-        });
+        const serviceabilityRes = await fetch(serviceabilityUrl, { method: 'GET' });
 
-        if (!serviceabilityRes.ok) {
-          throw new Error(`Serviceability API returned status ${serviceabilityRes.status}`);
-        }
-
-        const serviceabilityData = await serviceabilityRes.json();
-        
-        if (active) {
-          if (serviceabilityData && Array.isArray(serviceabilityData.delivery_codes)) {
+        if (serviceabilityRes.ok) {
+          const serviceabilityData = await serviceabilityRes.json();
+          if (active && serviceabilityData && Array.isArray(serviceabilityData.delivery_codes)) {
             if (serviceabilityData.delivery_codes.length === 0) {
               setPincodeError("We do not ship to this pincode. Please try a different location.");
-              setShippingCost(null);
+              setStandardShippingCost(null);
+              setExpressShippingCost(null);
               setIsCalculating(false);
               return;
             } else {
-              // Fallback auto-fill city and state from postal_code if available
               const postalCode = serviceabilityData.delivery_codes[0]?.postal_code;
               if (postalCode) {
                 const detectedCity = postalCode.city || postalCode.district || '';
@@ -145,43 +131,49 @@ export default function Checkout() {
           }
         }
 
-        // 2. Fetch shipping cost
+        // 2. Fetch Surface (Standard) and Express charges in parallel
         const o_pin = 560043;
         const cgm = totalWeightGrams || 500;
-        const chargesUrl = `${host}/api/shipping?type=charges&o_pin=${o_pin}&d_pin=${pin}&cgm=${cgm}`;
 
-        const response = await fetch(chargesUrl, {
-          method: 'GET'
-        });
+        const [surfaceRes, expressRes] = await Promise.all([
+          fetch(`${host}/api/shipping?type=charges&o_pin=${o_pin}&d_pin=${pin}&cgm=${cgm}&md=S`).catch(() => null),
+          fetch(`${host}/api/shipping?type=charges&o_pin=${o_pin}&d_pin=${pin}&cgm=${cgm}&md=E`).catch(() => null)
+        ]);
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        let surfaceVal: number | null = null;
+        let expressVal: number | null = null;
 
-        const data = await response.json();
-        
-        if (active) {
-          if (Array.isArray(data) && data.length > 0 && data[0].total_amount !== undefined) {
-            const cost = Number(data[0].total_amount);
-            if (!isNaN(cost) && cost > 0) {
-              setShippingCost(Math.round(cost) + 10);
-            } else {
-              setShippingCost(null);
-            }
-          } else if (data && typeof data === 'object' && 'error' in data) {
-            console.warn("Delhivery API error response:", data.error);
-            setShippingCost(null);
-          } else {
-            console.warn("Unexpected Delhivery API response format:", data);
-            setShippingCost(null);
+        if (surfaceRes && surfaceRes.ok) {
+          const surfaceData = await surfaceRes.json().catch(() => null);
+          if (Array.isArray(surfaceData) && surfaceData.length > 0 && surfaceData[0].total_amount !== undefined) {
+            const c = Number(surfaceData[0].total_amount);
+            if (!isNaN(c) && c > 0) surfaceVal = Math.round(c) + 10;
           }
         }
+
+        if (expressRes && expressRes.ok) {
+          const expressData = await expressRes.json().catch(() => null);
+          if (Array.isArray(expressData) && expressData.length > 0 && expressData[0].total_amount !== undefined) {
+            const c = Number(expressData[0].total_amount);
+            if (!isNaN(c) && c > 0) expressVal = Math.round(c) + 10;
+          }
+        }
+
+        // Fallbacks if API returns error/null or missing token
+        const finalSurfaceRate = surfaceVal !== null ? surfaceVal : 60;
+        const finalExpressRate = expressVal !== null ? expressVal : (surfaceVal ? surfaceVal + 80 : 140);
+
+        if (active) {
+          const isFreeStandard = cartTotal >= 999;
+          setStandardShippingCost(isFreeStandard ? 0 : finalSurfaceRate);
+          setExpressShippingCost(finalExpressRate);
+        }
       } catch (error) {
-        console.error("Error fetching shipping charges from Delhivery:", error);
-        // Fail-open: do not block if there is a network error or token issue
+        console.error("Error fetching shipping charges:", error);
         if (active) {
           setPincodeError(null);
-          setShippingCost(null);
+          setStandardShippingCost(cartTotal >= 999 ? 0 : 60);
+          setExpressShippingCost(140);
         }
       } finally {
         if (active) {
@@ -195,7 +187,7 @@ export default function Checkout() {
     return () => {
       active = false;
     };
-  }, [formData.pincode, totalWeightGrams]);
+  }, [formData.pincode, totalWeightGrams, cartTotal]);
 
   React.useEffect(() => {
     sessionStorage.setItem('kk_checkout_form', JSON.stringify(formData));
@@ -464,6 +456,7 @@ export default function Checkout() {
           }),
           total: cartTotal + (shippingCost ?? 0),
           shippingCost: shippingCost ?? 0,
+          shippingMode: shippingMode === 'express' ? 'Express' : 'Standard',
           totalWeightGrams: totalWeightGrams,
           status: 'payment_pending',
           createdAt: serverTimestamp()
@@ -926,6 +919,99 @@ export default function Checkout() {
               </div>
             )}
 
+            {/* Shipping Method Selection */}
+            {formData.pincode.trim().length === 6 && !pincodeError && (
+              <div className="mt-6 mb-6 p-5 bg-warm-light/60 rounded-2xl border border-warm-accent/20">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-[11px] font-heading font-black uppercase tracking-widest text-warm-accent flex items-center gap-1.5">
+                    <Truck className="w-4 h-4 text-warm-accent" /> Select Shipping Speed
+                  </label>
+                  {isCalculating && (
+                    <span className="flex items-center gap-1 text-[11px] font-serif italic text-warm-accent animate-pulse">
+                      <Loader2 className="w-3 h-3 animate-spin" /> Live rates...
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  {/* Standard Shipping */}
+                  <div
+                    onClick={() => setShippingMode('standard')}
+                    className={`p-4 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                      shippingMode === 'standard'
+                        ? 'border-warm-accent bg-white shadow-sm ring-1 ring-warm-accent/30'
+                        : 'border-warm-dark/10 bg-white/70 hover:border-warm-dark/20'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <span className="font-serif font-bold text-warm-dark text-sm block">Standard Delivery</span>
+                        <span className="text-[11px] text-warm-dark/60 font-serif">3 – 5 Business Days</span>
+                      </div>
+                      <input
+                        type="radio"
+                        name="shippingMode"
+                        checked={shippingMode === 'standard'}
+                        onChange={() => setShippingMode('standard')}
+                        className="mt-1 accent-warm-accent cursor-pointer"
+                      />
+                    </div>
+                    <div className="mt-3 pt-2.5 border-t border-warm-dark/5 flex items-center justify-between text-xs">
+                      <span className="text-warm-dark/50 font-serif italic">Delhivery Surface</span>
+                      <span className="font-sans font-bold text-warm-accent">
+                        {isCalculating
+                          ? '...'
+                          : standardShippingCost === 0
+                          ? 'FREE'
+                          : standardShippingCost !== null
+                          ? `₹${standardShippingCost}`
+                          : '₹60'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Express Shipping */}
+                  <div
+                    onClick={() => setShippingMode('express')}
+                    className={`p-4 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden ${
+                      shippingMode === 'express'
+                        ? 'border-warm-accent bg-white shadow-sm ring-1 ring-warm-accent/30'
+                        : 'border-warm-dark/10 bg-white/70 hover:border-warm-dark/20'
+                    }`}
+                  >
+                    <span className="absolute top-0 right-0 bg-warm-accent text-white text-[9px] font-heading font-black px-2 py-0.5 rounded-bl-lg uppercase tracking-wider flex items-center gap-0.5">
+                      <Zap className="w-2.5 h-2.5" /> Express
+                    </span>
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <span className="font-serif font-bold text-warm-dark text-sm flex items-center gap-1">
+                          Express Air ⚡
+                        </span>
+                        <span className="text-[11px] text-warm-dark/60 font-serif">1 – 2 Business Days</span>
+                      </div>
+                      <input
+                        type="radio"
+                        name="shippingMode"
+                        checked={shippingMode === 'express'}
+                        onChange={() => setShippingMode('express')}
+                        className="mt-1 accent-warm-accent cursor-pointer"
+                      />
+                    </div>
+                    <div className="mt-3 pt-2.5 border-t border-warm-dark/5 flex items-center justify-between text-xs">
+                      <span className="text-warm-dark/50 font-serif italic">Delhivery Air</span>
+                      <span className="font-sans font-bold text-warm-accent">
+                        {isCalculating
+                          ? '...'
+                          : expressShippingCost !== null
+                          ? `₹${expressShippingCost}`
+                          : '₹140'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {(savedAddresses.length === 0 || showNewAddressForm) && user && (
               <div className="flex items-center gap-2 mb-4 text-left">
                 <input
@@ -994,7 +1080,7 @@ export default function Checkout() {
                 <span className="font-sans font-bold text-warm-dark">₹{cartTotal}</span>
               </div>
               <div className="flex justify-between text-warm-dark/50 text-xs font-semibold uppercase tracking-wider items-center">
-                <span>Shipping</span>
+                <span>Shipping ({shippingMode === 'express' ? 'Express Air ⚡' : 'Standard'})</span>
                 {formData.pincode.trim().length !== 6 ? (
                   <span className="text-warm-dark/40 font-serif text-xs normal-case italic">
                     Enter Pincode

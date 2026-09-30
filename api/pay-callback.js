@@ -264,6 +264,9 @@ export default async function handler(req, res) {
 
           const orderDateStr = new Date().toISOString().replace('T', ' ').slice(0, 19);
 
+          const orderShippingMode = getFieldValue(fields.shippingMode);
+          const isExpressShipping = orderShippingMode === 'Express';
+
           const delhiveryPayload = {
             format: 'json',
             data: JSON.stringify({
@@ -276,7 +279,7 @@ export default async function handler(req, res) {
                 category_of_goods: "Food Products",
                 order_type: "ESSENTIALS",
                 product_type: "B2C",
-                shipping_mode: "Surface",
+                shipping_mode: isExpressShipping ? "Express" : "Surface",
 
                 name: customer.name || "Customer",
                 add: formatFullDeliveryAddress(
