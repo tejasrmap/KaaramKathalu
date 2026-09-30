@@ -17,17 +17,35 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const parseOrderDate = (createdAt: any): Date | null => {
+      if (!createdAt) return null;
+      if (typeof createdAt.toDate === 'function') {
+        return createdAt.toDate();
+      }
+      if (createdAt instanceof Date) {
+        return createdAt;
+      }
+      if (typeof createdAt === 'object' && typeof createdAt.seconds === 'number') {
+        return new Date(createdAt.seconds * 1000);
+      }
+      if (typeof createdAt === 'string' || typeof createdAt === 'number') {
+        const d = new Date(createdAt);
+        if (!isNaN(d.getTime())) return d;
+      }
+      return null;
+    };
+
     // Listen to all orders for stats and chart
-    const qAll = query(collection(db, 'orders'), orderBy('createdAt', 'asc'));
+    const qAll = query(collection(db, 'orders'));
     const unsubscribeStats = onSnapshot(qAll, (snapshot) => {
       const orders = snapshot.docs
-        .map(doc => doc.data())
-        .filter(o => !o.isDeleted && !o.deleted && o.status !== 'DELETED');
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .filter((o: any) => !o.isDeleted && !o.deleted && o.status !== 'DELETED');
       
       // Calculate Stats
-      const revenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
-      const active = orders.filter(o => ['pending', 'processing'].includes(o.status?.toLowerCase())).length;
-      const uniqueCustomers = new Set(orders.map(o => o.customer?.email).filter(Boolean)).size;
+      const revenue = orders.reduce((sum: number, o: any) => sum + (Number(o.total) || 0), 0);
+      const active = orders.filter((o: any) => ['pending', 'processing'].includes(o.status?.toLowerCase())).length;
+      const uniqueCustomers = new Set(orders.map((o: any) => o.customer?.email).filter(Boolean)).size;
 
       setStats({
         totalRevenue: revenue,
@@ -36,52 +54,67 @@ export default function Dashboard() {
         customerCount: uniqueCustomers
       });
 
-      // Calculate Orders Bar Graph Data (Monthly)
-      const monthlyData: { [key: string]: { count: number; revenue: number } } = {};
-      orders.forEach(o => {
-        if (o.createdAt) {
-          try {
-            const date = typeof o.createdAt.toDate === 'function' ? o.createdAt.toDate() : new Date(o.createdAt);
-            const month = date.toLocaleString('default', { month: 'short' });
-            if (!monthlyData[month]) {
-              monthlyData[month] = { count: 0, revenue: 0 };
-            }
-            monthlyData[month].count += 1;
-            monthlyData[month].revenue += (o.total || 0);
-          } catch (e) {
-            console.error('Error parsing order date:', e);
+      // Calculate Orders Bar Graph Data (Last 6 Months)
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth();
+
+      const targetMonths: { key: string; name: string }[] = [];
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(currentYear, currentMonth - i, 1);
+        targetMonths.push({
+          key: `${d.getFullYear()}-${d.getMonth()}`,
+          name: monthNames[d.getMonth()]
+        });
+      }
+
+      const monthlyCounts: Record<string, { count: number; revenue: number }> = {};
+      orders.forEach((o: any) => {
+        const date = parseOrderDate(o.createdAt);
+        if (date) {
+          const key = `${date.getFullYear()}-${date.getMonth()}`;
+          if (!monthlyCounts[key]) {
+            monthlyCounts[key] = { count: 0, revenue: 0 };
           }
+          monthlyCounts[key].count += 1;
+          monthlyCounts[key].revenue += (Number(o.total) || 0);
         }
       });
 
-      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const currentMonthIdx = new Date().getMonth();
-      const recentMonths: string[] = [];
-      for (let i = 5; i >= 0; i--) {
-        const mIdx = (currentMonthIdx - i + 12) % 12;
-        recentMonths.push(monthNames[mIdx]);
-      }
-
-      const chartData = recentMonths.map(month => ({
-        name: month,
-        orders: monthlyData[month]?.count || 0,
-        revenue: monthlyData[month]?.revenue || 0
+      const chartData = targetMonths.map(m => ({
+        name: m.name,
+        orders: monthlyCounts[m.key]?.count || 0,
+        revenue: monthlyCounts[m.key]?.revenue || 0
       }));
+
       setOrdersData(chartData);
+    }, (error) => {
+      console.error("Error fetching orders for stats:", error);
     });
 
     // Listen to recent orders
-    const qRecent = query(collection(db, 'orders'), orderBy('createdAt', 'desc'), limit(15));
+    const qRecent = query(collection(db, 'orders'));
     const unsubscribeRecent = onSnapshot(qRecent, (snapshot) => {
       const recent = snapshot.docs
-        .map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          date: doc.data().createdAt?.toDate ? doc.data().createdAt.toDate().toLocaleDateString() : 'Recent'
-        }))
+        .map(doc => {
+          const data = doc.data();
+          const d = parseOrderDate(data.createdAt);
+          return {
+            id: doc.id,
+            ...data,
+            date: d ? d.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Recent',
+            rawDate: d ? d.getTime() : 0
+          };
+        })
         .filter((o: any) => !o.isDeleted && !o.deleted && o.status !== 'DELETED')
+        .sort((a, b) => b.rawDate - a.rawDate)
         .slice(0, 5);
+
       setRecentOrders(recent);
+      setIsLoading(false);
+    }, (error) => {
+      console.error("Error fetching recent orders:", error);
       setIsLoading(false);
     });
 
@@ -175,7 +208,7 @@ export default function Dashboard() {
 
           <div className="h-[300px] w-full pt-2">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={ordersData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+              <BarChart data={ordersData} margin={{ top: 25, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="orderBarGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#B83A20" stopOpacity={0.95}/>
@@ -203,7 +236,7 @@ export default function Dashboard() {
                 />
                 <Bar 
                   dataKey="orders" 
-                  fill="url(#orderBarGrad)" 
+                  fill="#B83A20" 
                   radius={[8, 8, 0, 0]} 
                   maxBarSize={48}
                 >
@@ -211,7 +244,7 @@ export default function Dashboard() {
                     dataKey="orders" 
                     position="top" 
                     offset={8}
-                    formatter={(val: number) => (val > 0 ? `${val}` : '')}
+                    formatter={(val: any) => (Number(val) > 0 ? `${val}` : '')}
                     style={{ 
                       fill: '#8A2510', 
                       fontFamily: 'monospace', 
@@ -222,6 +255,7 @@ export default function Dashboard() {
                   {ordersData.map((entry, index) => (
                     <Cell 
                       key={`cell-${index}`} 
+                      fill="url(#orderBarGrad)"
                       className="transition-opacity duration-200 hover:opacity-85 cursor-pointer" 
                     />
                   ))}
