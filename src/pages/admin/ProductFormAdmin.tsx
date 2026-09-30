@@ -30,8 +30,10 @@ export default function ProductFormAdmin() {
   const [spiciness, setSpiciness] = useState<number>(2);
   const [isBestseller, setIsBestseller] = useState<boolean>(false);
   const [hasJarOption, setHasJarOption] = useState<boolean>(true);
+  const [enableDiscount, setEnableDiscount] = useState<boolean>(true);
   const [availableWeights, setAvailableWeights] = useState<number[]>([100, 250, 500, 1000]);
   const [variantPrices, setVariantPrices] = useState<Record<number, string>>({});
+  const [variantOriginalPrices, setVariantOriginalPrices] = useState<Record<number, string>>({});
   const [variantStocks, setVariantStocks] = useState<Record<number, string>>({
     100: '50',
     250: '50',
@@ -89,9 +91,11 @@ export default function ProductFormAdmin() {
           setSpiciness(prod.spiciness || 1);
           setIsBestseller(!!prod.isBestseller);
           setHasJarOption(prod.hasJarOption !== false);
+          setEnableDiscount(prod.enableDiscount !== false);
           setAvailableWeights(prod.availableWeights || [100, 250, 500, 1000]);
 
           const pricesMap: Record<number, string> = {};
+          const origPricesMap: Record<number, string> = {};
           const stocksMap: Record<number, string> = {};
           const activeWeights = prod.availableWeights || (prod.weightGrams ? [Number(prod.weightGrams)] : [100, 250, 500, 1000]);
 
@@ -104,6 +108,16 @@ export default function ProductFormAdmin() {
               pricesMap[w] = '';
             }
 
+            if ((prod as any).variantOriginalPrices && (prod as any).variantOriginalPrices[w] !== undefined) {
+              origPricesMap[w] = String((prod as any).variantOriginalPrices[w]);
+            } else if ((prod as any).weightOriginalPrices && (prod as any).weightOriginalPrices[w] !== undefined) {
+              origPricesMap[w] = String((prod as any).weightOriginalPrices[w]);
+            } else if (prod.originalPrice && w === prod.weightGrams) {
+              origPricesMap[w] = String(prod.originalPrice);
+            } else {
+              origPricesMap[w] = '';
+            }
+
             if ((prod as any).weightStocks && (prod as any).weightStocks[w] !== undefined) {
               stocksMap[w] = String((prod as any).weightStocks[w]);
             } else {
@@ -112,6 +126,7 @@ export default function ProductFormAdmin() {
           });
 
           setVariantPrices(pricesMap);
+          setVariantOriginalPrices(origPricesMap);
           setVariantStocks(stocksMap);
           setAvailableWeights(activeWeights);
 
@@ -201,6 +216,7 @@ export default function ProductFormAdmin() {
       const mainImage = imageList[0] || '';
       
       const weightPricesMap: Record<number, number> = {};
+      const weightOriginalPricesMap: Record<number, number> = {};
       const weightStocksMap: Record<number, number> = {};
 
       for (const w of availableWeights) {
@@ -212,6 +228,11 @@ export default function ProductFormAdmin() {
         }
         weightPricesMap[w] = Number(p);
 
+        const orig = variantOriginalPrices[w];
+        if (orig !== undefined && orig !== null && orig !== '' && !isNaN(Number(orig)) && Number(orig) > Number(p)) {
+          weightOriginalPricesMap[w] = Number(orig);
+        }
+
         const s = variantStocks[w];
         weightStocksMap[w] = (s !== undefined && s !== null && s !== '' && !isNaN(Number(s))) ? Number(s) : 50;
       }
@@ -219,6 +240,7 @@ export default function ProductFormAdmin() {
       // Determine starting weight and starting price
       const startingWeight = availableWeights.length > 0 ? Math.min(...availableWeights) : 100;
       const startingWeightPrice = weightPricesMap[startingWeight] || 0;
+      const startingWeightOriginal = weightOriginalPricesMap[startingWeight] || null;
 
       let totalStock = 0;
       availableWeights.forEach(w => {
@@ -229,12 +251,16 @@ export default function ProductFormAdmin() {
         id: productId,
         name: name.trim(),
         price: Number(startingWeightPrice),
+        originalPrice: startingWeightOriginal,
         weightPrices: weightPricesMap,
+        variantOriginalPrices: weightOriginalPricesMap,
+        weightOriginalPrices: weightOriginalPricesMap,
         weightStocks: weightStocksMap,
         stock: totalStock,
         weightGrams: Number(startingWeight),
         availableWeights: availableWeights,
         hasJarOption: hasJarOption,
+        enableDiscount: enableDiscount,
         type: type,
         spiciness: Number(spiciness),
         isBestseller: isBestseller,
@@ -364,58 +390,82 @@ export default function ProductFormAdmin() {
                       Please select at least one weight variant on the right to configure pricing and stock.
                     </p>
                   ) : (
-                    availableWeights.map(weight => (
-                      <div key={weight} className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-center border-b border-warm-dark/5 last:border-b-0 pb-3 last:pb-0">
-                        <span className="text-xs font-bold uppercase text-warm-dark font-sans">
-                          {weight === 1000 ? '1000g (1kg)' : `${weight}g`} Variant
-                        </span>
-                        <div>
-                          <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Rate (₹)</label>
-                          <input
-                            type="number"
-                            value={variantPrices[weight] || ''}
-                            onChange={e => setVariantPrices(prev => ({ ...prev, [weight]: e.target.value }))}
-                            placeholder="e.g. 250"
-                            className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Stock Level (Qty)</label>
-                          <input
-                            type="number"
-                            value={variantStocks[weight] || ''}
-                            onChange={e => setVariantStocks(prev => ({ ...prev, [weight]: e.target.value }))}
-                            placeholder="50"
-                            disabled={Number(variantStocks[weight] || 0) <= 0}
-                            className={`w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none transition-all ${
-                              Number(variantStocks[weight] || 0) <= 0 ? 'opacity-40 select-none bg-warm-light/20' : ''
-                            }`}
-                          />
-                        </div>
-                        <div className="flex flex-col items-center sm:items-end justify-center pt-3 sm:pt-0">
-                          <span className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1 text-center sm:text-right">Stock Status</span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const inStock = Number(variantStocks[weight] || 0) > 0;
-                              setVariantStocks(prev => ({
-                                ...prev,
-                                [weight]: inStock ? '0' : '50'
-                              }));
-                            }}
-                            className="flex items-center gap-2 cursor-pointer focus:outline-none"
-                          >
-                            <span className={`text-[10px] font-bold uppercase tracking-wider ${Number(variantStocks[weight] || 0) > 0 ? 'text-green-600' : 'text-red-500'}`}>
-                              {Number(variantStocks[weight] || 0) > 0 ? 'In Stock' : 'Out of Stock'}
+                    availableWeights.map(weight => {
+                      const rateVal = Number(variantPrices[weight]) || 0;
+                      const origVal = Number(variantOriginalPrices[weight]) || 0;
+                      const hasDiscount = origVal > rateVal && rateVal > 0;
+                      const pctOff = hasDiscount ? Math.round(((origVal - rateVal) / origVal) * 100) : 0;
+
+                      return (
+                        <div key={weight} className="grid grid-cols-1 sm:grid-cols-5 gap-3 items-center border-b border-warm-dark/5 last:border-b-0 pb-3 last:pb-0">
+                          <div className="flex flex-col">
+                            <span className="text-xs font-bold uppercase text-warm-dark font-sans">
+                              {weight === 1000 ? '1000g (1kg)' : `${weight}g`} Variant
                             </span>
-                            <div className={`w-9 h-5 rounded-full transition-colors relative ${Number(variantStocks[weight] || 0) > 0 ? 'bg-green-500' : 'bg-warm-dark/20'}`}>
-                              <div className={`w-4 h-4 bg-white rounded-full absolute top-0.5 transition-transform ${Number(variantStocks[weight] || 0) > 0 ? 'left-[18px]' : 'left-0.5'}`} />
-                            </div>
-                          </button>
+                            {hasDiscount && (
+                              <span className="text-[9px] font-bold text-red-700 bg-red-100 px-1.5 py-0.5 rounded w-max mt-0.5 font-sans">
+                                {pctOff}% OFF
+                              </span>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Selling Rate (₹)</label>
+                            <input
+                              type="number"
+                              value={variantPrices[weight] || ''}
+                              onChange={e => setVariantPrices(prev => ({ ...prev, [weight]: e.target.value }))}
+                              placeholder="e.g. 250"
+                              className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Original MRP (₹)</label>
+                            <input
+                              type="number"
+                              value={variantOriginalPrices[weight] || ''}
+                              onChange={e => setVariantOriginalPrices(prev => ({ ...prev, [weight]: e.target.value }))}
+                              placeholder="e.g. 300"
+                              className="w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1">Stock Level (Qty)</label>
+                            <input
+                              type="number"
+                              value={variantStocks[weight] || ''}
+                              onChange={e => setVariantStocks(prev => ({ ...prev, [weight]: e.target.value }))}
+                              placeholder="50"
+                              disabled={Number(variantStocks[weight] || 0) <= 0}
+                              className={`w-full bg-white border border-warm-dark/15 rounded-xl p-2.5 font-serif text-sm focus:ring-2 focus:ring-warm-accent/20 focus:border-warm-accent outline-none transition-all ${
+                                Number(variantStocks[weight] || 0) <= 0 ? 'opacity-40 select-none bg-warm-light/20' : ''
+                              }`}
+                            />
+                          </div>
+                          <div className="flex flex-col items-center sm:items-end justify-center pt-3 sm:pt-0">
+                            <span className="block text-[9px] font-bold uppercase tracking-wider text-warm-dark/55 mb-1 text-center sm:text-right">Stock Status</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const inStock = Number(variantStocks[weight] || 0) > 0;
+                                setVariantStocks(prev => ({
+                                  ...prev,
+                                  [weight]: inStock ? '0' : '50'
+                                }));
+                              }}
+                              className="flex items-center gap-2 cursor-pointer focus:outline-none"
+                            >
+                              <span className={`text-[10px] font-bold uppercase tracking-wider ${Number(variantStocks[weight] || 0) > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                                {Number(variantStocks[weight] || 0) > 0 ? 'In Stock' : 'Out of Stock'}
+                              </span>
+                              <div className={`w-9 h-5 rounded-full transition-colors relative ${Number(variantStocks[weight] || 0) > 0 ? 'bg-green-500' : 'bg-warm-dark/20'}`}>
+                                <div className={`w-4 h-4 bg-white rounded-full absolute top-0.5 transition-transform ${Number(variantStocks[weight] || 0) > 0 ? 'left-[18px]' : 'left-0.5'}`} />
+                              </div>
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                 </div>
               </div>
@@ -470,14 +520,30 @@ export default function ProductFormAdmin() {
                 </div>
               </div>
 
-              {/* Bestseller Toggle */}
-              <div className="pt-2">
+              {/* Discount Pricing & Bestseller Toggles */}
+              <div className="pt-2 space-y-3">
+                <label 
+                  onClick={() => setEnableDiscount(!enableDiscount)}
+                  className="p-4 rounded-xl border border-warm-dark/10 bg-warm-light/30 flex items-center justify-between cursor-pointer hover:bg-warm-light/60 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <Sparkles className={`w-5 h-5 ${enableDiscount ? 'text-warm-accent' : 'text-warm-dark/40'}`} />
+                    <div>
+                      <span className="text-xs font-bold uppercase tracking-wider text-warm-dark block">Enable Strikethrough Discount Pricing</span>
+                      <span className="text-[11px] text-warm-dark/60 font-serif italic">Display MRP strikethrough price and savings badge for this product</span>
+                    </div>
+                  </div>
+                  <div className={`w-11 h-6 rounded-full transition-colors relative ${enableDiscount ? 'bg-warm-accent' : 'bg-warm-dark/20'}`}>
+                    <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${enableDiscount ? 'left-[22px]' : 'left-0.5'}`} />
+                  </div>
+                </label>
+
                 <label 
                   onClick={() => setIsBestseller(!isBestseller)}
                   className="p-4 rounded-xl border border-warm-dark/10 bg-warm-light/30 flex items-center justify-between cursor-pointer hover:bg-warm-light/60 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <Sparkles className={`w-5 h-5 ${isBestseller ? 'text-warm-accent' : 'text-warm-dark/40'}`} />
+                    <Flame className={`w-5 h-5 ${isBestseller ? 'text-warm-accent' : 'text-warm-dark/40'}`} />
                     <div>
                       <span className="text-xs font-bold uppercase tracking-wider text-warm-dark block">Tag as Homepage Bestseller</span>
                       <span className="text-[11px] text-warm-dark/60 font-serif italic">Feature this product in the home page curated section</span>

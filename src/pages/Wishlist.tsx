@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import { Heart, Trash2, ShoppingCart, ArrowLeft, Loader2 } from 'lucide-react';
 import SEO from '../components/SEO';
 
+import { getProductStartingPrice, getProductStartingOriginalPrice, getDiscountPercentage } from '../utils/price';
+
 export default function Wishlist() {
   const { wishlist, removeFromWishlist } = useWishlist();
   const { addToCart, setIsCartOpen } = useCart();
@@ -61,10 +63,19 @@ export default function Wishlist() {
                 >
                   <Trash2 className="w-4 h-4 text-warm-dark/60 hover:text-red-600 transition-colors" />
                 </button>
-                <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-warm-dark text-xs font-sans font-black tracking-tight px-3 py-1 rounded-full shadow-sm border border-warm-dark/10 flex items-baseline gap-0.5">
-                  <span className="text-[10px] text-warm-accent font-bold">₹</span>
-                  <span>{product.price}</span>
-                </div>
+                {(() => {
+                  const sp = getProductStartingPrice(product);
+                  const op = getProductStartingOriginalPrice(product);
+                  const pct = getDiscountPercentage(sp, op);
+                  return (
+                    <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-warm-dark text-xs font-sans font-black tracking-tight px-3 py-1 rounded-full shadow-sm border border-warm-dark/10 flex items-baseline gap-1.5">
+                      {op && <span className="line-through text-warm-dark/40 font-serif font-normal text-[10px]">₹{op}</span>}
+                      <span className="text-[10px] text-warm-accent font-bold">₹</span>
+                      <span>{sp}</span>
+                      {pct > 0 && <span className="text-[9px] text-red-700 font-bold bg-red-100 px-1 py-0.2 rounded font-sans">{pct}% OFF</span>}
+                    </div>
+                  );
+                })()}
               </div>
               
               <div className="pt-1 flex flex-col text-left">

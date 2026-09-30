@@ -1,10 +1,14 @@
 export interface SimpleProduct {
   price?: number;
+  originalPrice?: number;
   weightGrams?: number;
   availableWeights?: number[];
   weightPrices?: Record<string | number, number>;
+  variantOriginalPrices?: Record<string | number, number>;
   weightStocks?: Record<string | number, number>;
   stock?: number;
+  enableDiscount?: boolean;
+  discountPercentage?: number;
   [key: string]: any;
 }
 
@@ -33,7 +37,7 @@ export function getAvailableWeights(product: SimpleProduct): number[] {
 }
 
 /**
- * Calculates the unit price for a specific weight and packaging option.
+ * Calculates the unit selling price for a specific weight and packaging option.
  */
 export function getProductUnitPrice(product: SimpleProduct, weight: number, isJar: boolean = false): number {
   const customWeightPrice = product.weightPrices?.[weight];
@@ -49,12 +53,81 @@ export function getProductUnitPrice(product: SimpleProduct, weight: number, isJa
 }
 
 /**
+ * Calculates the original MRP / strikethrough price for a specific weight and packaging option.
+ * Returns null if discount pricing is disabled or if no original MRP is higher than selling price.
+ */
+export function getProductOriginalPrice(
+  product: SimpleProduct,
+  weight: number,
+  isJar: boolean = false,
+  globalDiscountEnabled: boolean = true,
+  globalDiscountPercent: number = 0
+): number | null {
+  if (!globalDiscountEnabled || product.enableDiscount === false) {
+    return null;
+  }
+
+  const sellingPrice = getProductUnitPrice(product, weight, isJar);
+  if (sellingPrice <= 0) return null;
+
+  // 1. Check custom variant original MRP
+  const customVariantOriginal = product.variantOriginalPrices?.[weight] ?? (product as any).weightOriginalPrices?.[weight];
+  if (customVariantOriginal !== undefined && customVariantOriginal !== null && !isNaN(Number(customVariantOriginal))) {
+    const orig = Number(customVariantOriginal) + (isJar ? 100 : 0);
+    if (orig > sellingPrice) return orig;
+  }
+
+  // 2. Check product-level original price
+  if (product.originalPrice !== undefined && product.originalPrice !== null && !isNaN(Number(product.originalPrice))) {
+    const baseWeight = Number(product.weightGrams) || 250;
+    let baseOriginal = Number(product.originalPrice);
+    if (baseWeight > 0 && weight > 0 && baseWeight !== weight) {
+      const ratio = weight / baseWeight;
+      baseOriginal = Math.round(baseOriginal * ratio);
+    }
+    const orig = baseOriginal + (isJar ? 100 : 0);
+    if (orig > sellingPrice) return orig;
+  }
+
+  // 3. Check discount percentage (product level or global store setting)
+  const discountPct = Number(product.discountPercentage) || globalDiscountPercent || 0;
+  if (discountPct > 0 && discountPct < 100) {
+    const computedOriginal = Math.round(sellingPrice / (1 - discountPct / 100));
+    if (computedOriginal > sellingPrice) return computedOriginal;
+  }
+
+  return null;
+}
+
+/**
  * Calculates the lowest starting price ("From price") among all available weights.
  */
 export function getProductStartingPrice(product: SimpleProduct): number {
   const weights = getAvailableWeights(product);
   const prices = weights.map(w => getProductUnitPrice(product, w, false));
   return prices.length > 0 ? Math.min(...prices) : (Number(product.price) || 0);
+}
+
+/**
+ * Calculates the starting original price (strikethrough MRP) for the lowest weight variant.
+ */
+export function getProductStartingOriginalPrice(
+  product: SimpleProduct,
+  globalDiscountEnabled: boolean = true,
+  globalDiscountPercent: number = 0
+): number | null {
+  const weights = getAvailableWeights(product);
+  if (weights.length === 0) return null;
+  const startingWeight = Math.min(...weights);
+  return getProductOriginalPrice(product, startingWeight, false, globalDiscountEnabled, globalDiscountPercent);
+}
+
+/**
+ * Calculates savings percentage between selling price and original price.
+ */
+export function getDiscountPercentage(sellingPrice: number, originalPrice: number | null): number {
+  if (!originalPrice || originalPrice <= sellingPrice || sellingPrice <= 0) return 0;
+  return Math.round(((originalPrice - sellingPrice) / originalPrice) * 100);
 }
 
 /**
@@ -89,4 +162,3 @@ export function isWeightInStock(product: SimpleProduct, weight: number): boolean
   }
   return (Number(product.stock) || 0) > 0;
 }
-

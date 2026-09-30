@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Loader2, CheckCircle2, Globe, Phone, Mail, Bell, ShieldCheck, Image as ImageIcon, Trash2, BookOpen, Crop } from 'lucide-react';
+import { Save, Loader2, CheckCircle2, Globe, Phone, Mail, Bell, ShieldCheck, Image as ImageIcon, Trash2, BookOpen, Crop, Tag, Percent, Sparkles } from 'lucide-react';
 import { db } from '../../firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { supabase } from '../../supabase';
@@ -38,6 +38,8 @@ export default function Settings() {
     testimonialsTitle: 'What Our Customers Say',
     testimonialsDescription: 'Cherished words from homes across India celebrating authentic Andhra flavors.',
     delhiveryWarehouseName: 'Kaaram Kathalu',
+    enableDiscountPricing: true,
+    defaultDiscountPercent: 15,
     valuePropsHeadingColor: '#8B2E0F',
     activeCategories: {
       pickle: true,
@@ -909,6 +911,68 @@ export default function Settings() {
                     onChange={e => setSettings(prev => ({ ...prev, instagramUrl: e.target.value }))}
                     className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-sans text-sm focus:border-warm-accent transition-colors"
                   />
+                </div>
+              </div>
+            </div>
+
+            {/* Discount Pricing & Strike-Off Settings */}
+            <div className="bg-white border border-warm-dark/5 rounded-[24px] overflow-hidden shadow-sm">
+              <div className="bg-warm-light/60 p-4.5 border-b border-warm-dark/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <Tag className="w-5 h-5 text-warm-accent" />
+                  <div>
+                    <h2 className="font-serif font-semibold text-warm-dark uppercase tracking-widest text-sm">Discount & Strikethrough Pricing</h2>
+                    <p className="text-[11px] text-warm-dark/60 font-serif">Toggle MRP strike-off prices and savings badges across your store</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 bg-white px-3.5 py-1.5 rounded-full border border-warm-dark/10 shadow-xs">
+                  <span className="text-xs font-serif font-bold text-warm-dark">
+                    {settings.enableDiscountPricing !== false ? '⚡ Discount Pricing ON' : 'Discount Pricing OFF'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setSettings(prev => ({ ...prev, enableDiscountPricing: !(prev.enableDiscountPricing !== false) }))}
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                      settings.enableDiscountPricing !== false ? 'bg-warm-accent' : 'bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                        settings.enableDiscountPricing !== false ? 'translate-x-5' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div className="bg-warm-light/40 border border-warm-accent/15 p-4 rounded-xl text-xs text-warm-dark/80 font-serif leading-relaxed">
+                  <p>
+                    When <strong>ON</strong>, original MRP strikethrough prices (e.g. <span className="line-through text-warm-dark/40 font-bold mr-1">₹350</span><span className="font-bold text-warm-accent">₹299</span> <span className="bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-sans font-bold">15% OFF</span>) will be displayed on product cards, detail pages, and wishlist.
+                  </p>
+                  <p className="mt-1">
+                    When <strong>OFF</strong>, only the standard selling price is displayed without any strikethroughs or discount badges.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-widest text-warm-dark/60">Global Default Discount % (Optional)</label>
+                    <div className="relative">
+                      <Percent className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-dark/30" />
+                      <input 
+                        type="number" 
+                        min="0"
+                        max="90"
+                        value={settings.defaultDiscountPercent ?? 15}
+                        onChange={e => setSettings(prev => ({ ...prev, defaultDiscountPercent: Number(e.target.value) || 0 }))}
+                        className="w-full px-4 py-2.5 rounded-xl border border-warm-dark/10 bg-warm-light/20 focus:bg-white outline-none font-sans text-sm focus:border-warm-accent transition-colors"
+                        placeholder="15"
+                      />
+                    </div>
+                    <p className="text-[10px] text-warm-dark/50 font-serif italic">Applied to products without explicit custom MRPs when discount pricing is active.</p>
+                  </div>
                 </div>
               </div>
             </div>

@@ -6,7 +6,7 @@ import { collection, query, limit, onSnapshot, where, doc, getDoc } from 'fireba
 import { db } from '../firebase';
 import SEO from '../components/SEO';
 import { useWishlist } from '../context/WishlistContext';
-import { getProductStartingPrice } from '../utils/price';
+import { getProductStartingPrice, getProductStartingOriginalPrice, getDiscountPercentage } from '../utils/price';
 import { formatRichText } from '../utils/richText';
 
 interface ValueProposition {
@@ -533,9 +533,26 @@ export default function Home() {
                   </button>
                 </div>
                 
-                <h3 className="font-serif text-sm sm:text-base text-warm-dark group-hover:text-warm-accent transition-colors leading-snug mb-3 min-h-[2.75rem] sm:min-h-[3.25rem] flex items-center justify-center font-medium px-1">
+                <h3 className="font-serif text-sm sm:text-base text-warm-dark group-hover:text-warm-accent transition-colors leading-snug mb-1.5 min-h-[2.5rem] flex items-center justify-center font-medium px-1">
                   {product.name}
                 </h3>
+
+                {(() => {
+                  const startingPrice = getProductStartingPrice(product);
+                  const startingOriginal = getProductStartingOriginalPrice(product);
+                  const pctOff = getDiscountPercentage(startingPrice, startingOriginal);
+                  return (
+                    <div className="flex items-baseline justify-center gap-1.5 mb-3 flex-wrap">
+                      {startingOriginal && (
+                        <span className="line-through text-warm-dark/40 font-serif text-xs">₹{startingOriginal}</span>
+                      )}
+                      <span className="text-sm sm:text-base font-sans font-black text-warm-dark tracking-tight">₹{startingPrice}</span>
+                      {pctOff > 0 && (
+                        <span className="text-[9px] font-bold text-red-700 bg-red-100 px-1.5 py-0.5 rounded font-sans">{pctOff}% OFF</span>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="w-full flex justify-center mt-auto pb-1">

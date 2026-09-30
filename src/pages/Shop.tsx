@@ -8,7 +8,7 @@ import { collection, onSnapshot, query, doc, getDoc } from 'firebase/firestore';
 import SEO from '../components/SEO';
 import { useWishlist } from '../context/WishlistContext';
 import { Heart } from 'lucide-react';
-import { getProductStartingPrice, getProductStock } from '../utils/price';
+import { getProductStartingPrice, getProductStartingOriginalPrice, getDiscountPercentage, getProductStock } from '../utils/price';
 import { formatRichText } from '../utils/richText';
 
 export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 'snacks' }) {
@@ -216,15 +216,28 @@ export default function Shop({ category }: { category?: 'murukku' | 'namkeen' | 
                   <div className="pt-2 flex flex-col text-left">
                     <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-warm-accent mb-1">{product.type}</span>
                     <h3 className="font-heading font-bold text-sm sm:text-base text-warm-dark group-hover:text-warm-accent transition-colors leading-tight mb-1">{formatRichText(product.name)}</h3>
-                    <div className="flex justify-between items-baseline mt-2 pt-2 border-t border-warm-dark/5">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-[11px] font-sans font-medium text-warm-dark/50 uppercase tracking-wider">From</span>
-                        <span className="text-base font-sans font-black text-warm-dark tracking-tight">₹{getProductStartingPrice(product)}</span>
-                      </div>
-                      <span className="text-[10px] bg-warm-light/90 border border-warm-dark/10 px-2 py-0.5 rounded-md text-warm-dark/70 font-bold font-sans">
-                        {product.weightGrams || 500}g
-                      </span>
-                    </div>
+                    {(() => {
+                      const startingPrice = getProductStartingPrice(product);
+                      const startingOriginal = getProductStartingOriginalPrice(product);
+                      const pctOff = getDiscountPercentage(startingPrice, startingOriginal);
+                      return (
+                        <div className="flex justify-between items-baseline mt-2 pt-2 border-t border-warm-dark/5">
+                          <div className="flex items-baseline gap-1.5 flex-wrap">
+                            <span className="text-[11px] font-sans font-medium text-warm-dark/50 uppercase tracking-wider">From</span>
+                            {startingOriginal && (
+                              <span className="line-through text-warm-dark/40 font-serif text-xs">₹{startingOriginal}</span>
+                            )}
+                            <span className="text-base font-sans font-black text-warm-dark tracking-tight">₹{startingPrice}</span>
+                            {pctOff > 0 && (
+                              <span className="text-[9px] font-bold text-red-700 bg-red-100 px-1.5 py-0.5 rounded font-sans">{pctOff}% OFF</span>
+                            )}
+                          </div>
+                          <span className="text-[10px] bg-warm-light/90 border border-warm-dark/10 px-2 py-0.5 rounded-md text-warm-dark/70 font-bold font-sans">
+                            {product.weightGrams || 500}g
+                          </span>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               </Link>

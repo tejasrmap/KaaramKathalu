@@ -119,8 +119,11 @@ export default function ProductsAdmin() {
                       </span>
                     )}
                   </div>
-                  <div className="absolute top-4 right-4 bg-warm-accent text-white px-2.5 py-1 text-xs font-bold rounded-full shadow-sm">
-                    ₹{product.price}
+                  <div className="absolute top-4 right-4 bg-warm-accent text-white px-3 py-1 text-xs font-bold rounded-full shadow-sm flex items-center gap-1.5">
+                    {product.originalPrice && Number(product.originalPrice) > Number(product.price) && (
+                      <span className="line-through opacity-75 font-serif font-normal text-[11px]">₹{product.originalPrice}</span>
+                    )}
+                    <span>₹{product.price}</span>
                   </div>
                 </div>
                 

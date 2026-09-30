@@ -7,7 +7,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import SEO from '../components/SEO';
-import { getAvailableWeights, getProductUnitPrice, isWeightInStock } from '../utils/price';
+import { getAvailableWeights, getProductUnitPrice, getProductOriginalPrice, getDiscountPercentage, isWeightInStock } from '../utils/price';
 import { formatRichText } from '../utils/richText';
 
 export default function ProductDetail() {
@@ -95,6 +95,8 @@ export default function ProductDetail() {
   const activeImage = imagesList[activeImageIndex] || product.image;
 
   const computedUnitPrice = getProductUnitPrice(product, selectedWeight, isJar);
+  const computedOriginalPrice = getProductOriginalPrice(product, selectedWeight, isJar);
+  const discountPercent = getDiscountPercentage(computedUnitPrice, computedOriginalPrice);
   const selectedWeightInStock = isWeightInStock(product, selectedWeight);
 
   const handleAddToCart = () => {
@@ -175,11 +177,23 @@ export default function ProductDetail() {
 
           {/* Clean, Straight & Highly Readable Price Presentation */}
           <div className="flex flex-wrap items-center gap-3 mb-5">
-            <div className="inline-flex items-baseline gap-1.5 bg-white px-4 py-2 rounded-xl border border-warm-dark/15 shadow-xs">
-              <span className="text-sm font-sans font-bold text-warm-accent">₹</span>
-              <span className="text-2xl font-sans font-extrabold text-warm-dark tracking-tight leading-none">
-                {computedUnitPrice}
-              </span>
+            <div className="inline-flex items-baseline gap-2 bg-white px-4 py-2.5 rounded-xl border border-warm-dark/15 shadow-xs">
+              {computedOriginalPrice && (
+                <span className="line-through text-warm-dark/40 font-serif text-lg font-normal">
+                  ₹{computedOriginalPrice}
+                </span>
+              )}
+              <div className="flex items-baseline gap-0.5">
+                <span className="text-sm font-sans font-bold text-warm-accent">₹</span>
+                <span className="text-2xl font-sans font-extrabold text-warm-dark tracking-tight leading-none">
+                  {computedUnitPrice}
+                </span>
+              </div>
+              {discountPercent > 0 && (
+                <span className="bg-red-100 border border-red-200 text-red-700 text-xs font-bold px-2 py-0.5 rounded-md uppercase tracking-wider font-sans">
+                  {discountPercent}% OFF
+                </span>
+              )}
               <span className="text-xs font-sans font-medium text-warm-dark/60 ml-2 border-l border-warm-dark/15 pl-2.5">
                 Weight: {selectedWeight === 1000 ? '1000g (1kg)' : `${selectedWeight}g`}
               </span>
