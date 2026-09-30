@@ -61,7 +61,7 @@ export function getProductOriginalPrice(
   weight: number,
   isJar: boolean = false,
   globalDiscountEnabled: boolean = true,
-  globalDiscountPercent: number = 15
+  globalDiscountPercent: number = 0
 ): number | null {
   if (!globalDiscountEnabled || product.enableDiscount === false) {
     return null;
@@ -89,10 +89,10 @@ export function getProductOriginalPrice(
     if (orig > sellingPrice) return orig;
   }
 
-  // 3. Fallback: Default discount percentage (product level or global store setting, default 15%)
+  // 3. Fallback: Default discount percentage (product level or global store setting, default 0%)
   const discountPct = (product.discountPercentage !== undefined && product.discountPercentage !== null)
     ? Number(product.discountPercentage)
-    : (globalDiscountPercent || 15);
+    : (globalDiscountPercent || 0);
 
   if (discountPct > 0 && discountPct < 100) {
     const computedOriginal = Math.round(sellingPrice / (1 - discountPct / 100));
@@ -117,7 +117,7 @@ export function getProductStartingPrice(product: SimpleProduct): number {
 export function getProductStartingOriginalPrice(
   product: SimpleProduct,
   globalDiscountEnabled: boolean = true,
-  globalDiscountPercent: number = 15
+  globalDiscountPercent: number = 0
 ): number | null {
   const weights = getAvailableWeights(product);
   if (weights.length === 0) return null;
