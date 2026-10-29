@@ -118,7 +118,7 @@ export async function fetchPincodeDetails(pin: string): Promise<PincodeDetails |
   // 2. Fallback to Delhivery serviceability API
   try {
     const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'https://kaaramkathalu.in'
+      ? 'https://www.kaaramkathalu.in'
       : '';
     const serviceabilityRes = await fetch(`${host}/api/shipping?type=serviceability&pin=${cleanPin}`);
     if (serviceabilityRes.ok) {

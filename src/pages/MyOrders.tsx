@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
 import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore';
-import { Package, Truck, CheckCircle, Clock, ArrowRight, Loader2, ShoppingBag, ShieldCheck, MapPin, CornerDownRight, AlertCircle } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, ArrowRight, Loader2, ShoppingBag, ShieldCheck, MapPin, CornerDownRight, AlertCircle, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { motion, AnimatePresence } from 'motion/react';
+import { getApiHost, verifyOrderPaymentStatus } from '../utils/paymentUtils';
 
 export default function MyOrders() {
   const { user, isLoading: authLoading } = useAuth();
@@ -16,6 +17,17 @@ export default function MyOrders() {
   const [activeTracking, setActiveTracking] = useState<{ [key: string]: any }>({});
   const [trackingError, setTrackingError] = useState<{ [key: string]: string }>({});
   const [loadingTracking, setLoadingTracking] = useState<{ [key: string]: boolean }>({});
+  const [verifyingPayment, setVerifyingPayment] = useState<{ [key: string]: boolean }>({});
+  const autoVerifiedOrdersRef = useRef<Set<string>>(new Set());
+
+  const handleVerifyPayment = async (orderId: string) => {
+    setVerifyingPayment(prev => ({ ...prev, [orderId]: true }));
+    try {
+      await verifyOrderPaymentStatus(orderId);
+    } finally {
+      setVerifyingPayment(prev => ({ ...prev, [orderId]: false }));
+    }
+  };
 
   const fetchTracking = async (orderId: string, waybill: string) => {
     if (activeTracking[orderId]) {
@@ -29,9 +41,7 @@ export default function MyOrders() {
 
 
     try {
-      const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? 'https://kaaramkathalu.in'
-        : '';
+      const host = getApiHost();
 
       const response = await fetch(`${host}/api/shipping?type=track&waybill=${waybill}`);
       if (!response.ok) {
@@ -163,8 +173,20 @@ export default function MyOrders() {
         return timeB - timeA;
       });
 
-      setOrders(ordersData);
+      const visibleOrders = ordersData.filter(
+        o => !o.isDeleted && !o.deleted && o.status !== 'DELETED'
+      );
+
+      setOrders(visibleOrders);
       setIsLoading(false);
+
+      // Automatically reconcile any payment_pending orders against PhonePe V2
+      visibleOrders.forEach(o => {
+        if (o.status === 'payment_pending' && !autoVerifiedOrdersRef.current.has(o.id)) {
+          autoVerifiedOrdersRef.current.add(o.id);
+          handleVerifyPayment(o.id);
+        }
+      });
     }, (error) => {
       console.error("Error fetching orders:", error);
       setIsLoading(false);
@@ -183,6 +205,18 @@ export default function MyOrders() {
           icon: <AlertCircle className="w-3.5 h-3.5" />,
           label: 'Cancelled'
         };
+      case 'payment_failed':
+        return {
+          bg: 'bg-red-50 text-red-700 border-red-200/50',
+          icon: <AlertCircle className="w-3.5 h-3.5" />,
+          label: 'Payment Failed'
+        };
+      case 'payment_pending':
+        return {
+          bg: 'bg-amber-50 text-amber-700 border-amber-200/50',
+          icon: <Clock className="w-3.5 h-3.5" />,
+          label: 'Payment Pending'
+        };
       case 'delivered':
         return {
           bg: 'bg-green-50 text-green-700 border-green-200/50',
@@ -196,6 +230,7 @@ export default function MyOrders() {
           label: 'In Transit'
         };
       case 'processing':
+      case 'pending':
         return {
           bg: 'bg-blue-50 text-blue-700 border-blue-200/50',
           icon: <Clock className="w-3.5 h-3.5" />,
@@ -205,7 +240,7 @@ export default function MyOrders() {
         return {
           bg: 'bg-amber-50 text-amber-700 border-amber-200/50',
           icon: <Clock className="w-3.5 h-3.5" />,
-          label: status || 'Pending'
+          label: status || 'Processing'
         };
     }
   };
@@ -317,6 +352,18 @@ export default function MyOrders() {
                       >
                         View Details
                       </Link>
+
+                      {order.status === 'payment_pending' && (
+                        <button
+                          type="button"
+                          disabled={verifyingPayment[order.id]}
+                          onClick={() => handleVerifyPayment(order.id)}
+                          className="inline-flex items-center justify-center gap-1.5 bg-amber-50 hover:bg-amber-100 disabled:opacity-60 text-amber-800 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase border border-amber-200 cursor-pointer flex-1 md:w-full transition-colors font-heading tracking-wider shadow-xs"
+                        >
+                          <RefreshCw className={`w-3.5 h-3.5 ${verifyingPayment[order.id] ? 'animate-spin' : ''}`} />
+                          {verifyingPayment[order.id] ? 'Checking...' : 'Verify Payment'}
+                        </button>
+                      )}
 
                       {order.waybill && (
                         <div className="flex-1 md:w-full space-y-2 pt-2 sm:pt-0 md:pt-2 border-t sm:border-t-0 md:border-t border-warm-dark/10">

@@ -17,6 +17,16 @@ function getFieldValue(field) {
   return null;
 }
 
+function resolveCanonicalAppUrl(req) {
+  let raw = (process.env.APP_URL || (req.headers.host ? `https://${req.headers.host}` : 'https://www.kaaramkathalu.in'))
+    .trim()
+    .replace(/\/+$/, '');
+  if (raw === 'https://kaaramkathalu.in' || raw === 'http://kaaramkathalu.in') {
+    return 'https://www.kaaramkathalu.in';
+  }
+  return raw;
+}
+
 // Fetch PhonePe OAuth Token helper
 async function getOAuthToken(clientId, clientSecret, clientVersion, env) {
   const postData = new URLSearchParams({
@@ -118,7 +128,7 @@ export default async function handler(req, res) {
     const clientSecret = process.env.PHONEPE_CLIENT_SECRET;
     const clientVersion = process.env.PHONEPE_CLIENT_VERSION || '1';
     const env = process.env.PHONEPE_ENV || 'production';
-    const appUrl = process.env.APP_URL || (req.headers.host ? `https://${req.headers.host}` : 'https://www.kaaramkathalu.in');
+    const appUrl = resolveCanonicalAppUrl(req);
 
     if (!clientId || !clientSecret) {
       return res.status(500).json({ error: 'PhonePe V2 credentials are not configured on the server.' });

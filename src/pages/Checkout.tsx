@@ -4,11 +4,12 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp, runTransaction, doc, getDoc, query, where, limit, getDocs, updateDoc, onSnapshot, setDoc } from 'firebase/firestore';
-import { ArrowLeft, Package, Send, CheckCircle2, AlertTriangle, Loader2, Truck, Zap } from 'lucide-react';
+import { ArrowLeft, Package, Send, CheckCircle2, AlertTriangle, Loader2, Truck, Zap, Clock, RefreshCw } from 'lucide-react';
 import SEO from '../components/SEO';
 import { motion } from 'motion/react';
 import { usePopups } from '../context/PopupContext';
 import { fetchPincodeDetails } from '../utils/pincode';
+import { getApiHost, verifyOrderPaymentStatus } from '../utils/paymentUtils';
 
 export default function Checkout() {
   const { cart, cartTotal, clearCart } = useCart();
@@ -24,9 +25,17 @@ export default function Checkout() {
   const [isSuccess, setIsSuccess] = useState(() => {
     return sessionStorage.getItem('kk_checkout_success') === 'true' || searchParams.get('status') === 'success';
   });
+  const [confirmedOrderId, setConfirmedOrderId] = useState<string>(() => {
+    return searchParams.get('id') || sessionStorage.getItem('kk_checkout_order_id') || "";
+  });
   const [successWaybill, setSuccessWaybill] = useState<string>(() => {
     return sessionStorage.getItem('kk_checkout_waybill') || searchParams.get('waybill') || "";
   });
+  const [paymentPending, setPaymentPending] = useState(() => searchParams.get('status') === 'pending');
+  const [pendingVerifyOrderId, setPendingVerifyOrderId] = useState<string | null>(() =>
+    searchParams.get('status') === 'pending' ? searchParams.get('id') : null
+  );
+  const [isManualVerifying, setIsManualVerifying] = useState(false);
   const [paymentFailed, setPaymentFailed] = useState(false);
   const [failedOrderId, setFailedOrderId] = useState<string | null>(null);
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
@@ -99,9 +108,7 @@ export default function Checkout() {
       }
 
       try {
-        const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-          ? 'https://kaaramkathalu.in' 
-          : '';
+        const host = getApiHost();
 
         // 1. Verify Pincode Serviceability
         const serviceabilityUrl = `${host}/api/shipping?type=serviceability&pin=${pin}`;
@@ -201,33 +208,115 @@ export default function Checkout() {
     sessionStorage.setItem('kk_checkout_show_new_address_form', showNewAddressForm ? 'true' : 'false');
   }, [showNewAddressForm]);
 
+  const completeCheckoutSuccess = React.useCallback((ordId: string, awb?: string) => {
+    setIsSuccess(true);
+    setPaymentPending(false);
+    setPaymentFailed(false);
+    setConfirmedOrderId(ordId);
+    setSuccessWaybill(awb || "");
+    sessionStorage.setItem('kk_checkout_success', 'true');
+    sessionStorage.setItem('kk_checkout_order_id', ordId);
+    if (awb) {
+      sessionStorage.setItem('kk_checkout_waybill', awb);
+    }
+    sessionStorage.removeItem('kk_pending_order_id');
+    clearCart();
+    sessionStorage.removeItem('kk_checkout_form');
+    sessionStorage.removeItem('kk_checkout_selected_address_id');
+    sessionStorage.removeItem('kk_checkout_show_new_address_form');
+  }, [clearCart]);
+
   React.useEffect(() => {
-    // If there are items in the cart and we are NOT in a successful callback, clear old success state
-    if (cart.length > 0 && status !== 'success') {
+    // If there are items in the cart and we are NOT in a successful/pending callback, clear old success state
+    if (cart.length > 0 && status !== 'success' && status !== 'pending' && !sessionStorage.getItem('kk_pending_order_id')) {
       sessionStorage.removeItem('kk_checkout_success');
+      sessionStorage.removeItem('kk_checkout_order_id');
       sessionStorage.removeItem('kk_checkout_waybill');
       setIsSuccess(false);
+      setConfirmedOrderId("");
       setSuccessWaybill("");
     }
   }, [cart, status]);
 
   React.useEffect(() => {
     if (status === 'success' && successOrderId) {
-      setIsSuccess(true);
-      setSuccessWaybill(waybill || "");
-      sessionStorage.setItem('kk_checkout_success', 'true');
-      if (waybill) {
-        sessionStorage.setItem('kk_checkout_waybill', waybill);
+      completeCheckoutSuccess(successOrderId, waybill || "");
+      if (!waybill) {
+        verifyOrderPaymentStatus(successOrderId).then(res => {
+          if (res?.waybill) {
+            setSuccessWaybill(res.waybill);
+            sessionStorage.setItem('kk_checkout_waybill', res.waybill);
+          }
+        });
       }
-      clearCart();
-      sessionStorage.removeItem('kk_checkout_form');
-      sessionStorage.removeItem('kk_checkout_selected_address_id');
-      sessionStorage.removeItem('kk_checkout_show_new_address_form');
+    } else if (status === 'pending' && successOrderId) {
+      setPaymentPending(true);
+      setPendingVerifyOrderId(successOrderId);
+      setPaymentFailed(false);
     } else if (status === 'failure') {
+      sessionStorage.removeItem('kk_pending_order_id');
+      setPaymentPending(false);
       setPaymentFailed(true);
       setFailedOrderId(successOrderId);
     }
-  }, [status, successOrderId, waybill, clearCart]);
+  }, [status, successOrderId, waybill, completeCheckoutSuccess]);
+
+  // Poll / auto-reconcile when PhonePe returned PENDING or user returned from mobile UPI app without redirect
+  React.useEffect(() => {
+    let cancelled = false;
+    let pollTimer: ReturnType<typeof setTimeout> | null = null;
+    let attempts = 0;
+
+    const checkOrder = async (targetOrderId: string, shouldPollIfPending: boolean) => {
+      const res = await verifyOrderPaymentStatus(targetOrderId);
+      if (cancelled || !res) return;
+
+      if (res.state === 'COMPLETED') {
+        completeCheckoutSuccess(targetOrderId, res.waybill || "");
+        navigate(`/checkout?status=success&id=${targetOrderId}${res.waybill ? `&waybill=${res.waybill}` : ''}`, { replace: true });
+      } else if (res.state === 'FAILED' || res.state === 'ORDER_NOT_FOUND') {
+        sessionStorage.removeItem('kk_pending_order_id');
+        if (paymentPending) {
+          setPaymentPending(false);
+          setPaymentFailed(true);
+          setFailedOrderId(targetOrderId);
+          navigate(`/checkout?status=failure&id=${targetOrderId}`, { replace: true });
+        }
+      } else if (res.state === 'PENDING' && shouldPollIfPending && attempts < 20) {
+        attempts += 1;
+        setPaymentPending(true);
+        setPendingVerifyOrderId(targetOrderId);
+        pollTimer = setTimeout(() => checkOrder(targetOrderId, true), 3000);
+      }
+    };
+
+    const activePendingId = (status === 'pending' && successOrderId)
+      ? successOrderId
+      : (!status ? sessionStorage.getItem('kk_pending_order_id') : null);
+
+    if (activePendingId) {
+      checkOrder(activePendingId, true);
+    }
+
+    const handleVisibilityOrPageShow = () => {
+      if (document.visibilityState === 'visible') {
+        const storedPending = sessionStorage.getItem('kk_pending_order_id');
+        if (storedPending && !isSuccess) {
+          checkOrder(storedPending, true);
+        }
+      }
+    };
+
+    window.addEventListener('pageshow', handleVisibilityOrPageShow);
+    document.addEventListener('visibilitychange', handleVisibilityOrPageShow);
+
+    return () => {
+      cancelled = true;
+      if (pollTimer) clearTimeout(pollTimer);
+      window.removeEventListener('pageshow', handleVisibilityOrPageShow);
+      document.removeEventListener('visibilitychange', handleVisibilityOrPageShow);
+    };
+  }, [status, successOrderId, paymentPending, isSuccess, completeCheckoutSuccess, navigate]);
 
   const hasLoadedInitialData = React.useRef(sessionStorage.getItem('kk_checkout_form') !== null);
 
@@ -284,7 +373,7 @@ export default function Checkout() {
     return unsubscribe;
   }, [user]);
 
-  if (!user && !isSuccess) {
+  if (!user && !isSuccess && !paymentPending && !paymentFailed) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center max-w-2xl mx-auto">
         <AlertTriangle className="w-16 h-16 text-warm-accent mb-6 opacity-80" />
@@ -299,7 +388,7 @@ export default function Checkout() {
     );
   }
 
-  if (cart.length === 0 && !isSuccess) {
+  if (cart.length === 0 && !isSuccess && !paymentPending && !paymentFailed) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
         <h2 className="text-3xl font-serif text-warm-dark mb-4">Your basket is empty</h2>
@@ -512,9 +601,7 @@ export default function Checkout() {
       }
 
       // 4. Request PhonePe Redirect URL from Backend API Proxy
-      const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-        ? 'http://localhost:3000' 
-        : '';
+      const host = getApiHost();
         
       const response = await fetch(`${host}/api/pay`, {
         method: 'POST',
@@ -531,6 +618,8 @@ export default function Checkout() {
 
       const payData = await response.json();
       if (payData.url) {
+        // Track pending orderId so returning from mobile UPI app auto-verifies completion
+        sessionStorage.setItem('kk_pending_order_id', orderId);
         // Redirect to PhonePe payment page
         window.location.href = payData.url;
       } else {
@@ -550,6 +639,70 @@ export default function Checkout() {
       [e.target.name]: e.target.value
     }));
   };
+
+  if (paymentPending) {
+    const targetOrderId = pendingVerifyOrderId || successOrderId || sessionStorage.getItem('kk_pending_order_id') || '';
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center max-w-2xl mx-auto">
+        <div className="w-24 h-24 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mb-8 border border-amber-100 shadow-sm">
+          <Clock className="w-12 h-12 animate-pulse" />
+        </div>
+
+        <h2 className="text-4xl md:text-5xl font-serif text-warm-dark mb-4">
+          Confirming Your Payment...
+        </h2>
+
+        {targetOrderId && (
+          <p className="text-sm font-heading font-black tracking-widest text-warm-accent uppercase mb-4">
+            Order ID: {targetOrderId}
+          </p>
+        )}
+
+        <p className="text-warm-dark/60 mb-8 font-serif italic text-lg leading-relaxed">
+          We are waiting for payment confirmation from PhonePe / your UPI app. Please approve the payment in your UPI app if you haven't already — this page will update automatically.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-4">
+          {targetOrderId && (
+            <button
+              type="button"
+              disabled={isManualVerifying}
+              onClick={async () => {
+                setIsManualVerifying(true);
+                try {
+                  const res = await verifyOrderPaymentStatus(targetOrderId);
+                  if (res?.state === 'COMPLETED') {
+                    completeCheckoutSuccess(targetOrderId, res.waybill || '');
+                    navigate(`/checkout?status=success&id=${targetOrderId}${res.waybill ? `&waybill=${res.waybill}` : ''}`, { replace: true });
+                  } else if (res?.state === 'FAILED') {
+                    sessionStorage.removeItem('kk_pending_order_id');
+                    setPaymentPending(false);
+                    setPaymentFailed(true);
+                    setFailedOrderId(targetOrderId);
+                    navigate(`/checkout?status=failure&id=${targetOrderId}`, { replace: true });
+                  } else {
+                    showToast('Payment is still awaiting confirmation from PhonePe.', 'info');
+                  }
+                } finally {
+                  setIsManualVerifying(false);
+                }
+              }}
+              className="px-8 py-4 bg-warm-accent hover:bg-warm-accent/90 disabled:opacity-60 text-white rounded-full font-bold tracking-widest uppercase text-xs transition-colors shadow-sm cursor-pointer inline-flex items-center justify-center gap-2"
+            >
+              <RefreshCw className={`w-4 h-4 ${isManualVerifying ? 'animate-spin' : ''}`} />
+              {isManualVerifying ? 'Checking...' : 'Check Payment Status'}
+            </button>
+          )}
+          <Link
+            to="/my-orders"
+            className="px-8 py-4 bg-white hover:bg-warm-light/40 border border-warm-dark/15 text-warm-dark rounded-full font-bold tracking-widest uppercase text-xs transition-colors shadow-sm cursor-pointer flex items-center justify-center"
+          >
+            View My Orders
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (paymentFailed) {
     return (
@@ -629,14 +782,14 @@ export default function Checkout() {
           Order Placed Successfully!
         </motion.h2>
 
-        {successOrderId && (
+        {(successOrderId || confirmedOrderId) && (
           <motion.p
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.25 }}
             className="text-sm font-heading font-black tracking-widest text-warm-accent uppercase mb-4"
           >
-            Order ID: {successOrderId}
+            Order ID: {successOrderId || confirmedOrderId}
           </motion.p>
         )}
 

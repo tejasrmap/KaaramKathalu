@@ -44,7 +44,7 @@ export async function syncOrderTrackingStatus(orderId: string, waybill: string, 
 
   try {
     const host = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-      ? 'https://kaaramkathalu.in'
+      ? 'https://www.kaaramkathalu.in'
       : '';
 
     const response = await fetch(`${host}/api/shipping?type=track&waybill=${waybill}`);

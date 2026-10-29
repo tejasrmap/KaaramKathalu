@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import { isDeliveredStatus, isCancelledStatus } from '../utils/trackingUtils';
+import { getApiHost, verifyOrderPaymentStatus } from '../utils/paymentUtils';
 import { 
   ArrowLeft, Package, MapPin, Calendar, Clock, Truck, 
-  CheckCircle, ShieldCheck, Loader2, FileText, Printer, AlertCircle, CornerDownRight 
+  CheckCircle, ShieldCheck, Loader2, FileText, Printer, AlertCircle, CornerDownRight, RefreshCw 
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { motion } from 'motion/react';
@@ -33,6 +34,17 @@ export default function OrderDetail() {
   const [trackingInfo, setTrackingInfo] = useState<TrackingData | null>(null);
   const [trackingLoading, setTrackingLoading] = useState(false);
   const [trackingError, setTrackingError] = useState<string | null>(null);
+  const [isVerifyingPayment, setIsVerifyingPayment] = useState(false);
+  const hasAutoVerifiedRef = useRef(false);
+
+  const handleVerifyPayment = async (orderId: string) => {
+    setIsVerifyingPayment(true);
+    try {
+      await verifyOrderPaymentStatus(orderId);
+    } finally {
+      setIsVerifyingPayment(false);
+    }
+  };
 
   useEffect(() => {
     if (authLoading) return;
@@ -40,16 +52,14 @@ export default function OrderDetail() {
       navigate('/login');
       return;
     }
+    if (!id) return;
 
-    const fetchOrderDetails = async () => {
-      if (!id) return;
-      try {
-        const docRef = doc(db, 'orders', id);
-        const docSnap = await getDoc(docRef);
-        
+    const docRef = doc(db, 'orders', id);
+    const unsubscribe = onSnapshot(
+      docRef,
+      (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
-          // Verify ownership or admin status if needed
           if (data.userId === user.uid || data.customer?.email === user.email) {
             setOrder({
               id: docSnap.id,
@@ -62,6 +72,11 @@ export default function OrderDetail() {
                 minute: '2-digit'
               }) : 'Recent'
             });
+
+            if (data.status === 'payment_pending' && !hasAutoVerifiedRef.current) {
+              hasAutoVerifiedRef.current = true;
+              handleVerifyPayment(docSnap.id);
+            }
           } else {
             console.warn("Unauthorized access to order:", id);
             navigate('/my-orders');
@@ -70,28 +85,27 @@ export default function OrderDetail() {
           console.warn("Order not found:", id);
           navigate('/my-orders');
         }
-      } catch (err) {
+        setOrderLoading(false);
+      },
+      (err) => {
         console.error("Error fetching order details:", err);
-      } finally {
         setOrderLoading(false);
       }
-    };
+    );
 
-    fetchOrderDetails();
+    return unsubscribe;
   }, [id, user, authLoading, navigate]);
 
   // Fetch live tracking from Delhivery if waybill is present
   useEffect(() => {
-    if (!order || !order.waybill) return;
+    if (!order?.id || !order?.waybill) return;
 
     const fetchLiveTracking = async () => {
       setTrackingLoading(true);
       setTrackingError(null);
 
       try {
-        const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-          ? 'https://kaaramkathalu.in'
-          : '';
+        const host = getApiHost();
         
         const response = await fetch(`${host}/api/shipping?type=track&waybill=${order.waybill}`);
         if (!response.ok) {
@@ -166,7 +180,7 @@ export default function OrderDetail() {
     };
 
     fetchLiveTracking();
-  }, [order]);
+  }, [order?.id, order?.waybill]);
 
   const getStatusDetails = (status?: string) => {
     const s = (status || 'pending').toLowerCase();
@@ -177,6 +191,18 @@ export default function OrderDetail() {
           bg: 'bg-red-50 text-red-700 border-red-200/50',
           icon: <AlertCircle className="w-4 h-4" />,
           label: 'Cancelled'
+        };
+      case 'payment_failed':
+        return {
+          bg: 'bg-red-50 text-red-700 border-red-200/50',
+          icon: <AlertCircle className="w-4 h-4" />,
+          label: 'Payment Failed'
+        };
+      case 'payment_pending':
+        return {
+          bg: 'bg-amber-50 text-amber-700 border-amber-200/50',
+          icon: <Clock className="w-4 h-4" />,
+          label: 'Payment Pending'
         };
       case 'delivered': 
         return {
@@ -190,7 +216,8 @@ export default function OrderDetail() {
           icon: <Truck className="w-4 h-4" />,
           label: 'In Transit'
         };
-      case 'processing': 
+      case 'processing':
+      case 'pending':
         return {
           bg: 'bg-blue-50 text-blue-700 border-blue-200/50',
           icon: <Clock className="w-4 h-4" />,
@@ -200,7 +227,7 @@ export default function OrderDetail() {
         return {
           bg: 'bg-amber-50 text-amber-700 border-amber-200/50',
           icon: <Clock className="w-4 h-4" />,
-          label: status || 'Pending'
+          label: status || 'Processing'
         };
     }
   };
@@ -252,6 +279,17 @@ export default function OrderDetail() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center w-full md:w-auto">
+              {order.status === 'payment_pending' && (
+                <button
+                  type="button"
+                  disabled={isVerifyingPayment}
+                  onClick={() => handleVerifyPayment(order.id)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-heading font-black uppercase tracking-wider bg-amber-100 hover:bg-amber-200 disabled:opacity-60 text-amber-900 border border-amber-300 transition-colors cursor-pointer"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isVerifyingPayment ? 'animate-spin' : ''}`} />
+                  {isVerifyingPayment ? 'Checking...' : 'Verify Payment'}
+                </button>
+              )}
               <div className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-heading font-black uppercase tracking-wider border ${statusInfo.bg}`}>
                 {statusInfo.icon}
                 {statusInfo.label}

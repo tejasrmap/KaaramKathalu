@@ -73,6 +73,141 @@ async function getOAuthToken(clientId, clientSecret, clientVersion, env) {
   return data.access_token;
 }
 
+function resolveCanonicalAppUrl(req) {
+  let raw = (process.env.APP_URL || (req.headers.host ? `https://${req.headers.host}` : 'https://www.kaaramkathalu.in'))
+    .trim()
+    .replace(/\/+$/, '');
+  if (raw === 'https://kaaramkathalu.in' || raw === 'http://kaaramkathalu.in') {
+    return 'https://www.kaaramkathalu.in';
+  }
+  return raw;
+}
+
+function extractMerchantOrderId(req) {
+  const fromQuery = req.query?.merchantOrderId || req.query?.orderId || req.query?.transactionId || req.query?.id;
+  if (fromQuery) return String(fromQuery).trim();
+
+  if (!req.body) return null;
+
+  let payload = req.body;
+  if (typeof payload === 'string') {
+    const trimmed = payload.trim();
+    if (trimmed.startsWith('{')) {
+      try {
+        payload = JSON.parse(trimmed);
+      } catch {}
+    } else if (trimmed.includes('=')) {
+      const params = new URLSearchParams(trimmed);
+      const formId = params.get('merchantOrderId') || params.get('transactionId') || params.get('orderId') || params.get('id');
+      if (formId) return formId.trim();
+      const respParam = params.get('response');
+      if (respParam) {
+        payload = { response: respParam };
+      }
+    }
+  }
+
+  if (payload && typeof payload === 'object') {
+    // 1. PhonePe PG Checkout V2 S2S Webhook JSON: { event: "checkout.order.completed", payload: { merchantOrderId: "KK..." } }
+    if (payload.payload?.merchantOrderId) {
+      return String(payload.payload.merchantOrderId).trim();
+    }
+    // 2. Nested data object
+    if (payload.data?.merchantOrderId) {
+      return String(payload.data.merchantOrderId).trim();
+    }
+    if (payload.data?.merchantTransactionId) {
+      return String(payload.data.merchantTransactionId).trim();
+    }
+    // 3. Direct top-level properties (ignore PhonePe internal OMO* orderId)
+    if (payload.merchantOrderId) {
+      return String(payload.merchantOrderId).trim();
+    }
+    if (payload.merchantTransactionId) {
+      return String(payload.merchantTransactionId).trim();
+    }
+    if (payload.transactionId) {
+      return String(payload.transactionId).trim();
+    }
+    if (payload.orderId && !String(payload.orderId).startsWith('OMO')) {
+      return String(payload.orderId).trim();
+    }
+    // 4. PhonePe V1 Base64 S2S payload fallback
+    if (payload.response && typeof payload.response === 'string') {
+      try {
+        const decoded = JSON.parse(Buffer.from(payload.response, 'base64').toString('utf-8'));
+        const responseData = decoded.data || decoded.payload || decoded || {};
+        const v1Id = responseData.merchantOrderId || responseData.merchantTransactionId;
+        if (v1Id) return String(v1Id).trim();
+      } catch (err) {
+        console.error("Failed to decode base64 S2S callback payload:", err);
+      }
+    }
+  }
+
+  return null;
+}
+
+async function adjustProductInventory(projectId, firebaseApiKey, items, deltaMultiplier) {
+  for (const item of items) {
+    if (!item.docId || !item.quantity) continue;
+    try {
+      const productUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/products/${item.docId}?key=${firebaseApiKey}`;
+      const prodRes = await fetch(productUrl);
+      if (!prodRes.ok) continue;
+
+      const prodData = await prodRes.json();
+      const qtyDelta = Number(item.quantity) * deltaMultiplier;
+      const itemWeight = String(item.weightGrams || item.selectedWeight || 500);
+      const rawWeightStocks = prodData.fields?.weightStocks?.mapValue?.fields;
+
+      if (rawWeightStocks && rawWeightStocks[itemWeight] !== undefined) {
+        const updatedMapFields = { ...rawWeightStocks };
+        const prevVariantStock = getFieldValue(rawWeightStocks[itemWeight]) || 0;
+        updatedMapFields[itemWeight] = {
+          integerValue: String(Math.max(0, prevVariantStock + qtyDelta))
+        };
+
+        const availableWeights = getFieldValue(prodData.fields?.availableWeights) || [250, 500, 1000];
+        let totalStock = 0;
+        let hasVariantStocks = false;
+        for (const w of availableWeights) {
+          const wf = updatedMapFields[String(w)];
+          if (wf !== undefined && wf !== null) {
+            totalStock += getFieldValue(wf) || 0;
+            hasVariantStocks = true;
+          }
+        }
+        const fallbackTotal = Math.max(0, (getFieldValue(prodData.fields?.stock) || 0) + qtyDelta);
+
+        await fetch(`${productUrl}&updateMask.fieldPaths=weightStocks&updateMask.fieldPaths=stock`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fields: {
+              weightStocks: { mapValue: { fields: updatedMapFields } },
+              stock: { integerValue: String(hasVariantStocks ? totalStock : fallbackTotal) }
+            }
+          })
+        });
+      } else {
+        const currentStock = getFieldValue(prodData.fields?.stock) || 0;
+        await fetch(`${productUrl}&updateMask.fieldPaths=stock`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fields: {
+              stock: { integerValue: String(Math.max(0, currentStock + qtyDelta)) }
+            }
+          })
+        });
+      }
+    } catch (invErr) {
+      console.error(`Failed to adjust stock for product docId ${item.docId}:`, invErr);
+    }
+  }
+}
+
 export default async function handler(req, res) {
   // CORS Headers
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -88,38 +223,21 @@ export default async function handler(req, res) {
     return;
   }
 
-  const appUrl = process.env.APP_URL || (req.headers.host ? `https://${req.headers.host}` : 'https://www.kaaramkathalu.in');
-  
-  let orderId = req.query.merchantOrderId || req.query.orderId || req.query.transactionId || req.query.id;
-  let isS2SCallback = req.method === 'POST';
+  const appUrl = resolveCanonicalAppUrl(req);
+  const isBrowserFormPost =
+    req.method === 'POST' &&
+    String(req.headers['content-type'] || '').includes('application/x-www-form-urlencoded') &&
+    String(req.headers['accept'] || '').includes('text/html');
+  const wantsJson =
+    req.query?.format === 'json' ||
+    (req.method === 'POST' && !isBrowserFormPost);
+
+  const orderId = extractMerchantOrderId(req);
 
   try {
-    // 1. If it's a POST request (S2S Callback), decode request body response payload to get orderId
-    if (req.method === 'POST' && req.body) {
-      let payload = req.body;
-      if (typeof payload === 'string') {
-        try {
-          payload = JSON.parse(payload);
-        } catch {}
-      }
-      
-      const base64Response = payload.response;
-      if (base64Response) {
-        try {
-          const decoded = JSON.parse(Buffer.from(base64Response, 'base64').toString('utf-8'));
-          const responseData = decoded.data || {};
-          if (responseData.merchantOrderId) {
-            orderId = responseData.merchantOrderId;
-          }
-        } catch (err) {
-          console.error("Failed to decode S2S callback body payload:", err);
-        }
-      }
-    }
-
     if (!orderId) {
       console.error("PhonePe callback received without a valid orderId. Method:", req.method, "Query:", req.query);
-      if (isS2SCallback) {
+      if (wantsJson) {
         return res.status(400).json({ error: "Missing orderId" });
       } else {
         res.writeHead(302, { Location: `${appUrl}/checkout?status=failure` });
@@ -145,7 +263,7 @@ export default async function handler(req, res) {
       ? 'https://api.phonepe.com'
       : 'https://api-preprod.phonepe.com';
     
-    const statusUrl = `${phonepeHost}/apis/pg/checkout/v2/order/${orderId}/status`;
+    const statusUrl = `${phonepeHost}/apis/pg/checkout/v2/order/${encodeURIComponent(orderId)}/status`;
     const statusRes = await fetch(statusUrl, {
       method: 'GET',
       headers: {
@@ -156,37 +274,76 @@ export default async function handler(req, res) {
 
     if (!statusRes.ok) {
       const errText = await statusRes.text();
+      if ((statusRes.status === 400 || statusRes.status === 404) && errText.includes('ORDER_NOT_FOUND')) {
+        console.warn(`PhonePe order not found for ${orderId}: ${errText}`);
+        if (wantsJson) {
+          return res.status(200).json({ success: false, state: 'ORDER_NOT_FOUND', orderId });
+        } else {
+          res.writeHead(302, { Location: `${appUrl}/checkout?status=failure&id=${orderId}` });
+          res.end();
+          return;
+        }
+      }
       throw new Error(`PhonePe status query failed for order ${orderId}: ${statusRes.status} - ${errText}`);
     }
 
     const statusData = await statusRes.json();
-    const isSuccess = statusData.state === 'COMPLETED';
-    const paymentId = (statusData.paymentDetails && statusData.paymentDetails.length > 0)
+    const ppState = String(statusData.state || '').toUpperCase();
+    const isSuccess = ppState === 'COMPLETED';
+    const isPending = ppState === 'PENDING';
+    const paymentId = (statusData.paymentDetails && statusData.paymentDetails.length > 0 && statusData.paymentDetails[0].transactionId)
       ? statusData.paymentDetails[0].transactionId
-      : 'PHONEPE-V2-' + Date.now();
+      : (statusData.orderId || 'PHONEPE-V2-' + Date.now());
 
     // 4. Fetch Order Document from Firestore
     const projectId = process.env.VITE_FIREBASE_PROJECT_ID;
     const firebaseApiKey = process.env.VITE_FIREBASE_API_KEY;
-    const orderDocUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/orders/${orderId}?key=${firebaseApiKey}`;
+    const orderDocUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/orders/${encodeURIComponent(orderId)}?key=${firebaseApiKey}`;
 
     const orderDocRes = await fetch(orderDocUrl);
     if (!orderDocRes.ok) {
+      if (orderDocRes.status === 404 && wantsJson) {
+        return res.status(404).json({ error: `Order ${orderId} not found in database.` });
+      }
       throw new Error(`Order ${orderId} document fetch returned status ${orderDocRes.status}`);
     }
 
     const orderDocRaw = await orderDocRes.json();
     const fields = orderDocRaw.fields || {};
-    const currentStatus = fields.status?.stringValue;
+    const currentStatus = fields.status?.stringValue || '';
+    const existingWaybill = fields.waybill?.stringValue || '';
     const total = getFieldValue(fields.total) || 0;
     const items = getFieldValue(fields.items) || [];
     const customer = getFieldValue(fields.customer) || {};
 
-    // Prevent duplicate processing if already marked complete
-    if (currentStatus === 'pending' || currentStatus === 'Shipped') {
-      const existingWaybill = fields.waybill?.stringValue || '';
-      if (isS2SCallback) {
-        return res.status(200).json({ success: true, message: "Already processed" });
+    const alreadyPaidStatuses = ['Processing', 'Shipped', 'Delivered', 'Cancelled', 'pending'];
+
+    // Prevent duplicate shipment/status overwrites if already marked paid/processed
+    if (isSuccess && alreadyPaidStatuses.includes(currentStatus)) {
+      const normalizedStatus = currentStatus === 'pending' ? 'Processing' : currentStatus;
+      if (!fields.paymentId?.stringValue || currentStatus === 'pending') {
+        const backfillFields = {
+          paymentId: { stringValue: fields.paymentId?.stringValue || paymentId },
+          paidAt: { stringValue: fields.paidAt?.stringValue || new Date().toISOString() },
+          ...(currentStatus === 'pending' ? { status: { stringValue: 'Processing' } } : {})
+        };
+        const mask = `updateMask.fieldPaths=paymentId&updateMask.fieldPaths=paidAt${currentStatus === 'pending' ? '&updateMask.fieldPaths=status' : ''}`;
+        await fetch(`${orderDocUrl}&${mask}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fields: backfillFields })
+        }).catch(err => console.warn("Failed to backfill paymentId on processed order:", err));
+      }
+
+      if (wantsJson) {
+        return res.status(200).json({
+          success: true,
+          alreadyProcessed: true,
+          state: 'COMPLETED',
+          status: normalizedStatus,
+          waybill: existingWaybill,
+          paymentId: fields.paymentId?.stringValue || paymentId
+        });
       } else {
         res.writeHead(302, { Location: `${appUrl}/checkout?status=success&id=${orderId}&waybill=${existingWaybill}` });
         res.end();
@@ -199,11 +356,17 @@ export default async function handler(req, res) {
     if (isSuccess) {
       // ── PAYMENT SUCCESS FLOW ──
       console.log(`V2 Payment successful for order: ${orderId}. Starting shipment booking...`);
-      let waybill = "";
+
+      // If order was previously marked payment_failed (which restored stock), re-deduct stock now
+      if (currentStatus === 'payment_failed') {
+        await adjustProductInventory(projectId, firebaseApiKey, items, -1);
+      }
+
+      let waybill = existingWaybill;
       const delhiveryToken = process.env.VITE_DELHIVERY_API_TOKEN;
 
-      // Book shipment in Delhivery
-      if (delhiveryToken) {
+      // Book shipment in Delhivery if not already booked
+      if (delhiveryToken && !waybill) {
         try {
           const BOX_WEIGHT_GRAMS = 100;
           const itemsWeightGrams = items.reduce((acc, item) => {
@@ -390,16 +553,11 @@ export default async function handler(req, res) {
         }
       }
 
-      // Update Firestore Order status to paid ('Shipped' if waybill exists, else 'pending')
+      // Update Firestore Order status to paid ('Shipped' if waybill exists, else 'Processing')
+      const newStatus = waybill ? 'Shipped' : 'Processing';
       const updatePayload = {
         fields: {
-          customer: orderDocRaw.fields.customer,
-          userId: orderDocRaw.fields.userId,
-          items: orderDocRaw.fields.items,
-          total: orderDocRaw.fields.total,
-          shippingCost: orderDocRaw.fields.shippingCost,
-          createdAt: orderDocRaw.fields.createdAt,
-          status: { stringValue: waybill ? 'Shipped' : 'pending' },
+          status: { stringValue: newStatus },
           paymentId: { stringValue: paymentId },
           paidAt: { stringValue: new Date().toISOString() },
           ...(waybill ? {
@@ -420,66 +578,64 @@ export default async function handler(req, res) {
         console.error("Failed to update Firestore order status after successful V2 payment:", await updateRes.text());
       }
 
-      if (isS2SCallback) {
-        return res.status(200).json({ success: true, waybill: waybill });
+      if (wantsJson) {
+        return res.status(200).json({
+          success: true,
+          state: 'COMPLETED',
+          status: newStatus,
+          waybill: waybill,
+          paymentId: paymentId
+        });
       } else {
         res.writeHead(302, { Location: `${appUrl}/checkout?status=success&id=${orderId}&waybill=${waybill}` });
         res.end();
         return;
       }
+    } else if (isPending) {
+      // ── PAYMENT STILL PENDING FLOW (DO NOT MARK FAILED OR RESTORE STOCK YET) ──
+      console.log(`V2 Payment still PENDING for order: ${orderId}. Keeping current status (${currentStatus}).`);
+      if (wantsJson) {
+        return res.status(200).json({
+          success: true,
+          state: 'PENDING',
+          status: currentStatus || 'payment_pending',
+          waybill: existingWaybill
+        });
+      } else {
+        res.writeHead(302, { Location: `${appUrl}/checkout?status=pending&id=${orderId}` });
+        res.end();
+        return;
+      }
     } else {
-      // ── PAYMENT FAILURE FLOW ──
-      console.warn(`V2 Payment failed/cancelled for order: ${orderId}. Restoring inventory stocks...`);
-
-      // Restore product stock in Firestore
-      for (const item of items) {
-        if (item.docId && item.quantity) {
-          try {
-            const productUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/products/${item.docId}?key=${firebaseApiKey}`;
-            const prodRes = await fetch(productUrl);
-            if (prodRes.ok) {
-              const prodData = await prodRes.json();
-              const currentStock = getFieldValue(prodData.fields?.stock) || 0;
-              
-              const updateProdPayload = {
-                fields: {
-                  stock: { integerValue: currentStock + Number(item.quantity) }
-                }
-              };
-
-              await fetch(`${productUrl}&updateMask.fieldPaths=stock`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updateProdPayload)
-              });
-            }
-          } catch (restoreError) {
-            console.error(`Failed to restore stock for product docId: ${item.docId}:`, restoreError);
-          }
+      // ── PAYMENT FAILURE FLOW (FAILED / EXPIRED) ──
+      if (alreadyPaidStatuses.includes(currentStatus)) {
+        if (wantsJson) {
+          return res.status(200).json({ success: true, state: ppState, status: currentStatus });
+        } else {
+          res.writeHead(302, { Location: `${appUrl}/checkout?status=success&id=${orderId}&waybill=${existingWaybill}` });
+          res.end();
+          return;
         }
       }
 
-      // Update Firestore Order status to payment_failed
-      const updateFailPayload = {
-        fields: {
-          customer: orderDocRaw.fields.customer,
-          userId: orderDocRaw.fields.userId,
-          items: orderDocRaw.fields.items,
-          total: orderDocRaw.fields.total,
-          shippingCost: orderDocRaw.fields.shippingCost,
-          createdAt: orderDocRaw.fields.createdAt,
-          status: { stringValue: 'payment_failed' }
-        }
-      };
+      // Only restore stock and mark payment_failed once (when transitioning from payment_pending)
+      if (currentStatus === 'payment_pending') {
+        console.warn(`V2 Payment failed/cancelled (${ppState}) for order: ${orderId}. Restoring inventory stocks...`);
+        await adjustProductInventory(projectId, firebaseApiKey, items, 1);
 
-      await fetch(`${orderDocUrl}&updateMask.fieldPaths=status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updateFailPayload)
-      });
+        await fetch(`${orderDocUrl}&updateMask.fieldPaths=status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fields: {
+              status: { stringValue: 'payment_failed' }
+            }
+          })
+        });
+      }
 
-      if (isS2SCallback) {
-        return res.status(200).json({ success: true, state: statusData.state });
+      if (wantsJson) {
+        return res.status(200).json({ success: true, state: ppState, status: 'payment_failed' });
       } else {
         res.writeHead(302, { Location: `${appUrl}/checkout?status=failure&id=${orderId}` });
         res.end();
@@ -488,10 +644,10 @@ export default async function handler(req, res) {
     }
   } catch (error) {
     console.error("Error inside pay-callback serverless handler:", error);
-    if (isS2SCallback) {
+    if (wantsJson) {
       return res.status(500).json({ error: error.message });
     } else {
-      res.writeHead(302, { Location: `${appUrl}/checkout?status=failure` });
+      res.writeHead(302, { Location: `${appUrl}/checkout?status=failure${orderId ? `&id=${orderId}` : ''}` });
       res.end();
     }
   }

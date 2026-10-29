@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { db } from '../../firebase';
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import { syncOrderTrackingStatus } from '../../utils/trackingUtils';
+import { getApiHost, verifyOrderPaymentStatus, formatOrderStatusLabel } from '../../utils/paymentUtils';
 
 const STATUSES = ['All', 'Pending', 'Processing', 'Shipped', 'Delivered'];
 
@@ -58,44 +59,90 @@ export default function Orders() {
   });
   const [isUpdatingDelivery, setIsUpdatingDelivery] = useState(false);
   const [isSyncingTracking, setIsSyncingTracking] = useState(false);
+  const [isVerifyingSelectedPayment, setIsVerifyingSelectedPayment] = useState(false);
   const hasAutoSyncedRef = useRef(false);
+
+  const handleVerifySingleOrderPayment = async (order: any) => {
+    if (!order?.id) return;
+    setIsVerifyingSelectedPayment(true);
+    setShippingError(null);
+    setShippingSuccess(null);
+    try {
+      const res = await verifyOrderPaymentStatus(order.id);
+      if (!res) {
+        setShippingError("Could not reach payment verification endpoint.");
+      } else if (res.state === 'COMPLETED') {
+        setSelectedOrder((prev: any) =>
+          prev && prev.id === order.id
+            ? {
+                ...prev,
+                status: res.status || (res.waybill ? 'Shipped' : 'Processing'),
+                waybill: res.waybill || prev.waybill,
+                paymentId: res.paymentId || prev.paymentId
+              }
+            : prev
+        );
+        setShippingSuccess(
+          `PhonePe confirmed COMPLETED! Order marked ${res.status || 'Processing'}${res.waybill ? ` (Waybill: ${res.waybill})` : ''}.`
+        );
+      } else {
+        showToast(`PhonePe status for ${order.id}: ${res.state || 'Unknown'}`, 'info');
+      }
+    } catch (err: any) {
+      setShippingError(err.message || "Error verifying payment with PhonePe.");
+    } finally {
+      setIsVerifyingSelectedPayment(false);
+    }
+  };
 
   const handleSyncTrackingStatuses = async (isManual = true, currentOrdersList?: any[]) => {
     const listToSync = currentOrdersList || orders;
+    const paymentPendingOrders = listToSync.filter(
+      (o: any) => o.status === 'payment_pending'
+    );
     const shippedOrders = listToSync.filter(
       (o: any) => o.waybill && o.status !== 'Delivered' && o.status !== 'Cancelled' && o.status !== 'DELETED'
     );
 
-    if (shippedOrders.length === 0) {
+    if (shippedOrders.length === 0 && paymentPendingOrders.length === 0) {
       if (isManual) {
-        showToast("No active shipped packages to sync.", "info");
+        showToast("No pending payments or active shipped packages to sync.", "info");
       }
       return;
     }
 
     setIsSyncingTracking(true);
+    let paidRecoveredCount = 0;
     let deliveredCount = 0;
     let cancelledCount = 0;
 
     try {
+      for (const order of paymentPendingOrders) {
+        const payRes = await verifyOrderPaymentStatus(order.id);
+        if (payRes?.state === 'COMPLETED') {
+          paidRecoveredCount++;
+        }
+      }
+
       for (const order of shippedOrders) {
         const result = await syncOrderTrackingStatus(order.id, order.waybill, order.status);
         if (result === 'Delivered') deliveredCount++;
         else if (result === 'Cancelled') cancelledCount++;
       }
 
-      if (deliveredCount > 0 || cancelledCount > 0) {
+      if (paidRecoveredCount > 0 || deliveredCount > 0 || cancelledCount > 0) {
         const msg = [];
+        if (paidRecoveredCount > 0) msg.push(`${paidRecoveredCount} payment(s) confirmed`);
         if (deliveredCount > 0) msg.push(`${deliveredCount} updated to Delivered`);
         if (cancelledCount > 0) msg.push(`${cancelledCount} updated to Cancelled`);
-        showToast(`Tracking sync complete: ${msg.join(', ')}!`, "success");
+        showToast(`Sync complete: ${msg.join(', ')}!`, "success");
       } else if (isManual) {
-        showToast(`Checked ${shippedOrders.length} active parcel(s). All statuses are up to date.`, "info");
+        showToast(`Checked ${paymentPendingOrders.length + shippedOrders.length} order(s). All statuses are up to date.`, "info");
       }
     } catch (err: any) {
-      console.error("Tracking status sync error:", err);
+      console.error("Tracking/payment status sync error:", err);
       if (isManual) {
-        showAlert("Error syncing tracking statuses.", "Error");
+        showAlert("Error syncing order statuses.", "Error");
       }
     } finally {
       setIsSyncingTracking(false);
@@ -142,9 +189,7 @@ export default function Orders() {
       if (cleanedPhone.length !== 10) cleanedPhone = "7676644366";
 
       if (selectedOrder.waybill) {
-        const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-          ? 'https://kaaramkathalu.in'
-          : '';
+        const host = getApiHost();
 
         const response = await fetch(`${host}/api/shipping`, {
           method: 'POST',
@@ -386,9 +431,7 @@ export default function Orders() {
         pickup_location: pickupLocation
       };
 
-      const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? 'https://kaaramkathalu.in'
-        : '';
+      const host = getApiHost();
 
       const response = await fetch(`${host}/api/shipping`, {
         method: 'POST',
@@ -500,8 +543,15 @@ export default function Orders() {
   }, []);
 
   const filteredOrders = orders.filter(o => {
-    const matchesTab = activeTab === 'All' || o.status.toLowerCase() === activeTab.toLowerCase();
-    const matchesSearch = o.customer.name.toLowerCase().includes(search.toLowerCase()) || o.id.toLowerCase().includes(search.toLowerCase());
+    const orderStatusLower = (o.status || '').toLowerCase();
+    const matchesTab =
+      activeTab === 'All' ||
+      (activeTab === 'Pending'
+        ? orderStatusLower === 'pending' || orderStatusLower === 'payment_pending'
+        : orderStatusLower === activeTab.toLowerCase());
+    const matchesSearch =
+      (o.customer?.name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (o.id || '').toLowerCase().includes(search.toLowerCase());
     return matchesTab && matchesSearch;
   });
 
@@ -699,8 +749,14 @@ export default function Orders() {
                       <td className="px-6 py-4 font-bold text-warm-dark text-lg text-right">₹{order.total}</td>
                       <td className="px-6 py-4 text-center space-y-1">
                         <div>
-                          <span className={`inline-block px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-warm-accent/10 text-warm-accent`}>
-                            {order.status}
+                          <span className={`inline-block px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${
+                            order.status === 'payment_failed'
+                              ? 'bg-red-50 text-red-700'
+                              : order.status === 'payment_pending'
+                              ? 'bg-amber-100 text-amber-800'
+                              : 'bg-warm-accent/10 text-warm-accent'
+                          }`}>
+                            {formatOrderStatusLabel(order.status)}
                           </span>
                         </div>
                         {order.shippingMode && (
@@ -787,8 +843,14 @@ export default function Orders() {
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-warm-dark text-xl">₹{order.total}</p>
-                  <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-warm-accent/10 text-warm-accent mt-1">
-                    {order.status}
+                  <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider mt-1 ${
+                    order.status === 'payment_failed'
+                      ? 'bg-red-50 text-red-700'
+                      : order.status === 'payment_pending'
+                      ? 'bg-amber-100 text-amber-800'
+                      : 'bg-warm-accent/10 text-warm-accent'
+                  }`}>
+                    {formatOrderStatusLabel(order.status)}
                   </span>
                 </div>
               </div>
@@ -1056,6 +1118,28 @@ export default function Orders() {
                 {/* Delhivery Integration Section */}
                 <div className="mt-8 pt-6 border-t border-warm-dark/10 space-y-4">
                   <h3 className="text-xs font-bold uppercase tracking-widest text-warm-accent border-b border-dashed border-warm-accent/20 pb-2">Logistics & Shipping</h3>
+
+                  {(selectedOrder.status === 'payment_pending' || selectedOrder.status === 'payment_failed') && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                      <div>
+                        <p className="text-xs font-bold text-amber-900 uppercase tracking-wider mb-1">
+                          PhonePe Payment Verification ({formatOrderStatusLabel(selectedOrder.status)})
+                        </p>
+                        <p className="text-xs font-serif text-amber-900/80">
+                          Check live payment status directly with PhonePe. If paid, this will automatically confirm the order and book Delhivery shipping.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleVerifySingleOrderPayment(selectedOrder)}
+                        disabled={isVerifyingSelectedPayment}
+                        className="px-5 py-2.5 bg-amber-700 hover:bg-amber-800 disabled:opacity-60 text-white font-bold uppercase tracking-widest text-[10px] rounded-xl transition-colors cursor-pointer shadow-sm flex items-center gap-2 shrink-0"
+                      >
+                        <RefreshCw className={`w-3.5 h-3.5 ${isVerifyingSelectedPayment ? 'animate-spin' : ''}`} />
+                        {isVerifyingSelectedPayment ? 'Checking...' : 'Verify Payment'}
+                      </button>
+                    </div>
+                  )}
                   
                   {selectedOrder.waybill ? (
                     <div className="bg-green-50 border border-green-200 rounded-2xl p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
